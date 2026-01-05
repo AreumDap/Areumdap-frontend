@@ -1,2 +1,7 @@
 local.properties
 .gradle/
+
+# local
+auto.properties
+local.properties
+.gradle/
