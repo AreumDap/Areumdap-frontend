@@ -1,7 +1,11 @@
-local.properties
+# Android / Gradle
 .gradle/
+.idea/
+.kotlin/
 
-# local
-auto.properties
+# Local config
 local.properties
-.gradle/
+auto.properties
+
+# macOS
+.DS_Store
