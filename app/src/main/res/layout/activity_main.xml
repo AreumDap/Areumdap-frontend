@@ -7,6 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".UI.MainActivity">
 
+    <FrameLayout
+        android:id="@+id/main_frm"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/main_bnv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <!-- 바텀네비게이션 -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/main_bnv"
