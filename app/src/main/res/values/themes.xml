@@ -2,15 +2,15 @@
 
     <style name="Theme.AreumDap" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <item name="colorPrimary">@color/main_pink</item>
-        <item name="colorPrimaryVariant">@color/sub_pink</item>
+        <item name="colorPrimary">@color/pink1</item>
+        <item name="colorPrimaryVariant">@color/pink2</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/main_blue</item>
-        <item name="colorSecondaryVariant">@color/sub_blue</item>
+        <item name="colorSecondary">@color/blue1</item>
+        <item name="colorSecondaryVariant">@color/blue2</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="android:windowBackground">@color/background_base</item>
+        <item name="android:windowBackground">@color/background2</item>
 
-        <item name="android:statusBarColor">@color/background_base</item>
+        <item name="android:statusBarColor">@color/background2</item>
 
         <item name="android:windowLightStatusBar">true</item>
 
