@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 
 android {
@@ -28,12 +29,20 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
     }
+
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "18"
+    }
+
+    buildFeatures {
+        buildConfig = true
+        compose = true
+        viewBinding = true
     }
 }
 
@@ -48,4 +57,23 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     implementation("com.google.android.material:material:1.11.0")
+
+    // 1. Compose BOM 추가 (Compose 라이브러리 버전들을 한 번에 관리)
+    val composeBom = platform("androidx.compose:compose-bom:2024.01.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    // 2. Compose 기본 라이브러리들 추가
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.runtime:runtime")
+
+    // 3. Activity에서 Compose를 사용하기 위한 라이브러리
+    implementation("androidx.activity:activity-compose:1.8.2")
+
+    // 디버그용 도구
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
