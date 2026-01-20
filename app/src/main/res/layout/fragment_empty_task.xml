@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/empty_task_tv1"
+        android:text="아직 주어진 자기 성찰 과제가 없어요."
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/empty_task_tv2"
+        android:text="아름답과의 대화를 통해 성장의 기회를 찾아보러 가볼까요?"
+        app:layout_constraintTop_toBottomOf="@id/empty_task_tv1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/empty_task_ai_btn"
+        android:layout_width="185dp"
+        android:layout_height="33dp"
+        android:text="AI 대화 시작하기"
+        app:layout_constraintTop_toBottomOf="@id/empty_task_tv2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="70dp"
+        android:background="@drawable/bg_next_level_btn"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/empty_task_recommend_btn"
+        android:layout_width="185dp"
+        android:layout_height="33dp"
+        android:text="질문 추천 받기"
+        app:layout_constraintTop_toBottomOf="@id/empty_task_ai_btn"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_next_level_btn"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

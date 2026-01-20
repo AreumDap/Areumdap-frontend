@@ -1,4 +1,4 @@
-package com.example.areumdap.Adapter
+package com.example.areumdap.VPAdapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
