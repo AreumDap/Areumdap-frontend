@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp"
+    android:background="@color/background1">
+
+
+<TextView
+        android:id="@+id/tv_selected_season_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:gravity="center"
+        android:text="봄과 가장 닮아 계시군요!"
+        style="@style/TA_Body2"
+        android:textColor="@color/gray5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_keyword_selection_guide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="봄의 어떤 부분과\n가장 닮았다고 생각하시나요?"
+        style="@style/TA_Subtitle1"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_selected_season_result" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/cg_keywords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:chipSpacingHorizontal="10dp"
+        app:chipSpacingVertical="11dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide"
+        app:singleSelection="false">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_keyword_1"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:gravity="center"
+            android:text="키워드1"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textAppearance="@style/TA_Body2"
+            app:chipBackgroundColor="@color/pink2"
+
+            app:chipStrokeWidth="0dp"
+            app:rippleColor="@android:color/transparent" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_keyword_2"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/pink2"
+            android:checkable="true"
+            android:gravity="center"
+            android:text="키워드2"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textAppearance="@style/TA_Body2"
+
+            app:chipBackgroundColor="@color/pink2"
+            app:chipStrokeWidth="0dp" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_keyword_3"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:checkable="true"
+            android:gravity="center"
+            android:text="키워드3"
+            android:textAlignment="center"
+            android:textAppearance="@style/TA_Body2"
+            android:textColor="@color/black"
+
+            app:chipBackgroundColor="@color/white"
+            app:chipStrokeColor="@color/line_color"
+            app:chipStrokeWidth="2dp" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
+        android:id="@+id/tv_or"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="직접 작성하기"
+        android:textColor="@color/gray3"
+        style="@style/TA_Caption1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.445"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cg_keywords" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
