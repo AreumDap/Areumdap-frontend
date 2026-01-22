@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp"
+    android:background="@color/background1">
+
+    <TextView
+        android:id="@+id/tv_complete_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:gravity="center"
+        android:text="좋아요!\n앞으로 지은님과 아름이의\n여정이 시작됩니다."
+        android:textColor="@color/black"
+        style="@style/TA_Subtitle1"
+
+        app:layout_constraintVertical_chainStyle="packed"
+
+        app:layout_constraintBottom_toTopOf="@id/layout_final_character"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/layout_final_character"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="52dp"
+
+        android:background="@color/gray1"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_complete_title" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
