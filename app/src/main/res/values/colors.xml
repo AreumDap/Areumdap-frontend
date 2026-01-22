@@ -11,6 +11,7 @@
 
     <!--    Line-->
     <color name="line_color">#E4E4E4</color>
+    <color name="archive_line">#ED9D6F</color>
 
     <!--    Gray Color-->
     <color name="gray1">#EEEEEE</color>

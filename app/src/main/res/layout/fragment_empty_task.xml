@@ -7,6 +7,7 @@
     <TextView
         android:id="@+id/empty_task_tv1"
         android:text="아직 주어진 자기 성찰 과제가 없어요."
+        style="@style/character_task"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,6 +18,7 @@
     <TextView
         android:id="@+id/empty_task_tv2"
         android:text="아름답과의 대화를 통해 성장의 기회를 찾아보러 가볼까요?"
+        style="@style/character_task"
         app:layout_constraintTop_toBottomOf="@id/empty_task_tv1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -29,6 +31,8 @@
         android:layout_width="185dp"
         android:layout_height="33dp"
         android:text="AI 대화 시작하기"
+        style="@style/TA_Caption1"
+        android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@id/empty_task_tv2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,6 +44,8 @@
         android:layout_width="185dp"
         android:layout_height="33dp"
         android:text="질문 추천 받기"
+        style="@style/TA_Caption1"
+        android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@id/empty_task_ai_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
