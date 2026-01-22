@@ -4,20 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="24dp">
+    android:paddingHorizontal="24dp"
+    android:background="@color/background1">
 
-    <TextView
+
+<TextView
         android:id="@+id/tv_selected_season_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="76dp"
         android:gravity="center"
-        android:lineSpacingExtra="8sp"
         android:text="봄과 가장 닮아 계시군요!"
-        android:textColor="@color/black"
-        android:textSize="16sp"
+        style="@style/TA_Body2"
+        android:textColor="@color/gray5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -27,10 +27,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:gravity="center"
-        android:lineSpacingExtra="8sp"
         android:text="봄의 어떤 부분과\n가장 닮았다고 생각하시나요?"
+        style="@style/TA_Subtitle1"
         android:textColor="@color/black"
-        android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_selected_season_result" />
@@ -43,6 +42,7 @@
         app:chipSpacingHorizontal="10dp"
         app:chipSpacingVertical="11dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide"
         app:singleSelection="false">
@@ -57,26 +57,26 @@
             android:text="키워드1"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="16sp"
-            app:chipBackgroundColor="@color/sub_pink"
+            android:textAppearance="@style/TA_Body2"
+            app:chipBackgroundColor="@color/pink2"
 
-            app:rippleColor="@android:color/transparent"
-            app:chipStrokeWidth="0dp" />
+            app:chipStrokeWidth="0dp"
+            app:rippleColor="@android:color/transparent" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_keyword_2"
             style="@style/Widget.MaterialComponents.Chip.Choice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/sub_pink"
+            android:backgroundTint="@color/pink2"
             android:checkable="true"
             android:gravity="center"
             android:text="키워드2"
             android:textAlignment="center"
             android:textColor="@color/white"
-            android:textSize="16sp"
+            android:textAppearance="@style/TA_Body2"
 
-            app:chipBackgroundColor="@color/sub_pink"
+            app:chipBackgroundColor="@color/pink2"
             app:chipStrokeWidth="0dp" />
 
         <com.google.android.material.chip.Chip
@@ -89,8 +89,8 @@
             android:gravity="center"
             android:text="키워드3"
             android:textAlignment="center"
+            android:textAppearance="@style/TA_Body2"
             android:textColor="@color/black"
-            android:textSize="16sp"
 
             app:chipBackgroundColor="@color/white"
             app:chipStrokeColor="@color/line_color"
@@ -103,8 +103,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="직접 작성하기"
-        android:textColor="#999999"
-        android:textSize="12sp"
+        android:textColor="@color/gray3"
+        style="@style/TA_Caption1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.445"
         app:layout_constraintStart_toStartOf="parent"

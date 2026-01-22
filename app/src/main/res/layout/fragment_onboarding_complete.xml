@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingHorizontal="24dp">
+    android:paddingHorizontal="24dp"
+    android:background="@color/background1">
 
     <TextView
         android:id="@+id/tv_complete_title"
@@ -29,7 +30,7 @@
         android:layout_height="140dp"
         android:layout_marginTop="52dp"
 
-        android:background=""
+        android:background="@color/gray1"
 
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

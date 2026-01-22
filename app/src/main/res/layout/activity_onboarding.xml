@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:background="@color/gray_light">
+    android:background="@color/background1">
 
     <ImageView
         android:id="@+id/iv_back"
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/nanum_square_round"
             android:text="2/5"
-            android:textColor="@color/main_pink"
+            android:textColor="@color/pink1"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -72,26 +72,23 @@
         style="@style/TA_Body2"
         android:text="시작할게요"
         android:textColor="@color/white"
-        app:backgroundTint="@color/main_pink"
+        app:backgroundTint="@color/pink1"
         app:cornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!--    네비게이션 작업 전이라 임시로 비워둠 (추후 연결 필요)-->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fcv_onboarding"
-
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="20dp"
 
         app:layout_constraintBottom_toTopOf="@id/btn_next"
-
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/iv_back"
-        tools:background="@color/gray_light" />
+        android:background="@color/background1"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
