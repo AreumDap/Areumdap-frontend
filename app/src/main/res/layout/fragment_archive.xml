@@ -6,25 +6,28 @@
 
     <TextView
         android:id="@+id/archive_name_tv"
-        android:layout_width="100dp"
-        android:layout_height="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="아카이브"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
+        style="@style/character_xp_tv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp"/>
+        android:layout_marginTop="71dp"/>
 
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/archive_tb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:tabBackground="@color/white"
+        app:tabIndicatorHeight="2dp"
+        app:tabIndicatorColor="@color/archive_line"
         app:tabSelectedTextColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/archive_name_tv"/>
+        app:layout_constraintTop_toBottomOf="@+id/archive_name_tv"
+        android:layout_marginTop="34dp"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/archive_vp"

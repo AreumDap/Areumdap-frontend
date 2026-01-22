@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/characterFragment"
-        android:icon="@drawable/ic_character"
+        android:icon="@drawable/ic_ghost_character"
         android:title="캐릭터"
         />
 
