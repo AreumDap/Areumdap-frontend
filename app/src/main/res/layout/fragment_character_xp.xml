@@ -73,17 +73,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/character_xp_btn"
-        android:layout_width="134dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="112dp"
+    <ImageView
+        android:id="@+id/character_xp_close_iv"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_close"
+        app:layout_constraintTop_toBottomOf="@id/character_xp_iv"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/character_xp_iv"
-        android:text="이전으로"
-        style="@style/TA_Body2"
-        android:textColor="@color/black"
-        android:background="@drawable/bg_data_task"/>
-
+        android:layout_marginTop="157dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
