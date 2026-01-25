@@ -2,15 +2,15 @@
 
     <style name="Theme.AreumDap" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <item name="colorPrimary">@color/main_pink</item>
-        <item name="colorPrimaryVariant">@color/sub_pink</item>
+        <item name="colorPrimary">@color/pink1</item>
+        <item name="colorPrimaryVariant">@color/pink2</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/main_blue</item>
-        <item name="colorSecondaryVariant">@color/sub_blue</item>
+        <item name="colorSecondary">@color/blue1</item>
+        <item name="colorSecondaryVariant">@color/blue2</item>
         <item name="colorOnSecondary">@color/white</item>
-        <item name="android:windowBackground">@color/background_base</item>
+        <item name="android:windowBackground">@color/background2</item>
 
-        <item name="android:statusBarColor">@color/background_base</item>
+        <item name="android:statusBarColor">@color/background2</item>
 
         <item name="android:windowLightStatusBar">true</item>
 
@@ -32,10 +32,16 @@
         <item name="lineHeight">30sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="TA_Body2">
         <item name="android:textSize">16sp</item>
         <item name="lineHeight">20sp</item>
         <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TA_Body2_bold">
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">20sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
     <style name="TA_Body3">
         <item name="android:textSize">14sp</item>
@@ -47,4 +53,68 @@
         <item name="lineHeight">20sp</item>
         <item name="android:textStyle">normal</item>
     </style>
+    <!-- 아카이브 페이지 -->
+    <style name="archive_tv">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+    <style name="item_date">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#666666</item>
+    </style>
+
+    <style name="character_task">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_type_tv">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_xp_tv">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_title_tv">
+        <item name="android:textSize">25sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_tip_tv">
+        <item name="android:textSize">9sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#A0A0A0</item>
+    </style>
+
+    <style name="task_date_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#525252</item>
+    </style>
+
+    <style name="character_xp_tv">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="spinner_tv">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_complete_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
 </resources>
