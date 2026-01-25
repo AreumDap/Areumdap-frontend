@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/summary_cv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    app:cardUseCompatPadding="true"
+    app:cardPreventCornerOverlap="true"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/reflection1"
+    android:outlineAmbientShadowColor="@color/reflection1"
+    android:outlineSpotShadowColor="@color/reflection1">
+
+    <LinearLayout
+        android:id="@+id/summary_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <LinearLayout
+            android:id="@+id/summary_layout_top"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="15dp"
+            android:paddingLeft="19dp"
+            android:paddingRight="11dp"
+            android:paddingBottom="66dp">
+
+            <LinearLayout
+                android:id="@+id/sum_category_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="1dp"
+                android:paddingTop="1dp"
+                android:layout_marginEnd="100dp">
+
+                <ImageView
+                    android:id="@+id/sum_cat_iv"
+                    android:layout_width="11dp"
+                    android:layout_height="17dp"
+                    android:src="@drawable/ic_reflection"
+                    android:layout_marginEnd="9dp" />
+
+                <TextView
+                    android:id="@+id/sum_cat_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="자기성찰"
+                    style="@style/TA_Body3"
+                    android:textColor="@color/reflection2" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/xp_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00 XP" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/summary_layout_mid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingRight="35dp"
+            android:paddingLeft="38dp"
+            android:paddingBottom="56dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="오늘 하루\n 나를 위한 시간 갖기"
+                android:gravity="center"
+                style="@style/TA_Body1"
+                android:textColor="@color/black"
+                android:paddingBottom="11dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="아무 생각 없이 좋아하는 일을 하며\n 나만의 시간을 가져보세요."
+                android:gravity="center"
+                style="@style/TA_Caption1"
+                android:textColor="@color/black" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/summary_layout_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginEnd="12dp"
+            android:paddingBottom="12dp">
+
+            <ImageView
+                android:id="@+id/ic_clock_iv"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_clock"
+                android:layout_marginEnd="4dp" />
+
+            <TextView
+                android:id="@+id/sum_dueday_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7일"
+                android:textColor="@color/reflection2"
+                android:padding="1dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
