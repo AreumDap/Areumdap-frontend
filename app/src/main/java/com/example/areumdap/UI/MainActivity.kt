@@ -60,4 +60,8 @@ class MainActivity : AppCompatActivity() {
             false
             }
         }
+
+    fun goToHome() {
+        binding.mainBnv.selectedItemId = R.id.homeFragment
+    }
     }
