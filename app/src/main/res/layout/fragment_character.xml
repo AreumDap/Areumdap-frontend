@@ -137,11 +137,12 @@
             <Spinner
                 android:id="@+id/task_filter_sp"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:background="@drawable/bg_spinner"
                 android:layout_marginTop="30dp"
+                android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:spinnerMode="dropdown"/>
 
