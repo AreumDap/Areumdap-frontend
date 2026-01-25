@@ -6,8 +6,11 @@
     <!--    Background-->
     <color name="background1">#FCFCFC</color>
     <color name="background2">#F5F5F5</color>
+    <color name="bg_pink">#FDEFF5</color>
+    <color name="bg_green">#EFFDF0</color>
+    <color name="bg_yellow">#FDF7EF</color>
+    <color name="bg_blue">#EFFCFD</color>
 
-    #F5F5F5
 
     <!--    Line-->
     <color name="line_color">#E4E4E4</color>
