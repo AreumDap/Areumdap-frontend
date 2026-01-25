@@ -27,7 +27,11 @@
         android:layout_marginTop="40dp"
         android:layout_marginEnd="16dp"
 
-        android:text="🌸\n\n봄"
+        app:icon="@drawable/ic_spring_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n봄"
         android:textColor="@color/black"
         android:textAppearance="@style/TA_Body1"
 
@@ -52,7 +56,11 @@
         android:layout_height="131dp"
         android:layout_marginStart="16dp"
 
-        android:text="🌊\n\n여름"
+        app:icon="@drawable/ic_summer_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n여름"
         android:textColor="@color/black"
         android:textAppearance="@style/TA_Body1"
 
@@ -80,7 +88,11 @@
         android:insetBottom="0dp"
         android:stateListAnimator="@null"
 
-        android:text="🍁\n\n가을"
+        app:icon="@drawable/ic_fall_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n가을"
         android:textColor="@color/black"
         android:textAppearance="@style/TA_Body1"
 
@@ -98,7 +110,11 @@
         android:layout_width="131dp"
         android:layout_height="131dp"
 
-        android:text="❄️\n\n겨울"
+        app:icon="@drawable/ic_winter_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n겨울"
         android:textColor="@color/black"
         android:textAppearance="@style/TA_Body1"
 
