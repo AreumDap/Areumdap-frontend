@@ -61,6 +61,7 @@
         android:spinnerMode="dropdown"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:paddingStart="5dp"
         android:layout_marginTop="38dp"
         android:layout_marginEnd="20dp"/>
 
@@ -68,10 +69,11 @@
         android:id="@+id/task_list_rv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="38dp"
         android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="@+id/task_number_ll"
         app:layout_constraintEnd_toEndOf="@+id/task_sp"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/task_number_ll"
         app:layout_constraintTop_toBottomOf="@+id/task_number_ll"
-        tools:listitem="@layout/item_archive_task"
-        android:layout_marginTop="38dp"/>
+        tools:listitem="@layout/item_archive_task" />
 </androidx.constraintlayout.widget.ConstraintLayout>

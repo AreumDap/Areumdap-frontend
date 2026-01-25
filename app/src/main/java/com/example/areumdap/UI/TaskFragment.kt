@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.areumdap.R
+import com.example.areumdap.RVAdapter.TaskRVAdapter
 import com.example.areumdap.databinding.FragmentTaskBinding
 
 class TaskFragment : Fragment() {
@@ -43,5 +45,14 @@ class TaskFragment : Fragment() {
         }
 
         binding.taskSp.adapter = spinnerAdapter
+
+        val testData = arrayListOf("자기 성찰") // 아이템 하나만 나오도록 설정
+        val taskRVAdapter = TaskRVAdapter(testData)
+
+        binding.taskListRv.apply {
+            adapter = taskRVAdapter
+            // 가로 스크롤 설정 (XML에 가로로 되어 있으므로)
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        }
     }
 }
