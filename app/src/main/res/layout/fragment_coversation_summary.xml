@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+    android:id="@+id/sum_title_top_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="대화가 종료되었어요!"
+        style="@style/TA_Subtitle1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/sum_title_bottom_tv"
+        android:layout_marginBottom="15dp" />
+    <TextView
+        android:id="@+id/sum_title_bottom_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="오늘 나눈 대화는 다음과 같아요."
+        style="@style/TA_Subtitle1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/summary_layout"
+        android:layout_marginBottom="60dp"/>
+
+    <LinearLayout
+        android:id="@+id/summary_layout"
+        android:layout_width="296dp"
+        android:layout_height="323dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:background="@drawable/bg_keyword_chip_selector"
+        android:paddingTop="20dp"
+        android:paddingBottom="60dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+    <LinearLayout
+        android:id="@+id/category_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="33dp">
+
+        <ImageView
+            android:id="@+id/sum_cat_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_reflection"
+            android:layout_marginEnd="5dp" />
+
+        <TextView
+            android:id="@+id/sum_cat_tv"
+            style="@style/TA_Body3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="자기성찰"
+            android:textColor="@color/reflection2" />
+    </LinearLayout>
+
+        <TextView
+            android:id="@+id/sum_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="제목"
+            style="@style/TA_Body1"
+            android:layout_marginBottom="38dp"/>
+        <TextView
+            android:id="@+id/sum_body_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="오늘은 이러이러한 대화를 나눴어요.
+이러이러한 고민을 나눴고,
+이러이러한 이야기를 이야기해줬어요.
+대화 요약내용이 들어가요 대화 요약내용이 들어가요
+대화 요약내용이 들어가요대화 요약내용이 들어가요
+대화 요약내용이 들어가요"
+            style="@style/TA_Caption1" />
+
+
+    </LinearLayout>
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@drawable/bg_btn_radius16"
+        android:text="다음으로"
+        android:gravity="center"
+        style="@style/TA_Body2_bold"
+        android:textColor="@color/white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="20dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
