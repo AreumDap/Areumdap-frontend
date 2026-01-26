@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="10dp"
+    android:paddingVertical="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="92dp"
+        android:background="@drawable/bg_item_character_task"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/item_archive_task_iv"
+            android:layout_width="10dp"
+            android:layout_height="15dp"
+            android:src="@drawable/ic_reflection"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"/>
+
+        <TextView
+            android:id="@+id/item_archive_task_tv"
+            android:text="자기 성찰"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/item_archive_task_iv"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="7dp"/>
+        
+        <ImageView
+            android:id="@+id/item_archive_check_iv"
+            android:src="@drawable/ic_check"
+            app:layout_constraintTop_toBottomOf="@id/item_archive_task_iv"
+            app:layout_constraintStart_toStartOf="@id/item_archive_task_iv"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="15.5dp"/>
+        
+        <TextView
+            style="@style/TA_Body2"
+            android:text="오늘 하루 나를 위한 시간 갖기"
+            android:textColor="@color/black"
+            android:layout_width="220dp"
+            android:layout_height="20dp"
+            app:layout_constraintStart_toEndOf="@id/item_archive_check_iv"
+            app:layout_constraintTop_toBottomOf="@id/item_archive_task_tv"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="8dp"/>
+        
+        <TextView
+            android:text="2026. 00. 00"
+            android:id="@+id/item_archive_date_tv"
+            style="@style/task_type_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="20dp"/>
+        
+        <LinearLayout
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="9dp"
+            android:layout_marginEnd="20dp">
+
+            <TextView
+                style="@style/task_type_tv"
+                android:text="+"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/item_archive_xp_tv"
+                style="@style/task_type_tv"
+                android:text=" 00"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                style="@style/task_type_tv"
+                android:text="XP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

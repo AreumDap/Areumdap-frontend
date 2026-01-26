@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/summary_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/task_btn_row"
+
+        >
+
+        <TextView
+            android:id="@+id/sum_title_top_tv"
+            style="@style/TA_Subtitle1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="20dp"
+            android:text="대화를 통해 얻은 과제예요!"
+            app:layout_constraintBottom_toTopOf="@id/sum_title_bottom_tv"
+            />
+
+        <TextView
+            android:id="@+id/sum_title_bottom_tv"
+            style="@style/TA_Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dp"
+            android:text="해당 과제는 캐릭터 페이지에서도 확인 가능해요."
+            />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_tasks"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingHorizontal="24dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
+    <include
+        android:id="@+id/inc_task_card"
+        layout="@layout/item_task_card"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    </LinearLayout>
+
+<!--    xlq-->
+
+
+    <LinearLayout
+        android:id="@+id/task_btn_row"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="23dp"
+        android:layout_marginEnd="23dp"
+        android:layout_marginBottom="23dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_task_page"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:text="과제 페이지"
+            style="@style/TA_Body2_bold"
+            app:cornerRadius="100dp"
+
+            app:strokeColor="@color/pink2"
+            app:strokeWidth="1dp"
+            app:elevation="0dp"
+            android:stateListAnimator="@null"
+
+            app:backgroundTint="@color/white"
+            android:textColor="@color/pink2"/>
+
+
+        <Space
+            android:layout_width="24dp"
+            android:layout_height="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_home"
+            style="@style/TA_Body2_bold"
+            android:layout_width="170dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:stateListAnimator="@null"
+            android:text="홈으로"
+
+            android:textColor="@color/white"
+            app:backgroundTint="@color/pink2"
+            app:cornerRadius="100dp"
+
+            app:elevation="0dp"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

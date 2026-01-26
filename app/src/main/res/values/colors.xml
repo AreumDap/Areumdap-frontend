@@ -3,24 +3,49 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#222222</color>
 
-    <color name="main_pink">#F46680</color>
-    <color name="main_green">#80F466</color>
-    <color name="main_yellow">#F4DB61</color>
-    <color name="main_blue">#6680F4</color>
+    <!--    Background-->
+    <color name="background1">#FCFCFC</color>
+    <color name="background2">#F5F5F5</color>
+    <color name="bg_pink">#FDEFF5</color>
+    <color name="bg_green">#EFFDF0</color>
+    <color name="bg_yellow">#FDF7EF</color>
+    <color name="bg_blue">#EFFCFD</color>
 
-    <color name="sub_pink">#DD8394</color>
-    <color name="sub_green">#8FDC7E</color>
-    <color name="sub_yellow">#D9C97C</color>
-    <color name="sub_blue">#7E8FDC</color>
 
-    <color name="orange">#FFA800</color>
-
-    <color name="background_light">#FCFCFC</color>
-    <color name="background_base">#F5F5F5</color>
-
+    <!--    Line-->
     <color name="line_color">#E4E4E4</color>
+    <color name="archive_line">#ED9D6F</color>
 
-    <color name="gray_light">#EEEEEE</color>
-    <color name="gray_medium">#D9D9D9</color>
-    <color name="gray_dark">#A0A0A0</color>
+    <!--    Gray Color-->
+    <color name="gray1">#EEEEEE</color>
+    <color name="gray2">#D9D9D9</color>
+    <color name="gray3">#A0A0A0</color>
+    <color name="gray4">#7E7E7E</color>
+    <color name="gray5">#656565</color>
+
+    <!--    Main Color-->
+    <color name="pink1">#F46680</color>
+    <color name="green1">#80F466</color>
+    <color name="yellow1">#F4DB61</color>
+    <color name="blue1">#6680F4</color>
+
+    <color name="pink2">#DD8394</color>
+    <color name="green2">#8FDC7E</color>
+    <color name="yellow2">#D9C97C</color>
+    <color name="blue2">#7E8FDC</color>
+
+    <!--    Category(Line) Color-->
+    <color name="reflection1">#E5D3B1</color>
+    <color name="growth1">#A4D8BF</color>
+    <color name="career1">#A4ADD8</color>
+    <color name="relationship1">#D8A4A4</color>
+    <color name="emotion1">#CFA4D8</color>
+    <color name="etc1">#D8BEA4</color>
+
+    <color name="reflection2">#FFA800</color>
+    <color name="growth2">#379568</color>
+    <color name="career2">#1430B8</color>
+    <color name="relationship2">#CC0000</color>
+    <color name="emotion2">#853795</color>
+    <color name="etc2">#B86614</color>
 </resources>
