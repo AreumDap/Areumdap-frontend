@@ -3,6 +3,49 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:id="@+id/character_level_ll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="46dp"
+        android:layout_marginStart="18dp"
+        android:layout_width="130dp"
+        android:layout_height="42dp"
+        android:background="@drawable/bg_home_level"
+        android:gravity="center">
+
+        <TextView
+            style="@style/home_tv"
+            android:text="성장 단계 :"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="@style/home_tv"
+            android:id="@+id/character_level_tv"
+            android:text=" 0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="@style/home_tv"
+            android:text="단계"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/character_group_iv"
+        android:src="@drawable/ic_group"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="26dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"/>
     
     <ImageView
         android:src="@drawable/ic_character"
@@ -12,7 +55,7 @@
         android:layout_marginTop="80dp"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/character_level_ll"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -52,7 +95,7 @@
             android:paddingTop="8dp">
 
             <TextView
-                android:id="@+id/character_level_tv"
+                android:id="@+id/character_xp_level_tv"
                 style="@style/TA_Caption1"
                 android:text="00"
                 android:textColor="@color/black"
@@ -102,8 +145,10 @@
         android:layout_width="98dp"
         android:layout_height="28dp"
         style="@style/TA_Caption1"
-        android:text="다음 단계 확인 ->"
+        android:text="다음 단계 확인"
+        android:drawableEnd="@drawable/ic_next_right"
         android:textColor="@color/black"
+        android:paddingHorizontal="7dp"
         app:layout_constraintEnd_toEndOf="@+id/character_level_cl"
         app:layout_constraintBottom_toTopOf="@id/character_level_cl"
         android:layout_marginBottom="20dp"
@@ -136,13 +181,14 @@
 
             <Spinner
                 android:id="@+id/task_filter_sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="73dp"
+                android:layout_height="36dp"
                 android:layout_alignParentEnd="true"
+                android:gravity="center"
                 android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:background="@drawable/bg_spinner"
                 android:layout_marginTop="30dp"
-                android:paddingStart="5dp"
+                android:paddingStart="18dp"
                 android:paddingEnd="5dp"
                 android:spinnerMode="dropdown"/>
 
