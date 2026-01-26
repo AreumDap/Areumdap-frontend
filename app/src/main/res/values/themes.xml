@@ -117,4 +117,9 @@
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
+    <style name="home_tv">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#222</item>
+    </style>
 </resources>
