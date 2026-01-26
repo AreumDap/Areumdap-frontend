@@ -1,0 +1,11 @@
+# Android / Gradle
+.gradle/
+.idea/
+.kotlin/
+
+# Local config
+local.properties
+auto.properties
+
+# macOS
+.DS_Store
