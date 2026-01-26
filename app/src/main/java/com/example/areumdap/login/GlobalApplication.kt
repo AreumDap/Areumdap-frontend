@@ -1,4 +1,4 @@
-package com.example.areumdap
+package com.example.areumdap.login
 
 import android.app.Application
 import com.kakao.sdk.common.KakaoSdk

@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        android:name=".GlobalApplication"
+        android:name=".login.GlobalApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -15,7 +15,7 @@
         android:theme="@style/Theme.AreumDap">
 
         <activity
-            android:name=".signup.SignupActivity"
+            android:name=".login.SignupActivity"
             android:exported="false" />
         <activity
             android:name=".login.LoginActivity"
@@ -34,7 +34,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EmailLoginActivity" />
+        <activity android:name=".login.EmailLoginActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />

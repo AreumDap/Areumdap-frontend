@@ -1,4 +1,3 @@
-// 1. 기능 단위 패키지 구조 적용 (splash)
 package com.example.areumdap.splash
 
 import android.content.Intent
@@ -10,7 +9,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.areumdap.R
-import com.example.areumdap.login.LoginActivity // 패키지 분리에 따른 import
+import com.example.areumdap.login.LoginActivity
 
 class SplashActivity : AppCompatActivity() {
 

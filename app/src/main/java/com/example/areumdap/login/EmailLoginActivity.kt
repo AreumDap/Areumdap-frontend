@@ -1,10 +1,11 @@
-package com.example.areumdap
+package com.example.areumdap.login
 
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import com.example.areumdap.R
 
 class EmailLoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -10,11 +10,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.areumdap.EmailLoginActivity
 import com.example.areumdap.MainActivity
 import com.example.areumdap.R
-import com.example.areumdap.signup.SignupActivity
-import com.kakao.sdk.user.UserApiClient // [중요] 카카오 로그인 기능
+import com.example.areumdap.login.SignupActivity
+import com.kakao.sdk.user.UserApiClient
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,8 +45,8 @@ class LoginActivity : AppCompatActivity() {
         // 3. 카카오 로그인 버튼 클릭
         btnKakao.setOnClickListener {
             // 카카오톡 앱이 있으면 앱으로, 없으면 웹으로 로그인
-            if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-                UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
+            if (UserApiClient.Companion.instance.isKakaoTalkLoginAvailable(this)) {
+                UserApiClient.Companion.instance.loginWithKakaoTalk(this) { token, error ->
                     if (error != null) {
                         Log.e("KakaoLogin", "카카오톡 로그인 실패", error)
                         // 사용자가 취소한 게 아니면 웹으로 다시 시도
@@ -72,7 +71,7 @@ class LoginActivity : AppCompatActivity() {
 
     // 웹(계정)으로 로그인하는 함수
     private fun loginWithKakaoAccount() {
-        UserApiClient.instance.loginWithKakaoAccount(this) { token, error ->
+        UserApiClient.Companion.instance.loginWithKakaoAccount(this) { token, error ->
             if (error != null) {
                 Log.e("KakaoLogin", "웹 로그인 실패", error)
             } else if (token != null) {

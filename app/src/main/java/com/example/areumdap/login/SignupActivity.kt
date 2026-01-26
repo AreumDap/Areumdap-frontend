@@ -1,5 +1,4 @@
-// 1. 기능 단위 패키지 구조 적용 (signup)
-package com.example.areumdap.signup
+package com.example.areumdap.login
 
 import android.os.Bundle
 import android.widget.Button
