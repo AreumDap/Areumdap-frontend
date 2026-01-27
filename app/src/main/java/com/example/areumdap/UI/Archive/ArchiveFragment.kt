@@ -1,4 +1,4 @@
-package com.example.areumdap.UI
+package com.example.areumdap.UI.Archive
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,8 +24,7 @@ class ArchiveFragment : Fragment(){
         val archiveAdapter = ArchiveVPAdapter(this)
         binding.archiveVp.adapter = archiveAdapter
 
-        TabLayoutMediator(binding.archiveTb, binding.archiveVp){
-            tab,position ->
+        TabLayoutMediator(binding.archiveTb, binding.archiveVp) { tab, position ->
             tab.text = information[position]
         }.attach()
 

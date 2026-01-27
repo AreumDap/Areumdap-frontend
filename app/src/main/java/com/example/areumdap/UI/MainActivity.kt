@@ -3,6 +3,8 @@ package com.example.areumdap.UI
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.areumdap.R
+import com.example.areumdap.UI.Archive.ArchiveFragment
+import com.example.areumdap.UI.Character.CharacterFragment
 import com.example.areumdap.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
                 R.id.characterFragment -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm,CharacterFragment())
+                        .replace(R.id.main_frm, CharacterFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }

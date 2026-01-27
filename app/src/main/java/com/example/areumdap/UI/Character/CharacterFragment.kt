@@ -1,4 +1,4 @@
-package com.example.areumdap.UI
+package com.example.areumdap.UI.Character
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -58,6 +58,22 @@ class CharacterFragment : Fragment() {
             }
         }
         binding.taskFilterSp.adapter = spinnerAdapter
+
+        binding.characterGroupIv.setOnClickListener {
+            val characterhistoryFragment = CharacterHistoryFragment()
+
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, characterhistoryFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        // 다음 단계 확인하기
+        binding.characterNextLevelBtn.setOnClickListener{
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.replace(R.id.main_frm, CharacterXpFragment())
+            transaction.commit()
+        }
+
     }
 
     override fun onDestroyView() {
