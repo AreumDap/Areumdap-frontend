@@ -18,7 +18,26 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // 테스트용
         holder.binding.itemQuestionTaskTv.text = questionList[position]
+
+        holder.binding.taskCardView.setOnClickListener {
+            if(it.translationX < 0f){
+                it.animate().translationX(0f).setDuration(200).start()
+            } else{
+                // 닫혀있을 때 클릭 철
+            }
+        }
+
+        holder.binding.taskTrashIv.setOnClickListener {
+           removeItem(holder.adapterPosition)
+        }
     }
 
     override fun getItemCount(): Int = questionList.size
+    //아이템 삭제
+    fun removeItem(position: Int){
+        questionList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, questionList.size)
+    }
+
 }

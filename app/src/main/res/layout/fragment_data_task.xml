@@ -4,170 +4,29 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:id="@+id/task_type_ll"
+    <include
+        android:id="@+id/data_task_card"
+        layout="@layout/item_task_card"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="167dp"
-        android:layout_width="82dp"
-        android:layout_height="33dp"
-        android:gravity="center"
-        android:background="@drawable/bg_data_task">
+        android:layout_marginTop="186dp"/>
 
-        <TextView
-            style="@style/task_type_tv"
-            android:id="@+id/task_type_tv"
-            android:text="제목"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/task_xp_ll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_type_ll"
-        android:layout_marginTop="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
-            style="@style/task_xp_tv"
-            android:text="성공 시,"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            android:id="@+id/task_xp_tv"
-            style="@style/task_xp_tv"
-            android:text=" 00"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            style="@style/task_xp_tv"
-            android:text="XP"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/task_title_ll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_xp_ll"
-        android:layout_marginTop="65dp"
-        android:layout_width="207dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/task_title_tv1"
-            style="@style/task_title_tv"
-            android:text="오늘 하루 나를 위한"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/task_title_tv2"
-            style="@style/task_title_tv"
-            android:text="시간 갖기"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/task_part_title_ll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_title_ll"
-        android:layout_marginTop="52dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
-            style="@style/TA_Caption1"
-            android:textColor="@color/black"
-            android:text="아무 생각 없이 좋아하는 일을 하며"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            style="@style/TA_Caption1"
-            android:textColor="@color/black"
-            android:text="나만의 시간을 가져보세요."
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/task_tip_ll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_part_title_ll"
-        android:layout_marginTop="3dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
-            style="@style/task_tip_tv"
-            android:text="Tip. 이걸 하기 어려울 땐"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            style="@style/task_tip_tv"
-            android:text="이렇게 저렇게 시작해보는 건 어때요?"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/task_date_ll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_tip_ll"
-        android:layout_marginTop="87dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
-            style="@style/task_date_tv"
-            android:text="D-"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <TextView
-            style="@style/task_date_tv"
-            android:id="@+id/task_date_tv"
-            android:text="7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/task_complete_btn"
         android:layout_width="134dp"
         android:layout_height="45dp"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="127dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/task_date_ll"
-        android:text="과제 완료"
+        app:layout_constraintTop_toBottomOf="@+id/data_task_card"
+        android:text="이전으로"
         style="@style/TA_Body2"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:background="@drawable/bg_data_task"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,7 +2,7 @@ package com.example.areumdap.VPAdapter
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.example.areumdap.UI.ArchiveFragment
+import com.example.areumdap.UI.Archive.ArchiveFragment
 import com.example.areumdap.UI.QuestionFragment
 import com.example.areumdap.UI.TaskFragment
 
