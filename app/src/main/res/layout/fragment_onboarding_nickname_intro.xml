@@ -17,22 +17,11 @@
 
         app:layout_constraintVertical_chainStyle="packed"
 
-        app:layout_constraintBottom_toTopOf="@id/iv_speech_bubble"
+        app:layout_constraintBottom_toTopOf="@id/view_character"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_speech_bubble"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="34dp"
-        android:background="@drawable/ic_speech_bubble"
-
-        app:layout_constraintBottom_toTopOf="@id/view_character"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_nickname_question" />
 
     <View
         android:id="@+id/view_character"
@@ -44,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/iv_speech_bubble" />
+        app:layout_constraintTop_toBottomOf="@id/tv_nickname_question" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
