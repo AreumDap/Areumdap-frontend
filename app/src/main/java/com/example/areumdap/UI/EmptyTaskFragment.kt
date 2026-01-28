@@ -25,5 +25,13 @@ class EmptyTaskFragment: Fragment() {
         binding.emptyTaskRecommendBtn.setOnClickListener {
             (activity as? MainActivity)?.goToHome()
         }
+
+        /*binding.emptyTaskAiBtn.setOnClickListener {
+            val chatFragment = ChatFragment()
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, chatFragment)
+                .commit()
+        }*/
     }
 }
