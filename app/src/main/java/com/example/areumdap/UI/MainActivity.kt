@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.areumdap.R
 import com.example.areumdap.UI.Archive.ArchiveFragment
 import com.example.areumdap.UI.Character.CharacterFragment
+import com.example.areumdap.UI.Home.HomeFragment
 import com.example.areumdap.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -24,31 +25,25 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.main_frm, HomeFragment())
             .commitAllowingStateLoss()
 
-        // 초기 홈 화면 툴바 설정
-        setToolbar(visible = false)
-
         binding.mainBnv.setOnItemSelectedListener { item ->
             when (item.itemId){
                 R.id.archiveFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, ArchiveFragment())
                         .commitAllowingStateLoss()
-                    setToolbar(visible = true, title = "아카이브")
                     return@setOnItemSelectedListener true
                 }
                 R.id.homeFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, HomeFragment())
                         .commitAllowingStateLoss()
-                    setToolbar(visible = false)
                     return@setOnItemSelectedListener true
                 }
 
                 R.id.settingFragment -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, SettingFragment())
+                        .replace(R.id.main_frm,SettingFragment())
                         .commitAllowingStateLoss()
-                    setToolbar(visible = true, title = "설정")
                     return@setOnItemSelectedListener true
                 }
 
@@ -56,7 +51,6 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, RecordFragment())
                         .commitAllowingStateLoss()
-                    setToolbar(visible = true, title = "기록")
                     return@setOnItemSelectedListener true
                 }
 
@@ -64,13 +58,12 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, CharacterFragment())
                         .commitAllowingStateLoss()
-                    setToolbar(visible = true, title = "캐릭터")
                     return@setOnItemSelectedListener true
                 }
             }
             false
+            }
         }
-    }
 
     /**
      * 툴바 설정 함수
@@ -103,4 +96,4 @@ class MainActivity : AppCompatActivity() {
     fun goToHome() {
         binding.mainBnv.selectedItemId = R.id.homeFragment
     }
-}
+    }

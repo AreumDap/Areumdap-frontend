@@ -1,89 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:id="@+id/home_character_level_ll"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="46dp"
-        android:layout_marginStart="18dp"
         android:layout_width="130dp"
         android:layout_height="42dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="46dp"
         android:background="@drawable/bg_home_level"
-        android:gravity="center">
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             style="@style/home_tv"
-            android:text="성장 단계 :"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="성장 단계 :" />
 
         <TextView
-            style="@style/home_tv"
             android:id="@+id/home_character_level_tv"
-            android:text=" 0"
+            style="@style/home_tv"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text=" 0" />
 
         <TextView
             style="@style/home_tv"
-            android:text="단계"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-
+            android:layout_height="wrap_content"
+            android:text="단계" />
     </LinearLayout>
 
     <ImageView
-        android:src="@drawable/ic_character"
         android:id="@+id/character_iv"
         android:layout_width="211dp"
         android:layout_height="165dp"
-        android:layout_marginTop="60dp"
         android:layout_marginStart="100dp"
+        android:layout_marginTop="60dp"
         android:layout_marginEnd="100dp"
-        app:layout_constraintTop_toBottomOf="@+id/home_character_level_ll"
+        android:layout_marginBottom="52dp"
+        android:src="@drawable/ic_character"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+        app:layout_constraintTop_toBottomOf="@+id/home_character_level_ll"
+        app:layout_constraintBottom_toTopOf="@id/character_task_ll"/>
+    
+    <TextView
+        android:id="@+id/chat_start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_input_field"
+        android:text="대화 바로 시작하기→"
+        style="@style/TA_Caption1"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/character_task_ll"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="12dp"/>
 
 
     <LinearLayout
         android:id="@+id/character_task_ll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:orientation="vertical"
-        android:background="@drawable/bg_character_task"
         android:layout_marginTop="35dp"
+        android:background="@drawable/bg_character_task"
         android:elevation="10dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/character_iv">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="40dp">
+            android:paddingHorizontal="40dp"
+            android:paddingTop="30dp"
+            android:paddingBottom="18dp">
 
             <TextView
-                android:text="오늘의 추천 질문"
-                android:textColor="@color/black"
+                android:id="@+id/title_tv"
                 style="@style/spinner_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:layout_marginTop="30dp"/>
-
+                android:layout_height="wrap_content"
+                android:text="오늘의 추천 질문"
+                android:textColor="@color/black" />
         </RelativeLayout>
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/character_vp"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recommend_question_rv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="20dp"
+            android:paddingEnd="12dp"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_recommend_question" />
 
     </LinearLayout>
 

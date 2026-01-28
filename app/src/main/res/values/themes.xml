@@ -2,7 +2,7 @@
 
     <style name="Theme.AreumDap" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
-        <item name="colorPrimary">@color/pink1</item>
+        <item name="colorPrimary">@color/pink2</item>
         <item name="colorPrimaryVariant">@color/pink2</item>
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorSecondary">@color/blue1</item>
