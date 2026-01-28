@@ -4,6 +4,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class OnboardingViewModel : ViewModel() {
+    // 1. 현재 진행 단계를 관리하는 변수 (0단계부터 시작)
+    val currentStep = MutableLiveData<Int>(0)
+
+    // 2. 시작 화면에서 텍스트가 한 번 바뀌었는지 체크하는 변수
+    var isTextUpdated: Boolean = false
+
     // 1단계: 선택한 계절
     val selectedSeason = MutableLiveData<String>()
 
