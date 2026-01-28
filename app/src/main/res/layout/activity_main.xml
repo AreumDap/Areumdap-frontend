@@ -16,6 +16,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <include
+        android:id="@+id/character_tool_bar"
+        layout="@layout/layout_toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
     <!-- 바텀네비게이션 -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/main_bnv"

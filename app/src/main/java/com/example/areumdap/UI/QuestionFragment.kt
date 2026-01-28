@@ -58,7 +58,6 @@ class QuestionFragment : Fragment() {
         val limit = (54 * resources.displayMetrics.density)
 
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            private var isClamped = false
 
             override fun onMove(
                 recyclerView: RecyclerView,
