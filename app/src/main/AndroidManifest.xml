@@ -15,10 +15,11 @@
         <activity
             android:name=".UI.SplashActivity"
             android:exported="true"
-            android:theme="@style/SplashTheme"> <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -29,6 +30,23 @@
         <activity
             android:name=".UI.onboarding.OnboardingActivity"
             android:exported="true" />
+
+        <!-- 인증 관련 Activity들 추가 -->
+        <activity
+            android:name=".UI.auth.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AreumDap" />
+
+        <activity
+            android:name=".UI.auth.EmailLoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AreumDap" />
+
+        <activity
+            android:name=".UI.auth.SignupActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AreumDap" />
+
     </application>
 
 </manifest>
