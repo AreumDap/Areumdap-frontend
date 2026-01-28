@@ -9,6 +9,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // [삭제함] setTheme(R.style.Theme_AreumDap) <- 이 줄 지웠음!
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -35,33 +37,30 @@ class MainActivity : AppCompatActivity() {
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
-
                 R.id.settingFragment -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm,SettingFragment())
+                        .replace(R.id.main_frm, SettingFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
-
                 R.id.recordFragment -> {
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, RecordFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
-
                 R.id.characterFragment -> {
                     supportFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm,CharacterFragment())
+                        .replace(R.id.main_frm, CharacterFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
             }
             false
-            }
         }
+    }
 
     fun goToHome() {
         binding.mainBnv.selectedItemId = R.id.homeFragment
     }
-    }
+}
