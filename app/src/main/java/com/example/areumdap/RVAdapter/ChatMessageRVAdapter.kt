@@ -52,7 +52,7 @@ class ChatMessageRVAdapter :
     class AiVH(private val binding: ItemChatAiBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(msg: ChatMessage, showProfile:Boolean) {
             binding.chatTv.text = msg.text
-            binding.aiProfileIv.visibility = if(!showProfile) View.VISIBLE else View.INVISIBLE
+            binding.aiProfileIv.visibility = if(showProfile) View.VISIBLE else View.INVISIBLE
 
 
         }
