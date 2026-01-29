@@ -1,102 +1,3 @@
-//package com.example.areumdap.UI.Onboarding
-//
-//import android.graphics.Color
-//import android.os.Bundle
-//import androidx.activity.viewModels
-//import androidx.appcompat.app.AppCompatActivity
-//import androidx.core.content.ContextCompat
-//import com.example.areumdap.R
-//import com.example.areumdap.UI.Onboarding.fragment.OnboardingCustomKeywordFragment
-//import com.example.areumdap.UI.Onboarding.fragment.OnboardingKeywordFragment
-//import com.example.areumdap.UI.Onboarding.fragment.OnboardingNicknameFragment
-//import com.example.areumdap.UI.Onboarding.fragment.OnboardingResultFragment
-//import com.example.areumdap.UI.Onboarding.fragment.OnboardingSeasonFragment
-//import com.example.areumdap.UI.Onboarding.fragment.OnboardingStartFragment
-//import com.example.areumdap.databinding.ActivityOnboardingBinding
-//
-//class OnboardingActivity : AppCompatActivity() {
-//    private lateinit var binding: ActivityOnboardingBinding
-//
-//    private val viewModel: OnboardingViewModel by viewModels()
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        binding = ActivityOnboardingBinding.inflate(layoutInflater)
-//        setContentView(binding.root)
-//
-//
-//        if (savedInstanceState == null) {
-//            supportFragmentManager.beginTransaction()
-//                .replace(R.id.fcv_onboarding, OnboardingStartFragment()) // fcv_onboarding은 XML의 컨테이너 ID
-//                .commit()
-//        }
-//
-//        setupObserve()
-//
-//        binding.btnNext.setOnClickListener {
-//            val current = viewModel.currentStep.value ?: 0
-//
-//            // 0단계(시작 화면)이고 아직 텍스트가 바뀌지 않은 경우
-//            if (current == 0 && !viewModel.isTextUpdated) {
-//                // 현재 fcv_onboarding에 떠 있는 프래그먼트를 찾아 함수 호출
-//                val startFragment = supportFragmentManager.findFragmentById(R.id.fcv_onboarding) as? OnboardingStartFragment
-//                startFragment?.changeText()
-//
-//                viewModel.isTextUpdated = true
-//                binding.btnNext.text = "나는..." // 버튼 텍스트 변경
-//                return@setOnClickListener // 화면 전환 없이 종료
-//            } else if (current == 1 && viewModel.selectedSeason.value!=null) {
-//                binding.btnNext.text = "다음으로" // 버튼 텍스트 변경
-//            }
-//
-//
-//                // 이미 텍스트가 바뀌었거나 다음 단계인 경우 화면 전환
-//            val nextStep = current + 1
-//            val nextFragment: androidx.fragment.app.Fragment? = when (nextStep) {
-//                1 -> OnboardingSeasonFragment()
-//                2 -> OnboardingKeywordFragment()
-//                3 -> OnboardingCustomKeywordFragment()
-//                4 -> OnboardingResultFragment()
-//                5 -> OnboardingNicknameFragment()
-//                else -> null
-//            }
-//
-//            if (nextFragment != null) {
-//                supportFragmentManager.beginTransaction()
-//                    .replace(R.id.fcv_onboarding, nextFragment)
-//                    .addToBackStack(null)
-//                    .commit()
-//
-//                viewModel.currentStep.value = nextStep
-//                updateProgress(nextStep) // 1/5 등으로 업데이트
-//
-//                // 화면이 넘어갔으므로 버튼 다시 비활성화 (선택 유도)
-//                viewModel.isKeywordSelected.value = false
-//            }
-//        }    }
-//
-//    // 진행바 업데이트 함수
-//    fun updateProgress(step: Int) {
-//        binding.pbOnboarding.progress = step
-//        binding.tvProgressNum.text = "$step/5"
-//    }
-//
-//    private fun setupObserve() {
-//        // 뷰모델의 선택 상태를 관찰하여 버튼 활성화 제어
-//        viewModel.isKeywordSelected.observe(this) { isEnabled ->
-//            binding.btnNext.apply {
-//                this.isEnabled = isEnabled
-//                // 활성화 상태에 따라 색상 변경
-//                if (isEnabled) {
-//                    setBackgroundColor(ContextCompat.getColor(context, R.color.pink1))
-//                } else {
-//                    binding.btnNext.setBackgroundColor(ContextCompat.getColor(context, R.color.pink2))
-//                }
-//            }
-//        }
-//    }
-//}
-
 package com.example.areumdap.UI.Onboarding
 
 import android.content.Intent
@@ -146,6 +47,32 @@ class OnboardingActivity : AppCompatActivity() {
                     return // 여기서 종료 (앱 종료 안 함)
                 }
 
+                if (currentStep == 4) {
+                    val currentTextStep = viewModel.infoTextStep.value ?: 0
+
+                    when(currentTextStep){
+                        3 -> {
+                            viewModel.infoTextStep.value = 2
+                            viewModel.isKeywordSelected.value = true
+                            return
+                        }
+                        2 -> {
+                            // 닉네임 입력 → "서로를 알아가기 위해..."
+                            viewModel.infoTextStep.value = 1
+                            viewModel.isKeywordSelected.value = true
+                            binding.btnNext.text = "나는..."
+                            return
+                        }
+                        1 -> {
+                            // "서로를 알아가기 위해..." → "아름이가 태어났어요"
+                            viewModel.infoTextStep.value = 0
+                            return
+                        }
+                        0 -> {
+                        }
+                    }
+                }
+
                 // 그 외 상황: 일반적인 뒤로가기 동작
                 if (supportFragmentManager.backStackEntryCount > 1) { // 1보다 클 때만 pop (0단계는 유지)
                     supportFragmentManager.popBackStack()
@@ -163,6 +90,10 @@ class OnboardingActivity : AppCompatActivity() {
 
             viewModel.currentStep.value = step
             updateUI(step)
+
+            if(step == 4){
+                viewModel.isResultTextUpdated = false
+            }
         }
 
         setupObserve() // 뷰모델 관찰
@@ -183,6 +114,52 @@ class OnboardingActivity : AppCompatActivity() {
                 }
             }
 
+            if (currentStep == 4){
+                val currentTextStep = viewModel.infoTextStep.value ?:0
+
+                when(currentTextStep){
+                    0 -> {
+                        viewModel.infoTextStep.value = 1
+                        return@setOnClickListener
+                    }
+                    1 -> {
+                        goToNextStep(currentStep)
+                        return@setOnClickListener
+                    }
+                    2 -> {
+                        if (!viewModel.nickname.value.isNullOrEmpty()) {
+                            viewModel.infoTextStep.value = 3
+                            viewModel.isKeywordSelected.value = true
+                            binding.btnNext.text = "여정 시작하기"
+                        }
+                        return@setOnClickListener
+                    }
+                    3 -> {
+                        if (!viewModel.nickname.value.isNullOrEmpty()) {
+                            startActivity(Intent(this, MainActivity::class.java))
+                            finish()
+                        }
+                        return@setOnClickListener
+                    }
+                }
+            }
+            if(currentStep == 6){
+                val currentTextStep = viewModel.infoTextStep.value ?: 2
+
+                when (currentTextStep) {
+                    2 -> {
+                        // "좋아요!..." -> "아름이는..." 으로 변경
+                        viewModel.infoTextStep.value = 3
+                        binding.btnNext.text
+                        return@setOnClickListener
+                    }
+                    3 -> {
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                        return@setOnClickListener
+                    }
+                }
+            }
             // [다음 단계로 이동]
             goToNextStep(currentStep)
         }
@@ -213,14 +190,16 @@ class OnboardingActivity : AppCompatActivity() {
                     nextStepNum = 3
                 } else {
                     // B코스: 그냥 선택 -> 결과 화면 (Step 3 건너뛰고 Step 4로 점프!)
-                    nextFragment = OnboardingResultFragment() // 혹은 InfoFragment
+                    nextFragment = OnboardingInfoFragment() // 혹은 InfoFragment
                     nextStepNum = 4
+                    viewModel.infoTextStep.value = 0
                 }
             }
 
             3 -> { // 커스텀 -> 결과 (Step 4)
-                nextFragment = OnboardingResultFragment()
+                nextFragment = OnboardingInfoFragment()
                 nextStepNum = 4
+                viewModel.infoTextStep.value = 0
             }
 
             4 -> { // 결과 -> 닉네임 (Step 5)
@@ -231,9 +210,16 @@ class OnboardingActivity : AppCompatActivity() {
             5 -> { // 닉네임 -> 메인 (끝!)
                 // 닉네임 입력 확인 (비어있지 않을 때만)
                 if (!viewModel.nickname.value.isNullOrEmpty()) {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
+                    nextFragment = OnboardingInfoFragment()
+                    nextStepNum = 6 // 단계를 6으로 설정 (새로운 단계 정의)
+                    viewModel.infoTextStep.value = 2 // "좋아요! 앞으로..." 멘트 나오게 설정
                 }
+            }
+            // 6단계(마지막 멘트 화면) 처리 추가
+            6 -> {
+                // 멘트 다 보여줬으면 이제 진짜 메인으로
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
                 return
             }
         }
@@ -265,8 +251,14 @@ class OnboardingActivity : AppCompatActivity() {
             0 -> 0
             1 -> 1 // 계절
             2 -> 2 // 키워드
-            3 -> 3 // 결과1
-            4 -> 4 // 결과2
+            3 -> 2 // 커스텀 키워드
+            4 ->
+                // Info 화면 내 텍스트 단계에 따라 진행바 변경
+                when (viewModel.infoTextStep.value ?: 0) {
+                    0 -> 3  // "아름이가 태어났어요" → 3/5
+                    1, 2 -> 4     //  "서로를 알아가기 위해...", 닉네임 입력 → 4/5
+                    else -> 3
+                }
             5 -> 4 // 닉네임
             else -> 5
         }
@@ -280,7 +272,7 @@ class OnboardingActivity : AppCompatActivity() {
             else -> binding.btnNext.text = "다음으로"
         }
 
-// 3. ✨ [수정] 버튼 활성화 상태 강제 동기화 (여기가 핵심!)
+        // 3. ✨ [수정] 버튼 활성화 상태 강제 동기화 (여기가 핵심!)
         if (step == 0 || step == 4) {
             // 무조건 활성화되는 단계 (시작, 결과)
             binding.btnNext.isEnabled = true
@@ -315,7 +307,23 @@ class OnboardingActivity : AppCompatActivity() {
                     viewModel.currentStep.value = 3
                     updateUI(2)
                     viewModel.isKeywordSelected.value = false
-                } else if (currentStep == 2 && !isDirectInput) { }
+                } else if (currentStep == 2 && !isDirectInput) {
+                }
+            }
+
+            viewModel.nickname.observe(this) { nickname ->
+                val step = viewModel.currentStep.value ?: 0
+                if (step == 4 && viewModel.infoTextStep.value == 2) {
+                    val isEnabled = !nickname.isNullOrEmpty()
+                    binding.btnNext.isEnabled = isEnabled
+                    val color = if (isEnabled) R.color.pink1 else R.color.pink2
+                    binding.btnNext.setBackgroundColor(ContextCompat.getColor(this, color))
+                }
+            }
+
+            // ✨ infoTextStep 관찰해서 UI 업데이트
+            viewModel.infoTextStep.observe(this) {
+                updateUI(viewModel.currentStep.value ?: 0)
             }
         }
     }
