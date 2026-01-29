@@ -110,7 +110,6 @@
             android:text="홈으로"
 
             android:textColor="@color/white"
-            app:backgroundTint="@color/pink2"
             app:cornerRadius="100dp"
 
             app:elevation="0dp"/>

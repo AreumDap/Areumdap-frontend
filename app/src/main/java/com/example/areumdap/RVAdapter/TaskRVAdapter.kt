@@ -3,6 +3,7 @@ package com.example.areumdap.RVAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.areumdap.UI.PopUpDialogFragment
 import com.example.areumdap.databinding.ItemArchiveTaskBinding
 
 class TaskRVAdapter(private val questionList: ArrayList<String>):
@@ -31,7 +32,22 @@ class TaskRVAdapter(private val questionList: ArrayList<String>):
         }
 
         holder.binding.taskTrashIv.setOnClickListener {
-            removeItem(holder.adapterPosition)
+            val activity = holder.binding.root.context as androidx.fragment.app.FragmentActivity
+
+            val dialog = PopUpDialogFragment.newInstance(
+                title = "완료한 과제를 정말로 삭제하겠어요?\n삭제한 리스트는 되돌릴 수 없어요.",
+                subtitle = "",
+                leftBtn = "이전으로",
+                rightBtn = "삭제하기"
+            )
+
+            dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback{
+                override fun onConfirm(){
+                    removeItem(holder.adapterPosition)
+                }
+            })
+
+            dialog.show(activity.supportFragmentManager, "PopUpDialog")
         }
     }
 
