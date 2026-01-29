@@ -76,7 +76,9 @@ class MainActivity : AppCompatActivity() {
         visible: Boolean,
         title: String = "",
         showBackButton: Boolean = false,
-        subText: String? = null
+        subText: String? = null,
+        onBackClick:(()->Unit)? = null
+
     ) {
         binding.characterToolBar.root.visibility = if (visible) View.VISIBLE else View.GONE
 
@@ -88,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 
             // 뒤로가기 버튼 클릭 리스너
             binding.characterToolBar.ivBack.setOnClickListener {
-                onBackPressedDispatcher.onBackPressed()
+                onBackClick?.invoke() ?: onBackPressedDispatcher.onBackPressed()
             }
         }
     }

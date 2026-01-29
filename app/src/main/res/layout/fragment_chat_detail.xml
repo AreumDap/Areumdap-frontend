@@ -29,7 +29,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        tools:listitem="@layout/item_chat_left"/>
+        tools:listitem="@layout/item_chat_ai"/>
     <ImageView
         android:id="@+id/ic_report_iv"
         android:layout_width="40dp"
