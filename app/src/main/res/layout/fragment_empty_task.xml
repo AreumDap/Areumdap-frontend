@@ -11,7 +11,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="52dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -22,7 +22,7 @@
         app:layout_constraintTop_toBottomOf="@id/empty_task_tv1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -30,14 +30,14 @@
         android:id="@+id/empty_task_ai_btn"
         android:layout_width="185dp"
         android:layout_height="33dp"
-        android:text="AI 대화 시작하기"
+        android:text="대화 시작하기"
         style="@style/TA_Caption1"
         android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@id/empty_task_tv2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="70dp"
-        android:background="@drawable/bg_next_level_btn"/>
+        android:layout_marginTop="62dp"
+        android:background="@drawable/bg_empty_task_btn"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/empty_task_recommend_btn"
@@ -49,8 +49,8 @@
         app:layout_constraintTop_toBottomOf="@id/empty_task_ai_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/bg_next_level_btn"/>
+        android:layout_marginTop="15dp"
+        android:background="@drawable/bg_empty_task_btn"/>
 
 
 
