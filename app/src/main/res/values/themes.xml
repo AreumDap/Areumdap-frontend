@@ -17,6 +17,43 @@
         <item name="android:fontFamily">@font/nanum_square_round</item>
 
     </style>
+
+    <!-- 기본 온보딩 테마 (온보딩은 그대로 유지) -->
+    <style name="Theme.Areumdap.Onboarding" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pink1</item>
+        <item name="colorPrimaryVariant">@color/pink2</item>
+        <item name="colorSecondary">@color/pink1</item>
+        <!-- 기타 온보딩 스타일 -->
+    </style>
+
+    <!-- 봄 테마 -->
+    <style name="Theme.Areumdap.Spring" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pink1</item>
+        <item name="colorSecondary">@color/pink2</item>
+        <item name="backgroundColor">@color/bg_pink</item>
+    </style>
+
+    <!-- 여름 테마 -->
+    <style name="Theme.Areumdap.Summer" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/green1</item>
+        <item name="colorSecondary">@color/green2</item>
+        <item name="backgroundColor">@color/bg_green</item>
+    </style>
+
+    <!-- 가을 테마 -->
+    <style name="Theme.Areumdap.Autumn" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/yellow1</item>
+        <item name="colorSecondary">@color/yellow2</item>
+        <item name="backgroundColor">@color/bg_yellow</item>
+    </style>
+
+    <!-- 겨울 테마 -->
+    <style name="Theme.Areumdap.Winter" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/blue1</item>
+        <item name="colorSecondary">@color/blue2</item>
+        <item name="backgroundColor">@color/bg_blue</item>
+    </style>
+
     <style name="TA_Header1">
         <item name="android:textSize">36sp</item>
         <item name="lineHeight">40sp</item>
