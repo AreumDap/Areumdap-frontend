@@ -49,8 +49,7 @@
         android:gravity="center"
         android:inputType="text"
         android:paddingHorizontal="16dp"
-        android:textColor="@color/black"
-        android:textColorHint="@color/gray3"
+        android:textColor="@color/gray3"
         style="@style/TA_Body2"
 
         app:layout_constraintBottom_toBottomOf="parent"
