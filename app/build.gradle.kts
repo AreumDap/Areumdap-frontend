@@ -84,9 +84,4 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("androidx.activity:activity-ktx:1.9.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${lifecycleVersion}")
-
-    // 네비게이션 필수 라이브러리
-    val nav_version = "2.7.7" 
-    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
 }

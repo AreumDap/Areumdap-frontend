@@ -46,10 +46,6 @@ class OnboardingNicknameFragment : Fragment(){
                 // 글자가 1글자 이상 -> 버튼 활성화 (Pink1)
                 // 글자가 없으면 -> 버튼 비활성화 (Pink2)
                 viewModel.isKeywordSelected.value = input.isNotEmpty()
-
-                if (input.isNotEmpty()) {
-                    viewModel.isKeywordSelected.value = true
-                }
             }
         })
     }
