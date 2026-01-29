@@ -29,7 +29,7 @@
         app:layout_constraintBottom_toTopOf="@id/message_send_layout"
         app:layout_constraintStart_toStartOf="@id/start_guideline"
         app:layout_constraintEnd_toEndOf="@id/end_guideline"
-        tools:listitem="@layout/item_chat_left"/>
+        tools:listitem="@layout/item_chat_ai"/>
 
     <LinearLayout
         android:id="@+id/message_send_layout"
@@ -45,17 +45,22 @@
             android:id="@+id/et_chat_input"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:imeOptions="actionSend"
+            android:singleLine="false"
+            android:maxLines="4"
             android:layout_weight="1"
             android:background="@drawable/bg_input_field"
             android:hint="메시지를 입력하세요"
             android:padding="12dp"
             android:layout_marginEnd="12dp"/>
         <ImageView
+            android:id="@+id/send_btn"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_send"
             android:layout_gravity="center"/>
-
+ㅗ
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
