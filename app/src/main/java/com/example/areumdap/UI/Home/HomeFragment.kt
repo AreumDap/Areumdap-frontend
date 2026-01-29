@@ -9,7 +9,7 @@ import com.example.areumdap.R
 import com.example.areumdap.RVAdapter.RecommendQuestionRVAdapter
 import com.example.areumdap.UI.Chat.ChatFragment
 import com.example.areumdap.databinding.FragmentHomeBinding
-import com.example.areumdap.domain.model.QuestionCategory
+import com.example.areumdap.domain.model.Category
 import com.example.areumdap.domain.model.RecommendQuestion
 
 class HomeFragment : Fragment() {
@@ -37,8 +37,8 @@ class HomeFragment : Fragment() {
         binding.recommendQuestionRv.adapter = adapter
         adapter.submitList(
             listOf(
-                RecommendQuestion(1, "오늘 가장 기억에 남는 순간은?", QuestionCategory.REFLECTION),
-                RecommendQuestion(2, "요즘 가장 고민되는 건?", QuestionCategory.EMOTION)
+                RecommendQuestion(1, "오늘 가장 기억에 남는 순간은?", Category.REFLECTION),
+                RecommendQuestion(2, "요즘 가장 고민되는 건?", Category.EMOTION)
             )
         )
 

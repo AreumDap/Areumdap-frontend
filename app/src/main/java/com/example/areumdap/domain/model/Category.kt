@@ -4,7 +4,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.example.areumdap.R
 
-enum class QuestionCategory(
+enum class Category(
     val label:String,
     @DrawableRes val iconRes:Int,
     @ColorRes val colorRes: Int
@@ -16,7 +16,7 @@ enum class QuestionCategory(
     ETC("기타", R.drawable.ic_etc, R.color.etc2);
 
     companion object{
-        fun from(value:String?): QuestionCategory{
+        fun from(value:String?): Category{
             return when (value?.trim()){
                 "자기성찰"->REFLECTION
                 "관계"->RELATIONSHIP
