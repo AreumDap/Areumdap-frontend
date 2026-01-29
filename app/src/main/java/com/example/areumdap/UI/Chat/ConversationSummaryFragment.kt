@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.areumdap.R
 import com.example.areumdap.databinding.FragmentCoversationSummaryBinding
-import com.example.areumdap.databinding.FragmentRecordBinding
 
 class ConversationSummaryFragment : Fragment() {
     lateinit var binding: FragmentCoversationSummaryBinding

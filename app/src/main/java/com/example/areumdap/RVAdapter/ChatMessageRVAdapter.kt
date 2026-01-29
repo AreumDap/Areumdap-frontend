@@ -1,6 +1,6 @@
 package com.example.areumdap.RVAdapter
 
-import android.R
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

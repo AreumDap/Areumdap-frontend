@@ -60,7 +60,6 @@
             android:layout_height="28dp"
             android:src="@drawable/ic_send"
             android:layout_gravity="center"/>
-ㅗ
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

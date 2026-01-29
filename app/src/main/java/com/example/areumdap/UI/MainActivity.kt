@@ -79,8 +79,7 @@ class MainActivity : AppCompatActivity() {
         title: String = "",
         showBackButton: Boolean = false,
         subText: String? = null,
-        onBackClick:(()->Unit)? = null
-
+        onBackClick:(()->Unit)? = null,
         backgroundColor: Int = android.graphics.Color.WHITE
     ) {
         binding.characterToolBar.root.visibility = if (visible) View.VISIBLE else View.GONE
