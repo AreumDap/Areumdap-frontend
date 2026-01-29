@@ -1,4 +1,4 @@
-package com.example.areumdap.UI.onboarding
+package com.example.areumdap.UI.Onboarding
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +16,9 @@ class OnboardingViewModel : ViewModel() {
     // 2단계: 선택한 키워드
     val selectedKeywords = MutableLiveData<MutableList<String>>(mutableListOf())
     val isKeywordSelected = MutableLiveData<Boolean>(false)
+    val isDirectInput = MutableLiveData<Boolean>(false)
+    val directKeyword = MutableLiveData<String>()
+
 
     // 4단계: 입력한 닉네임
     val nickname = MutableLiveData<String>()

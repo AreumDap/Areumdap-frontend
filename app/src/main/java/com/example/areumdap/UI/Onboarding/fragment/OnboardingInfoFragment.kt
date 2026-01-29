@@ -6,13 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.UI.Onboarding.OnboardingViewModel
 import com.example.areumdap.databinding.FragmentOnboardingInfoBinding
-import com.example.areumdap.databinding.FragmentOnboardingKeywordBinding
 import kotlin.getValue
 
-class OnboardingResultFragment: Fragment() {
+class OnboardingInfoFragment: Fragment() {
+
     private var _binding: FragmentOnboardingInfoBinding? = null
     private val binding get() = _binding!!
 
@@ -26,9 +25,8 @@ class OnboardingResultFragment: Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
-
 }
