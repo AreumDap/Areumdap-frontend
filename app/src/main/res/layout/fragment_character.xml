@@ -8,7 +8,7 @@
         android:id="@+id/character_level_ll"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="46dp"
+        android:layout_marginTop="57dp"
         android:layout_marginStart="18dp"
         android:layout_width="130dp"
         android:layout_height="42dp"
@@ -42,7 +42,7 @@
         android:src="@drawable/ic_group"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="61dp"
         android:layout_marginEnd="26dp"
         android:layout_width="25dp"
         android:layout_height="25dp"/>
@@ -52,7 +52,7 @@
         android:id="@+id/character_iv"
         android:layout_width="211dp"
         android:layout_height="165dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="81dp"
         android:layout_marginStart="100dp"
         android:layout_marginEnd="100dp"
         app:layout_constraintTop_toBottomOf="@+id/character_level_ll"
@@ -67,7 +67,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/character_iv"
         app:layout_constraintBottom_toTopOf="@id/character_task_ll"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="54dp"
         android:layout_marginStart="28dp"
         android:layout_marginEnd="28dp"
         android:background="@drawable/bg_level_cl_bar">
@@ -77,8 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="다음 성장까지"
-            style="@style/TA_Caption1"
-            android:textColor="@color/black"
+            style="@style/character_level_tv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:paddingStart="16dp"
@@ -96,31 +95,27 @@
 
             <TextView
                 android:id="@+id/character_xp_level_tv"
-                style="@style/TA_Caption1"
+                style="@style/character_level_tv"
                 android:text="00"
-                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
                 android:text=" / "
-                style="@style/TA_Caption1"
-                android:textColor="@color/black"
+                style="@style/character_level_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
                 android:id="@+id/character_final_level_tv"
                 android:text="00"
-                android:textColor="@color/black"
-                style="@style/TA_Caption1"
+                style="@style/character_level_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
             <TextView
                 android:text=" XP"
-                android:textColor="@color/black"
-                style="@style/TA_Caption1"
+                style="@style/character_level_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -161,7 +156,7 @@
         android:layout_height="0dp"
         android:orientation="vertical"
         android:background="@drawable/bg_character_task"
-        android:layout_marginTop="63dp"
+        android:layout_marginTop="38dp"
         android:elevation="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/character_level_cl">
@@ -188,6 +183,7 @@
                 android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:background="@drawable/bg_spinner"
                 android:layout_marginTop="30dp"
+                android:visibility="gone"
                 android:paddingStart="18dp"
                 android:paddingEnd="5dp"
                 android:spinnerMode="dropdown"/>

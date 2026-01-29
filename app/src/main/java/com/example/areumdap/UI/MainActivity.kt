@@ -3,6 +3,7 @@ package com.example.areumdap.UI
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.example.areumdap.R
 import com.example.areumdap.UI.Archive.ArchiveFragment
 import com.example.areumdap.UI.Character.CharacterFragment
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
             }
             false
             }
+            binding.mainBnv.selectedItemId = R.id.homeFragment
         }
 
     /**
@@ -76,11 +78,13 @@ class MainActivity : AppCompatActivity() {
         visible: Boolean,
         title: String = "",
         showBackButton: Boolean = false,
-        subText: String? = null
+        subText: String? = null,
+        backgroundColor: Int = android.graphics.Color.WHITE
     ) {
         binding.characterToolBar.root.visibility = if (visible) View.VISIBLE else View.GONE
 
         if (visible) {
+            binding.characterToolBar.root.setBackgroundColor(backgroundColor)
             binding.characterToolBar.tvTitle.text = title
             binding.characterToolBar.ivBack.visibility = if (showBackButton) View.VISIBLE else View.GONE
             binding.characterToolBar.tvSub.visibility = if (subText != null) View.VISIBLE else View.GONE

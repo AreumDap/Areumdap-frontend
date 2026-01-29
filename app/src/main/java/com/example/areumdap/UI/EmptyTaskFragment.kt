@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.example.areumdap.R
+import com.example.areumdap.UI.Chat.ChatFragment
 import com.example.areumdap.databinding.FragmentEmptyTaskBinding
 
 class EmptyTaskFragment: Fragment() {
@@ -26,12 +28,13 @@ class EmptyTaskFragment: Fragment() {
             (activity as? MainActivity)?.goToHome()
         }
 
-        /*binding.emptyTaskAiBtn.setOnClickListener {
+        binding.emptyTaskAiBtn.setOnClickListener {
             val chatFragment = ChatFragment()
 
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, chatFragment)
+                .addToBackStack(null)
                 .commit()
-        }*/
+        }
     }
 }
