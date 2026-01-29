@@ -19,9 +19,6 @@ class OnboardingViewModel : ViewModel() {
     val isDirectInput = MutableLiveData<Boolean>(false)
     val directKeyword = MutableLiveData<String>()
 
-    // 3단계
-    var isResultTextUpdated: Boolean = false
-
     // 텍스트 변경 단계 추적 (0: 아름이가 태어났어요, 1: 닉네임 인트로, 2: 결과1, 3: 결과2)
     var infoTextStep = MutableLiveData<Int>(0)
 
