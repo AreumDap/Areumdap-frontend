@@ -28,7 +28,6 @@ class OnboardingActivity : AppCompatActivity() {
             replaceFragment(OnboardingStartFragment(), "0")
             viewModel.currentStep.value = 0
             updateUI(0)
-            binding.btnNext.text = "시작할게요"
         }
 
         // 2. 뒤로가기 버튼 처리 (시스템 뒤로가기 가로채기)
@@ -150,7 +149,7 @@ class OnboardingActivity : AppCompatActivity() {
                     2 -> {
                         // "좋아요!..." -> "아름이는..." 으로 변경
                         viewModel.infoTextStep.value = 3
-                        binding.btnNext.text
+                        binding.btnNext.text = "여정 시작하기"
                         return@setOnClickListener
                     }
                     3 -> {
@@ -244,7 +243,7 @@ class OnboardingActivity : AppCompatActivity() {
             .commit()
     }
 
-    // [헬퍼] UI 업데이트 (진행바, 버튼 글씨, 색상)
+    // UI 업데이트 (진행바, 버튼 글씨, 색상)
     private fun updateUI(step: Int) {
         // 1. 진행바 설정 (화면 번호에 맞춰서 사용자에게 보여줄 단계 설정)
         val displayStep = when (step) {
@@ -256,7 +255,7 @@ class OnboardingActivity : AppCompatActivity() {
                 // Info 화면 내 텍스트 단계에 따라 진행바 변경
                 when (viewModel.infoTextStep.value ?: 0) {
                     0 -> 3  // "아름이가 태어났어요" → 3/5
-                    1, 2 -> 4     //  "서로를 알아가기 위해...", 닉네임 입력 → 4/5
+                    1, 2 -> 4     //  닉네임 인트로 "서로를 알아가기 위해...", 닉네임 입력 → 4/5
                     else -> 3
                 }
             5 -> 4 // 닉네임
@@ -268,7 +267,14 @@ class OnboardingActivity : AppCompatActivity() {
         // 2. 버튼 글씨 설정
         when (step) {
             0 -> binding.btnNext.text = if (viewModel.isTextUpdated) "나는..." else "시작할게요"
-            7 -> binding.btnNext.text = "여정 시작하기"
+            6 -> {
+                // 텍스트 단계가 ("아름이는...")일 때만 "여정 시작하기"
+                if (viewModel.infoTextStep.value == 3) {
+                    binding.btnNext.text = "여정 시작하기"
+                } else {
+                    binding.btnNext.text = "다음으로"
+                }
+            }
             else -> binding.btnNext.text = "다음으로"
         }
 

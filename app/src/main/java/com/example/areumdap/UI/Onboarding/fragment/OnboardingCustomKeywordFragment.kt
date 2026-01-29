@@ -34,6 +34,15 @@ class OnboardingCustomKeywordFragment: Fragment(){
 
         viewModel.isKeywordSelected.value = !binding.etKeywordWrite.text.isNullOrEmpty()
 
+        // 선택한 계절에 따라 텍스트 변경
+        viewModel.selectedSeason.observe(viewLifecycleOwner) { season ->
+            val seasonTextResult = "${season}과 가장 닮아 계시군요!"
+            val seasonKeywordGuide = "${season}의 어떤 부분과\n가장 닮았다고 생각하시나요?"
+            binding.tvSelectedSeasonResult.text = android.text.Html.fromHtml(seasonTextResult, android.text.Html.FROM_HTML_MODE_LEGACY)
+            binding.tvKeywordSelectionGuide.text = android.text.Html.fromHtml(seasonKeywordGuide, android.text.Html.FROM_HTML_MODE_LEGACY)
+        }
+
+
         // 키워드 직접 입력
         binding.etKeywordWrite.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -48,6 +57,7 @@ class OnboardingCustomKeywordFragment: Fragment(){
             }
         })
 
+        // 키워드 선택
         binding.tvSelectKeyword.setOnClickListener {
             viewModel.isDirectInput.value = false
             requireActivity().supportFragmentManager.popBackStack()
@@ -58,5 +68,4 @@ class OnboardingCustomKeywordFragment: Fragment(){
         super.onDestroyView()
         _binding = null
     }
-
 }

@@ -37,7 +37,6 @@ class OnboardingSeasonFragment: Fragment(){
     }
 
     private fun handleSeasonClick(season: String, clickedButton: com.google.android.material.button.MaterialButton) {
-        // 프래그먼트 변수 대신 뷰모델에 저장된 현재 값을 가져옵니다.
         val currentSelected = viewModel.selectedSeason.value
 
         if (currentSelected == season) {
@@ -81,7 +80,7 @@ class OnboardingSeasonFragment: Fragment(){
     private fun resetAllButtons() {
         val buttons = listOf(binding.btnSpring, binding.btnSummer, binding.btnAutumn, binding.btnWinter)
 
-        // 각 버튼에 대응하는 기본 아이콘(비활성 상태) 리스트
+        // 각 버튼에 대응하는 기본 아이콘
         val defaultIcons = listOf(
             R.drawable.ic_spring_color,
             R.drawable.ic_summer_color,

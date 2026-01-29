@@ -32,7 +32,7 @@ class OnboardingNicknameFragment : Fragment(){
 
         viewModel.isKeywordSelected.value = false
 
-        // 닉네임 입력 감지 리스너 (TextWatcher)
+        // 닉네임 입력 감지 리스너
         binding.etNickname.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -43,8 +43,8 @@ class OnboardingNicknameFragment : Fragment(){
                 // 뷰모델에 닉네임 저장
                 viewModel.nickname.value = input
 
-//                // 글자가 1글자 이상이면 -> 버튼 활성화 (Pink1)
-//                // 글자가 없으면 -> 버튼 비활성화 (Pink2)
+                // 글자가 1글자 이상 -> 버튼 활성화 (Pink1)
+                // 글자가 없으면 -> 버튼 비활성화 (Pink2)
                 viewModel.isKeywordSelected.value = input.isNotEmpty()
 
                 if (input.isNotEmpty()) {

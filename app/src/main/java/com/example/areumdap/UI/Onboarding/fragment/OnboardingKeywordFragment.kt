@@ -38,8 +38,9 @@ class OnboardingKeywordFragment : Fragment(){
             val seasonKeywordGuide = "${season}의 어떤 부분과\n가장 닮았다고 생각하시나요?"
             binding.tvSelectedSeasonResult.text = android.text.Html.fromHtml(seasonTextResult, android.text.Html.FROM_HTML_MODE_LEGACY)
             binding.tvKeywordSelectionGuide.text = android.text.Html.fromHtml(seasonKeywordGuide, android.text.Html.FROM_HTML_MODE_LEGACY)
-            }
+        }
 
+        // 키워드 직접 입력하기
         binding.tvDirectKeyword.setOnClickListener {
             viewModel.isDirectInput.value = true
         }
