@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.areumdap.UI.MainActivity
+import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -20,13 +21,11 @@ class LoginActivity : AppCompatActivity() {
     private fun initClickListeners() {
         // 카카오 로그인 버튼
         binding.btnKakaoLogin.setOnClickListener {
-            // 임시로 바로 메인화면으로 이동
             navigateToMain()
         }
 
         // 네이버 로그인 버튼
         binding.btnNaverLogin.setOnClickListener {
-            // 임시로 바로 메인화면으로 이동
             navigateToMain()
         }
 
@@ -44,7 +43,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
+        val pref = getSharedPreferences("auth", MODE_PRIVATE)
+        val isOnboardingDone = pref.getBoolean("onboarding_done", false)
+
+        val intent = if (isOnboardingDone) {
+            Intent(this, MainActivity::class.java)
+        } else {
+            Intent(this, OnboardingActivity::class.java)
+        }
+
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.areumdap.UI.MainActivity
+import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivitySignupBinding
 
 class SignupActivity : AppCompatActivity() {
@@ -54,10 +54,7 @@ class SignupActivity : AppCompatActivity() {
             return
         }
 
-        // 임시로 바로 인증 요청 성공 처리
         Toast.makeText(this, "인증번호가 발송되었습니다. (임시: 1234)", Toast.LENGTH_LONG).show()
-
-        // 버튼 텍스트 변경
         binding.btnEmailCheck.text = "재요청"
     }
 
@@ -69,7 +66,6 @@ class SignupActivity : AppCompatActivity() {
             return
         }
 
-        // 임시로 1234가 정답
         if (authCode == "1234") {
             isEmailVerified = true
             Toast.makeText(this, "이메일 인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
@@ -82,16 +78,12 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun performSignup() {
-        // 입력값 검증
         if (!validateInputs()) {
             return
         }
 
-        // 임시로 바로 회원가입 성공 처리
         Toast.makeText(this, "회원가입이 완료되었습니다!", Toast.LENGTH_SHORT).show()
-
-        // 회원가입 후 바로 로그인 상태로 메인화면 이동
-        navigateToMain()
+        navigateToOnboarding()
     }
 
     private fun validateInputs(): Boolean {
@@ -101,14 +93,12 @@ class SignupActivity : AppCompatActivity() {
         val password = binding.etPw.text.toString().trim()
         val passwordConfirm = binding.etPwConfirm.text.toString().trim()
 
-        // 이름 검증
         if (name.isEmpty()) {
             Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etName.requestFocus()
             return false
         }
 
-        // 생년월일 검증
         if (birth.isEmpty()) {
             Toast.makeText(this, "생년월일을 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etBirth.requestFocus()
@@ -121,7 +111,6 @@ class SignupActivity : AppCompatActivity() {
             return false
         }
 
-        // 이메일 검증
         if (email.isEmpty()) {
             Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etEmail.requestFocus()
@@ -134,13 +123,11 @@ class SignupActivity : AppCompatActivity() {
             return false
         }
 
-        // 이메일 인증 확인
         if (!isEmailVerified) {
             Toast.makeText(this, "이메일 인증을 완료해주세요.", Toast.LENGTH_SHORT).show()
             return false
         }
 
-        // 비밀번호 검증
         if (password.isEmpty()) {
             Toast.makeText(this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etPw.requestFocus()
@@ -166,8 +153,8 @@ class SignupActivity : AppCompatActivity() {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    private fun navigateToMain() {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun navigateToOnboarding() {
+        val intent = Intent(this, OnboardingActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
