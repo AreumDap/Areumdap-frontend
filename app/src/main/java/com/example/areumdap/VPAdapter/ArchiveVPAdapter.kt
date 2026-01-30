@@ -3,8 +3,8 @@ package com.example.areumdap.VPAdapter
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.areumdap.UI.Archive.ArchiveFragment
-import com.example.areumdap.UI.QuestionFragment
-import com.example.areumdap.UI.TaskFragment
+import com.example.areumdap.Task.QuestionFragment
+import com.example.areumdap.Task.TaskFragment
 
 class ArchiveVPAdapter (fragment: ArchiveFragment) : FragmentStateAdapter(fragment) {
     override fun getItemCount(): Int = 2

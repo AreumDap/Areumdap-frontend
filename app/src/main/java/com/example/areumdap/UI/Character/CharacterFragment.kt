@@ -28,7 +28,6 @@ class CharacterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val hasTask = false
-
         val taskAdapter = TaskPageVPAdapter(this, hasTask)
         binding.characterVp.adapter = taskAdapter
 

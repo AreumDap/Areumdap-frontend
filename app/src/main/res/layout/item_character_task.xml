@@ -15,7 +15,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -71,40 +71,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-        <!--<TextView
-            android:id="@+id/tv_task_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="오늘 하루 나를 위한 시간 갖기"
-            style="@style/TA_Body2_bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ll_dday"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <LinearLayout
-            android:id="@+id/ll_dday"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:id="@+id/tv_dday_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="D-"
-                style="@style/TA_Body2_bold" />
-
-            <TextView
-                android:id="@+id/tv_dday_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="7"
-                style="@style/TA_Body2_bold" />
-        </LinearLayout>-->
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/task_complete_btn"

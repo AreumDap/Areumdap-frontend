@@ -1,4 +1,4 @@
-package com.example.areumdap.UI
+package com.example.areumdap.Task
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.areumdap.R
 import com.example.areumdap.UI.Chat.ChatFragment
+import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.databinding.FragmentEmptyTaskBinding
 
 class EmptyTaskFragment: Fragment() {

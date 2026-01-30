@@ -40,7 +40,10 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
 
             dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback{
                 override fun onConfirm(){
-                    removeItem(holder.adapterPosition)
+                    val position = holder.adapterPosition
+                    if (position != RecyclerView.NO_POSITION) {
+                        removeItem(position)
+                    }
                 }
             })
 
