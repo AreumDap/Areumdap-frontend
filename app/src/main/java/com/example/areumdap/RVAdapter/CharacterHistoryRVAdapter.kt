@@ -3,15 +3,22 @@ package com.example.areumdap.RVAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.areumdap.UI.Character.Data.HistoryItem
 import com.example.areumdap.databinding.ItemCharacterHistoryBinding
 
-class CharacterHistoryRVAdapter(private val items: List<Int>) :
+class CharacterHistoryRVAdapter(private var items: List<HistoryItem>) :
     RecyclerView.Adapter<CharacterHistoryRVAdapter.ViewHolder>() {
-
+        fun updateData(newItems: List<HistoryItem>){
+        this.items = newItems
+        notifyDataSetChanged()
+    }
     inner class ViewHolder(private val binding: ItemCharacterHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(imgRes: Int) {
-            binding.itemCharacterIv.setImageResource(imgRes)
+        fun bind(item: HistoryItem) {
+           /*Glide.with(binding.root.context)
+                .load(item.imageUrl) // 서버에서 온 이미지 URL
+                .into(binding.itemCharacterIv)*/
         }
     }
 

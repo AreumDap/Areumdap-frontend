@@ -1,31 +1,32 @@
-package com.example.areumdap.UI
+package com.example.areumdap.Task
 
-import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.graphics.Canvas
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.areumdap.R
-import com.example.areumdap.RVAdapter.QuestionRVAdapter
-import com.example.areumdap.databinding.FragmentQuestionBinding
+import com.example.areumdap.RVAdapter.TaskRVAdapter
+import com.example.areumdap.databinding.FragmentTaskBinding
 
-class QuestionFragment : Fragment() {
-    lateinit var binding: FragmentQuestionBinding
+class TaskFragment : Fragment() {
+    lateinit var binding: FragmentTaskBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentQuestionBinding.inflate(inflater, container, false)
+        binding = FragmentTaskBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
 
@@ -33,7 +34,7 @@ class QuestionFragment : Fragment() {
 
         val spinnerAdapter = object : ArrayAdapter<String>(
             requireContext(),
-            R.layout.item_spinner_text,
+            R.layout.item_spinner_text, // 스피너 평소 모습
             R.id.tv_spinner_item,
             categories
         ) {
@@ -45,52 +46,58 @@ class QuestionFragment : Fragment() {
             }
         }
 
-        binding.questionSp.adapter = spinnerAdapter
+        binding.taskSp.adapter = spinnerAdapter
 
         val testData = arrayListOf("자기 성찰") // 아이템 하나만 나오도록 설정
-        val questionRVAdapter = QuestionRVAdapter(testData)
+        val taskRVAdapter = TaskRVAdapter(testData)
 
-        binding.questionListRv.apply {
-            adapter = questionRVAdapter
+        taskRVAdapter.itemClickListener = { data ->
+            val dataTaskFragment = DataTaskFragment()
+
+            val bundle = Bundle()
+            bundle.putString("selected_task", data)
+            dataTaskFragment.arguments = bundle
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm,dataTaskFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+
+        binding.taskListRv.apply {
+            adapter = taskRVAdapter
+            // 가로 스크롤 설정 (XML에 가로로 되어 있으므로)
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         }
-        // 카드 이동거리
+
         val limit = (54 * resources.displayMetrics.density)
 
         val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean = false
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = false
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                questionRVAdapter.notifyItemChanged(viewHolder.adapterPosition)
+                val pos = viewHolder.adapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    taskRVAdapter.notifyItemChanged(pos)
+                }
             }
 
             override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
+                c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
             ) {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-                    recyclerView.parent.requestDisallowInterceptTouchEvent(true)
-
                     val cardView = viewHolder.itemView.findViewById<View>(R.id.task_card_view)
 
-                    val currentTranslationX = cardView.translationX
-                    var newX = if (isCurrentlyActive) dX else currentTranslationX
+                    val currentX = cardView.translationX
+                    var newX = if (isCurrentlyActive) dX else currentX
 
                     if (newX < -limit) newX = -limit
                     if (newX > 0f) newX = 0f
 
                     cardView.translationX = newX
 
+                    // 손을 뗐을 때 고정 또는 복구
                     if (!isCurrentlyActive) {
                         if (cardView.translationX <= -limit / 2) {
                             cardView.animate().translationX(-limit).setDuration(100).start()
@@ -98,19 +105,10 @@ class QuestionFragment : Fragment() {
                             cardView.animate().translationX(0f).setDuration(100).start()
                         }
                     }
-
-                    // ViewPager 터치 방지
-                    recyclerView.parent.requestDisallowInterceptTouchEvent(true)
                 }
             }
-            // 자동으로 안 넘어가게 함
-            override fun getSwipeThreshold(viewHolder: RecyclerView.ViewHolder): Float = 2f
-            // 빠르게 밀어도 안 날아가게 함
-            override fun getSwipeEscapeVelocity(defaultValue: Float): Float = defaultValue * 10
         }
 
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(binding.questionListRv)
-
+        ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(binding.taskListRv)
     }
 }

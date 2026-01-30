@@ -1,4 +1,4 @@
-package com.example.areumdap.UI
+package com.example.areumdap.Task
 
 import android.os.Bundle
 import android.view.LayoutInflater
