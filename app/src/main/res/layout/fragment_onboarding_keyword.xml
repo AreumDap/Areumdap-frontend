@@ -34,68 +34,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_selected_season_result" />
 
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/cg_keywords"
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexbox_keywords"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        app:chipSpacingHorizontal="10dp"
-        app:chipSpacingVertical="11dp"
+        app:flexWrap="wrap"
+        app:justifyContent="center"
+        app:alignItems="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide"
-        app:singleSelection="false">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_keyword_1"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checkable="true"
-            android:gravity="center"
-            android:text="키워드1"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textAppearance="@style/TA_Body2"
-            app:chipBackgroundColor="@color/pink2"
-
-            app:chipStrokeWidth="0dp"
-            app:rippleColor="@android:color/transparent" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_keyword_2"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/pink2"
-            android:checkable="true"
-            android:gravity="center"
-            android:text="키워드2"
-            android:textAlignment="center"
-            android:textColor="@color/white"
-            android:textAppearance="@style/TA_Body2"
-
-            app:chipBackgroundColor="@color/pink2"
-            app:chipStrokeWidth="0dp" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chip_keyword_3"
-            style="@style/Widget.MaterialComponents.Chip.Choice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:checkable="true"
-            android:gravity="center"
-            android:text="키워드3"
-            android:textAlignment="center"
-            android:textAppearance="@style/TA_Body2"
-            android:textColor="@color/black"
-
-            app:chipBackgroundColor="@color/white"
-            app:chipStrokeColor="@color/line_color"
-            app:chipStrokeWidth="2dp" />
-    </com.google.android.material.chip.ChipGroup>
+        app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide">
+        <!-- Chip들이 여기에 동적으로 추가됩니다 -->
+    </com.google.android.flexbox.FlexboxLayout>
 
     <TextView
         android:id="@+id/tv_direct_keyword"
@@ -108,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.445"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cg_keywords" />
+        app:layout_constraintTop_toBottomOf="@id/flexbox_keywords" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
