@@ -8,6 +8,7 @@ import com.example.areumdap.R
 import com.example.areumdap.UI.Archive.ArchiveFragment
 import com.example.areumdap.UI.Character.CharacterFragment
 import com.example.areumdap.UI.Home.HomeFragment
+import com.example.areumdap.UI.record.RecordFragment
 import com.example.areumdap.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {

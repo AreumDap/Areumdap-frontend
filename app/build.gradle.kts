@@ -98,6 +98,9 @@ dependencies {
     //이미지 받는 의존성
     implementation("com.github.bumptech.glide:glide:4.15.1")
 
+    // RoomDB 의존성
+    val room_version = "2.8.4"
+    implementation("androidx.room:room-runtime:$room_version")
     // chip 가운데 정렬
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
