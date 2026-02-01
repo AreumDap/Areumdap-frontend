@@ -31,8 +31,6 @@ class OnboardingActivity : AppCompatActivity() {
         setupNextButtonClickListener()
 
         binding.ivBack.setOnClickListener {
-            Log.d("OnboardingActivity", "ivBack clicked")
-
             handleBackPress()
         }
     }
