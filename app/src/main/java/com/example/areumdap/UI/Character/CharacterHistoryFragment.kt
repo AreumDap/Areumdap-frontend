@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.areumdap.Network.RetrofitClient
-import com.example.areumdap.R
 import com.example.areumdap.RVAdapter.CharacterHistoryRVAdapter
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.databinding.FragmentCharacterHistoryBinding
@@ -18,7 +17,7 @@ class CharacterHistoryFragment : Fragment() {
     private var _binding : FragmentCharacterHistoryBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: CharacterHistoryViewModel
+    private lateinit var viewModel: CharacterViewModel
     private lateinit var historyAdapter: CharacterHistoryRVAdapter
 
     override fun onCreateView(
@@ -35,8 +34,8 @@ class CharacterHistoryFragment : Fragment() {
 
         val apiService = RetrofitClient.service
 
-        val factory = CharacterHistoryViewModelFactory(apiService)
-        viewModel = ViewModelProvider(this, factory).get(CharacterHistoryViewModel::class.java)
+        val factory = CharacterViewModelFactory(apiService)
+        viewModel = ViewModelProvider(this, factory).get(CharacterViewModel::class.java)
 
         setupToolbar()
         setupRecyclerView()
@@ -45,12 +44,12 @@ class CharacterHistoryFragment : Fragment() {
         viewModel.fetchCharacterHistory()
     }
     private fun setupViewModel(){
-        viewModel = ViewModelProvider(this).get(CharacterHistoryViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(CharacterViewModel::class.java)
 
         viewModel.historyData.observe(viewLifecycleOwner){ response ->
             response?.let{
-                binding.pastContentTv.text = it.pastDescription
-                binding.presentContentTv.text = it.presentDescription
+                binding.pastContentTv.text = it.pastDescription ?: ""
+                binding.presentContentTv.text = it.presentDescription ?: ""
 
                 // 리사이클러뷰 데이터 갱신
                 historyAdapter.updateData(it.historyList)
