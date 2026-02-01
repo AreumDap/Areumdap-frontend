@@ -1,4 +1,4 @@
-package com.example.areumdap.UI
+package com.example.areumdap.UI.record
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +9,7 @@ import com.example.areumdap.RVAdapter.RecordRVAdapter
 import com.example.areumdap.databinding.FragmentRecordBinding
 import com.example.areumdap.domain.model.Category
 import com.example.areumdap.domain.model.RecordItem
+import com.example.areumdap.R
 
 class RecordFragment : Fragment() {
 
@@ -31,8 +32,12 @@ class RecordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = RecordRVAdapter(
-            onItemClick = {item ->
+            onItemClick = { item ->
                 // 상세 화면 이동
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_frm, ChatDetailFragment.newInstance(item.id))
+                    .addToBackStack(null)
+                    .commit()
             }
         )
         binding.recCardRv.adapter = adapter
