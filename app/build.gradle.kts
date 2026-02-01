@@ -97,4 +97,7 @@ dependencies {
 
     //이미지 받는 의존성
     implementation("com.github.bumptech.glide:glide:4.15.1")
+
+    // chip 가운데 정렬
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
 }
