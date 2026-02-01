@@ -1,19 +1,29 @@
 package com.example.areumdap.UI.Character
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import com.example.areumdap.R
 import android.widget.TextView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.VPAdapter.TaskPageVPAdapter
 import com.example.areumdap.databinding.FragmentCharacterBinding
 
 class CharacterFragment : Fragment() {
     private var _binding: FragmentCharacterBinding? = null
     private val binding get() = _binding!!
+
+    //뷰모델 초기화
+    private val viewModel: CharacterViewModel by viewModels {
+        CharacterViewModelFactory(RetrofitClient.service)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,6 +37,10 @@ class CharacterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
 
+        setupObservers()
+        // 초기 캐릭터 레벨 정보
+        //viewModel.fetchCharacterLevel()
+        testDummyData()
         val hasTask = false
         val taskAdapter = TaskPageVPAdapter(this, hasTask)
         binding.characterVp.adapter = taskAdapter
@@ -40,16 +54,14 @@ class CharacterFragment : Fragment() {
         val spinnerAdapter = object : ArrayAdapter<String>(
             requireContext(),
             R.layout.item_spinner_text, // 스피너 겉모양
-            R.id.tv_spinner_item,      // 스피너 겉모양 안의 TextView ID
+            R.id.tv_spinner_item,
             categories
         ) {
-            // 드롭다운(펼쳐졌을 때) 화면 설정
+            // 드롭다운 화면 설정
             override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-                // 부모의 것을 쓰지 않고 직접 레이아웃을 가져옵니다 (튕김 방지)
                 val inflater = LayoutInflater.from(context)
                 val view = convertView ?: inflater.inflate(R.layout.item_spinner_dropdown, parent, false)
 
-                // item_spinner_dropdown.xml 내부의 TextView ID를 정확히 찾아 연결합니다
                 val tv = view.findViewById<TextView>(R.id.tv_dropdown_item)
                 tv.text = getItem(position)
 
@@ -75,8 +87,46 @@ class CharacterFragment : Fragment() {
 
     }
 
+    private fun setupObservers(){
+        viewModel.characterLevel.observe(viewLifecycleOwner){ levelData ->
+            levelData?.let{
+                updateCharacterUI(it)
+            }
+        }
+
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+        }
+
+        // 에러 메시지 관찰
+        viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+        }
+    }
+
+    private fun updateCharacterUI(levelData: com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse){
+        // 레벨 업데이트
+        binding.characterLevelTv.text = "${levelData.previousLevel}"
+
+        binding.characterProgressBar.max = levelData.requiredXpForNextLevel
+        binding.characterProgressBar.progress = levelData.currentXp
+
+        binding.characterXpLevelTv.text = "${levelData.currentXp}"
+        binding.characterFinalLevelTv.text = "${levelData.requiredXpForNextLevel}"
+
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun testDummyData() {
+        val dummyData = com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse(
+            characterId = 1,
+            characterName = "아름이",
+            previousLevel = 1,
+            currentLevel = 2,
+            currentXp = 80,
+            requiredXpForNextLevel = 100
+        )
+        updateCharacterUI(dummyData)
     }
 }

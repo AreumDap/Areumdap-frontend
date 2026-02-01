@@ -1,6 +1,6 @@
 package com.example.areumdap.Network
 
-import com.example.areumdap.UI.Character.CharacterHistoryApiService
+import com.example.areumdap.UI.Character.CharacterApiService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,6 +16,6 @@ object RetrofitClient {
         .client(client).addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    val service: CharacterHistoryApiService = retrofit.create(CharacterHistoryApiService::class.java)
+    val service: CharacterApiService = retrofit.create(CharacterApiService::class.java)
 
 }
