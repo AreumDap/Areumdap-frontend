@@ -1,7 +1,6 @@
 package com.example.areumdap.UI.Character
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import com.example.areumdap.R
 import android.widget.TextView
@@ -38,9 +37,9 @@ class CharacterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupObservers()
-        // 초기 캐릭터 레벨 정보
-        //viewModel.fetchCharacterLevel()
-        testDummyData()
+        // 내 캐릭터 정보 불러오는
+        viewModel.fetchMyCharacter()
+
         val hasTask = false
         val taskAdapter = TaskPageVPAdapter(this, hasTask)
         binding.characterVp.adapter = taskAdapter
@@ -87,18 +86,17 @@ class CharacterFragment : Fragment() {
 
     }
 
-    private fun setupObservers(){
-        viewModel.characterLevel.observe(viewLifecycleOwner){ levelData ->
-            levelData?.let{
+    private fun setupObservers() {
+        viewModel.characterLevel.observe(viewLifecycleOwner) { levelData ->
+            levelData?.let {
                 updateCharacterUI(it)
             }
         }
 
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-        }
-
-        // 에러 메시지 관찰
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
+            errorMsg?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -112,21 +110,17 @@ class CharacterFragment : Fragment() {
         binding.characterXpLevelTv.text = "${levelData.currentXp}"
         binding.characterFinalLevelTv.text = "${levelData.requiredXpForNextLevel}"
 
+        // 경험치가 다 채워졌으면 다음버튼 활성화
+        if(levelData.currentXp >= levelData.requiredXpForNextLevel && levelData.requiredXpForNextLevel > 0){
+            binding.characterNextLevelBtn.visibility = View.VISIBLE
+        } else {
+            binding.characterNextLevelBtn.visibility = View.GONE
+        }
+
     }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    private fun testDummyData() {
-        val dummyData = com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse(
-            characterId = 1,
-            characterName = "아름이",
-            previousLevel = 1,
-            currentLevel = 2,
-            currentXp = 80,
-            requiredXpForNextLevel = 100
-        )
-        updateCharacterUI(dummyData)
-    }
 }

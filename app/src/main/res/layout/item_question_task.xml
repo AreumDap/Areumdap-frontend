@@ -17,13 +17,15 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/task_card_view"
-        android:layout_width="370dp"
+        android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="@drawable/bg_item_character_task"
         android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/bg_item_character_task"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
             android:id="@+id/item_question_task_iv"
@@ -55,7 +57,7 @@
             app:layout_constraintTop_toBottomOf="@+id/item_question_task_iv"
             android:layout_marginTop="15.5dp"
             android:layout_marginStart="24dp"/>
-        
+
         <ImageView
             android:id="@+id/item_question_task_check_iv"
             android:src="@drawable/ic_question_right"

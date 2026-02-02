@@ -5,8 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.R
 import com.example.areumdap.RVAdapter.RecommendQuestionRVAdapter
+import com.example.areumdap.UI.Character.CharacterViewModel
+import com.example.areumdap.UI.Character.CharacterViewModelFactory
 import com.example.areumdap.UI.Chat.ChatFragment
 import com.example.areumdap.databinding.FragmentHomeBinding
 import com.example.areumdap.domain.model.Category
@@ -17,6 +21,9 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: CharacterViewModel by viewModels {
+        CharacterViewModelFactory(RetrofitClient.service)
+    }
     private lateinit var adapter: RecommendQuestionRVAdapter
 
     override fun onCreateView(
@@ -30,6 +37,10 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupCharacterObserver()
+
+        viewModel.fetchMyCharacter()
 
         adapter = RecommendQuestionRVAdapter { item ->
             goToChat(item.text)
@@ -65,5 +76,16 @@ class HomeFragment : Fragment() {
             .replace(R.id.main_frm, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun setupCharacterObserver() {
+        viewModel.characterLevel.observe(viewLifecycleOwner) { data ->
+            data?.let {
+                binding.homeCharacterLevelTv.text = " ${it.currentLevel}"
+
+                // 캐릭터 이미지
+                // Glide.with(this).load(it.imageUrl).into(binding.characterIv)
+            }
+        }
     }
 }
