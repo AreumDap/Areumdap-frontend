@@ -39,7 +39,7 @@ class CharacterXpFragment : Fragment() {
             data?.let{
                 // 다음 성장 경험치
                 binding.characterNextXpTv.text = "${it.requiredXpForNextLevel}"
-                binding.characterXpLevelTv.text = "${it.requiredXpForNextLevel}"
+                binding.characterXpLevelTv.text = "${it.currentXp}"
             }
         }
 

@@ -1,5 +1,6 @@
 package com.example.areumdap.Network
 
+import com.example.areumdap.Task.TaskApiService
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -103,4 +104,6 @@ object RetrofitClient {
     val service: CharacterApiService by lazy {
         retrofit.create(CharacterApiService::class.java)
     }
+    val taskService: TaskApiService = retrofit.create(TaskApiService::class.java)
+
 }
