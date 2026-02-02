@@ -99,6 +99,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun setBottomNavVisibility(visible: Boolean) {
+        binding.mainBnv.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
     fun goToHome() {
         binding.mainBnv.selectedItemId = R.id.homeFragment
     }
