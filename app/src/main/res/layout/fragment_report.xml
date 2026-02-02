@@ -240,13 +240,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="대화를 통해 발견한 것"
-                    android:textColor="@color/black" />
-
-                <LinearLayout
-                    android:id="@+id/found_container"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="20dp"/>
+                
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/found_card_rv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:stackFromEnd="true"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_found_card"/>
+
             </LinearLayout>
 
             <Space

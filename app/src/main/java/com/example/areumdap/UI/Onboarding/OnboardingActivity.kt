@@ -2,6 +2,8 @@ package com.example.areumdap.UI.Onboarding
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +29,10 @@ class OnboardingActivity : AppCompatActivity() {
         setupBackStackListener()
         setupObservers()
         setupNextButtonClickListener()
+
+        binding.ivBack.setOnClickListener {
+            handleBackPress()
+        }
     }
 
     private fun initializeOnboarding(savedInstanceState: Bundle?) {
@@ -249,6 +255,12 @@ class OnboardingActivity : AppCompatActivity() {
         updateProgressBar(stepValue)
         updateButtonText(stepValue)
         updateButtonState(stepValue)
+
+        if (stepValue == OnboardingStep.START.value) {
+            binding.ivBack.visibility = View.INVISIBLE
+        } else {
+            binding.ivBack.visibility = View.VISIBLE
+        }
     }
 
     private fun updateProgressBar(stepValue: Int) {

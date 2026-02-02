@@ -9,9 +9,11 @@ import com.example.areumdap.databinding.ItemCharacterHistoryBinding
 
 class CharacterHistoryRVAdapter(private var items: List<HistoryItem>) :
     RecyclerView.Adapter<CharacterHistoryRVAdapter.ViewHolder>() {
-        fun updateData(newItems: List<HistoryItem>){
-        this.items = newItems
-        notifyDataSetChanged()
+        fun updateData(newItems: List<HistoryItem>?){
+            if (newItems == null) return // null이 들어오면 함수 종료
+
+            this.items = newItems
+            notifyDataSetChanged()
     }
     inner class ViewHolder(private val binding: ItemCharacterHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {

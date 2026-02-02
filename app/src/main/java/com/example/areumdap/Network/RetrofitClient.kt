@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 // 아래 import 문을 꼭 확인해주세요!
-import com.example.areumdap.UI.Character.CharacterHistoryApiService
+import com.example.areumdap.UI.Character.CharacterApiService
 
 /**
  * Retrofit 클라이언트 설정
@@ -100,7 +100,7 @@ object RetrofitClient {
      * [추가됨] CharacterHistoryFragment에서 사용하는 service 객체
      * 기존 코드와의 호환성을 위해 추가했습니다.
      */
-    val service: CharacterHistoryApiService by lazy {
-        retrofit.create(CharacterHistoryApiService::class.java)
+    val service: CharacterApiService by lazy {
+        retrofit.create(CharacterApiService::class.java)
     }
 }
