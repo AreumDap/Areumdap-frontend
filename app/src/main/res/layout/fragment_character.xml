@@ -141,6 +141,7 @@
         android:layout_height="28dp"
         style="@style/TA_Caption1"
         android:text="다음 단계 확인"
+        android:visibility="gone"
         android:drawableEnd="@drawable/ic_next_right"
         android:textColor="@color/black"
         android:paddingHorizontal="7dp"
