@@ -73,6 +73,7 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
                     _errorMessage.value = "캐릭터 정보를 가져오는데 실패"
                 }
             } catch (e: Exception){
+                Log.e("CharacterViewModel", "fetchMyCharacter 실패", e)
                 _errorMessage.value = "네트워크 오류가 발생"
             } finally {
                 _isLoading.value = false
