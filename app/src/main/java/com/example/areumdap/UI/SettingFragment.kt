@@ -21,6 +21,7 @@ import com.example.areumdap.R
 import com.example.areumdap.databinding.FragmentSettingBinding
 import java.util.Calendar
 import android.content.Intent
+import com.example.areumdap.Network.TokenManager
 
 import com.example.areumdap.UI.auth.LoginActivity
 
@@ -233,8 +234,12 @@ class SettingFragment : Fragment() {
                 val prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE)
                 prefs.edit().clear().apply() // 모든 저장 데이터 삭제
 
-                // 2. 토큰 삭제 (TokenManager에 기능이 있다면)
-                // TokenManager.clear()
+                // 2. 토큰 삭제
+                TokenManager.clearAll()
+
+                val cookieManager = android.webkit.CookieManager.getInstance()
+                cookieManager.removeAllCookies(null)
+                cookieManager.flush()
 
                 // 3. 로그인 화면으로 이동
                 val intent = Intent(requireContext(), LoginActivity::class.java) // LoginActivity import 필요
