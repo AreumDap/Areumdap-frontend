@@ -3,10 +3,11 @@ package com.example.areumdap.RVAdapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.areumdap.Task.QuestionItem
 import com.example.areumdap.UI.PopUpDialogFragment
 import com.example.areumdap.databinding.ItemQuestionTaskBinding
 
-class QuestionRVAdapter (private val questionList: ArrayList<String>):
+class QuestionRVAdapter (private val questionList: ArrayList<QuestionItem>):
 RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
 
     inner class ViewHolder(val binding: ItemQuestionTaskBinding): RecyclerView.ViewHolder(binding.root)
@@ -17,8 +18,9 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = questionList[position]
         // 테스트용
-        holder.binding.itemQuestionTaskTv.text = questionList[position]
+        holder.binding.itemQuestionTaskTv.text = item.content
 
         holder.binding.taskCardView.setOnClickListener {
             if(it.translationX < 0f){
@@ -59,4 +61,9 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
         notifyItemRangeChanged(position, questionList.size)
     }
 
+    fun updateData(newData: List<QuestionItem>) {
+        questionList.clear()
+        questionList.addAll(newData)
+        notifyDataSetChanged()
+    }
 }

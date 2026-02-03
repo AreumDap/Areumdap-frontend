@@ -8,6 +8,13 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.launch
 
 class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
+    // 저장한 질문
+    private val _savedQuestions = MutableLiveData<List<QuestionItem>>()
+    val savedQuestions: LiveData<List<QuestionItem>> = _savedQuestions
+
+    private val _questionsHasNext = MutableLiveData<Boolean>()
+    val questionsHasNext: LiveData<Boolean> = _questionsHasNext
+    // 완료 과제
     private val _completedMissions = MutableLiveData<List<MissionItem>>()
     val completedMissions: LiveData<List<MissionItem>> = _completedMissions
 
@@ -20,16 +27,18 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
     //에러 메시지
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
-    // 다음 커서 정보 (페이징용)
+    // 다음 커서 정보 과제 (페이징용)
     private var nextCursorTime: String? = null
     private var nextCursorId: Int? = null
+    // 다음 커서 정보 질문 (페이징용)
+    private var questionsNextCursorTime: String? = null
+    private var questionsNextCursorId: Int? = null
 
-    // 완료된 과제 조회 (초기 로딩)
+    // 완료된 과제 조회
     fun fetchCompletedMissions(tag: String? = null, size: Int = 100) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // request 객체를 만들지 않고, 값을 직접 순서대로 넣습니다.
                 val response = apiService.getCompletedMissions(
                     tag = tag,
                     cursorTime = getCurrentTimeISO(), // 현재 시간
@@ -39,12 +48,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
 
                 if (response.isSuccessful) {
                     val missions = response.body()?.missions
-                    // 데이터가 몇 개나 들어왔는지 로그캣에 찍어봅니다.
                     Log.d("API_SUCCESS_DATA", "받아온 데이터 개수: ${missions?.size ?: 0}")
                     //_completedMissions.value = missions
-                    // 성공 로직 (기존과 동일)
+                    // 성공 로직
                     _completedMissions.value = response.body()?.missions
-                    // 다음 페이지를 위한 커서 저장
+
                     nextCursorTime = response.body()?.nextCursorTime
                     nextCursorId = response.body()?.nextCursorId
                     _hasNext.value = response.body()?.hasNext ?: false
@@ -62,14 +70,13 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
         }
     }
 
-    // 다음 페이지 로딩 (스크롤 시)
+    // 다음 페이지 로딩
     fun fetchMoreMissions(tag: String = "CAREER", size: Int = 10) {
         if (_isLoading.value == true || _hasNext.value == false) return
 
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // 여기도 객체 대신 저장해둔 커서 값들을 직접 넣습니다.
                 val response = apiService.getCompletedMissions(
                     tag = tag,
                     cursorTime = nextCursorTime!!,
@@ -86,6 +93,79 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                         _hasNext.value = data.hasNext
                         nextCursorTime = data.nextCursorTime
                         nextCursorId = data.nextCursorId
+                    }
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "네트워크 오류가 발생했습니다."
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    // 저장한 질문 조회
+    fun fetchSavedQuestions(tag: String? = null, size: Int = 100){
+        viewModelScope.launch {
+            _isLoading.value = true
+            try{
+                val response = apiService.getSavedQuestions(
+                    tag = tag,
+                    cursorTime = getCurrentTimeISO(),
+                    cursorId = 0,
+                    size = size
+                )
+
+                if (response.isSuccessful) {
+                    response.body()?.let { responseBody ->
+                        val data = responseBody.data
+                        val questions = data.questions
+
+                        Log.d("QUESTION_API_SUCCESS", "받아온 질문 개수: ${questions.size}")
+
+                        _savedQuestions.value = questions
+                        questionsNextCursorTime = data.nextCursorTime
+                        questionsNextCursorId = data.nextCursorId
+                        _questionsHasNext.value = data.hasNext
+                    }
+                } else {
+                    val errorDetail = response.errorBody()?.string()
+                    Log.e("QUESTION_API_ERROR", "서버 에러: $errorDetail")
+                    _errorMessage.value = "질문을 가져오는데 실패했습니다: ${response.code()}"
+                }
+            } catch (e: Exception) {
+                Log.e("QUESTION_API_ERROR", "Exception: ${e.message}")
+                _errorMessage.value = "네트워크 오류가 발생했습니다."
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    // 다음 페이지 질문 로딩
+    fun fetchMoreQuestions(tag: String? = null, size: Int = 10) {
+        if (_isLoading.value == true || _questionsHasNext.value == false) return
+
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = apiService.getSavedQuestions(
+                    tag = tag,
+                    cursorTime = questionsNextCursorTime!!,
+                    cursorId = questionsNextCursorId!!,
+                    size = size
+                )
+
+                if (response.isSuccessful) {
+                    response.body()?.let { responseBody ->  // ✅ 첫 번째 let에서 responseBody 가져오기
+                        val data = responseBody.data        // ✅ data 객체 가져오기
+
+                        val currentList = _savedQuestions.value?.toMutableList() ?: mutableListOf()
+                        currentList.addAll(data.questions)  // ✅ data.questions 사용
+                        _savedQuestions.value = currentList
+
+                        _questionsHasNext.value = data.hasNext
+                        questionsNextCursorTime = data.nextCursorTime
+                        questionsNextCursorId = data.nextCursorId
                     }
                 }
             } catch (e: Exception) {

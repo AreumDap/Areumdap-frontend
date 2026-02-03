@@ -16,7 +16,7 @@ import com.example.areumdap.UI.Character.CharacterApiService
 object RetrofitClient {
 
     // 서버 베이스 URL
-    private const val BASE_URL = "http://3.35.91.110:8080/"
+    private const val BASE_URL = "https://areum-dap.online/"
 
     /**
      * 인증 인터셉터 - 모든 요청에 AccessToken 자동 첨부
