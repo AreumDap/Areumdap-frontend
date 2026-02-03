@@ -63,6 +63,7 @@ class SplashActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 // 네트워크 오류 등 -> 안전하게 로그인 화면으로
+                Log.e("Splash", "네트워크 오류: ${e.message}", e)
                 navigateToLogin()
             }
         }

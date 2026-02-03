@@ -43,8 +43,8 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
         loginType = intent.getStringExtra(EXTRA_LOGIN_TYPE) ?: ""
         val loginUrl = intent.getStringExtra(EXTRA_LOGIN_URL) ?: ""
 
-        if (loginUrl.isEmpty()) {
-            Toast.makeText(this, "로그인 URL을 가져올 수 없습니다.", Toast.LENGTH_SHORT).show()
+        if (loginUrl.isEmpty() || (loginType != TYPE_KAKAO && loginType != TYPE_NAVER)) {
+            Toast.makeText(this, "로그인 정보가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
