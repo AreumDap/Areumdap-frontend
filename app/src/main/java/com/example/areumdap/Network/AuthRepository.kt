@@ -1,7 +1,7 @@
 package com.example.areumdap.Network
 
-import android.util.Log
 import com.example.areumdap.Network.model.*
+import retrofit2.HttpException
 
 object AuthRepository {
 
@@ -10,7 +10,7 @@ object AuthRepository {
     }
 
     /**
-     * 이메일 로그인 (수정됨)
+     * 이메일 로그인
      */
     suspend fun login(email: String, password: String): Result<LoginResponse> {
         return try {
@@ -19,21 +19,35 @@ object AuthRepository {
             if (response.isSuccessful && response.body() != null) {
                 val baseResponse = response.body()!!
 
-                // 서버가 보내준 성공 여부(isSuccess) 확인
                 if (baseResponse.isSuccess && baseResponse.data != null) {
                     val loginData = baseResponse.data
 
-                    // 토큰 및 사용자 정보 저장
-                    TokenManager.saveTokens(loginData.accessToken, loginData.refreshToken)
-                    TokenManager.saveUserInfo(loginData.userId, loginData.email, loginData.name)
+                    // 1. 토큰 저장 (null이면 빈 문자열 처리)
+                    TokenManager.saveTokens(
+                        loginData.accessToken ?: "",
+                        loginData.refreshToken ?: ""
+                    )
+
+                    // 2. 유저 정보 저장 [수정된 부분]
+                    // userId가 Int이거나 null일 수 있으므로 Long으로 안전하게 변환합니다.
+                    // 만약 userId가 null이면 0L(0)으로 저장합니다.
+                    val userIdLong: Long = try {
+                        loginData.userId?.toString()?.toLong() ?: 0L
+                    } catch (e: Exception) {
+                        0L // 변환 실패시 0 저장
+                    }
+
+                    TokenManager.saveUserInfo(
+                        userIdLong,
+                        loginData.email ?: "",  // null이면 빈 문자열
+                        loginData.name ?: ""    // null이면 빈 문자열
+                    )
 
                     Result.success(loginData)
                 } else {
-                    // HTTP 200이지만, 비즈니스 로직상 실패인 경우 (예: 비밀번호 틀림 등)
                     Result.failure(Exception(baseResponse.message))
                 }
             } else {
-                // HTTP 에러 처리
                 val errorMessage = when (response.code()) {
                     400 -> "이메일 또는 비밀번호 형식이 올바르지 않습니다."
                     401 -> "비밀번호가 일치하지 않습니다."
@@ -43,7 +57,7 @@ object AuthRepository {
                 Result.failure(Exception(errorMessage))
             }
         } catch (e: Exception) {
-            e.printStackTrace() // 로그캣에서 에러 내용을 확인하기 위해 추가
+            e.printStackTrace()
             Result.failure(Exception("네트워크 오류가 발생했습니다: ${e.message}"))
         }
     }
@@ -123,6 +137,23 @@ object AuthRepository {
         } catch (e: Exception) {
             TokenManager.clearAll()
             Result.success(Unit)
+        }
+    }
+
+    /**
+     * 내 캐릭터 조회
+     */
+    suspend fun getMyCharacter(): Result<Any?> {
+        return try {
+            val response = authApi.getMyCharacterInfo()
+
+            if (response.isSuccessful) {
+                Result.success(response.body())
+            } else {
+                Result.failure(HttpException(response))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 }

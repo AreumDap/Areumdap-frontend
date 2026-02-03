@@ -16,22 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AreumDap">
 
-        <!-- ★★★ 카카오 로그인 Redirect Activity ★★★ -->
-        <activity
-            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <!-- ★ kakao{네이티브앱키} 형식으로 변경 필요 -->
-                <data
-                    android:host="oauth"
-                    android:scheme="kakao${KAKAO_NATIVE_APP_KEY}" />
-            </intent-filter>
-        </activity>
-
         <activity
             android:name=".UI.SplashActivity"
             android:exported="true"
@@ -52,6 +36,11 @@
 
         <activity
             android:name=".UI.auth.SignupActivity"
+            android:exported="false" />
+
+        <!-- ★★★ 소셜 로그인 웹뷰 Activity 추가 ★★★ -->
+        <activity
+            android:name=".UI.auth.SocialLoginWebViewActivity"
             android:exported="false" />
 
         <activity

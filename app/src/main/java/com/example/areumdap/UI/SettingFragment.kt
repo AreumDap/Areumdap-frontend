@@ -20,6 +20,9 @@ import androidx.fragment.app.Fragment
 import com.example.areumdap.R
 import com.example.areumdap.databinding.FragmentSettingBinding
 import java.util.Calendar
+import android.content.Intent
+
+import com.example.areumdap.UI.auth.LoginActivity
 
 class SettingFragment : Fragment() {
 
@@ -220,12 +223,24 @@ class SettingFragment : Fragment() {
     }
 
     // 로그아웃 확인 다이얼로그
+    // 로그아웃 확인 다이얼로그
     private fun showLogoutConfirmDialog() {
         androidx.appcompat.app.AlertDialog.Builder(requireContext())
             .setTitle("로그아웃")
             .setMessage("정말 로그아웃 하시겠어요?")
             .setPositiveButton("로그아웃") { _, _ ->
-                // TODO: 로그아웃 처리
+                // 1. 저장된 로그인/온보딩 정보 삭제 (핵심!)
+                val prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE)
+                prefs.edit().clear().apply() // 모든 저장 데이터 삭제
+
+                // 2. 토큰 삭제 (TokenManager에 기능이 있다면)
+                // TokenManager.clear()
+
+                // 3. 로그인 화면으로 이동
+                val intent = Intent(requireContext(), LoginActivity::class.java) // LoginActivity import 필요
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                requireActivity().finish()
             }
             .setNegativeButton("취소", null)
             .show()

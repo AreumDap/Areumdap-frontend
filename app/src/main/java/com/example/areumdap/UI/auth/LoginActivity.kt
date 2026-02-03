@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.Network.SocialAuthRepository
 import com.example.areumdap.Network.TokenManager
-import com.example.areumdap.UI.MainActivity
-import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivityLoginBinding
 import kotlinx.coroutines.launch
 
@@ -23,19 +21,17 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // TokenManager 초기화 (GlobalApplication에서 이미 했지만 안전하게)
         TokenManager.init(this)
-
         initClickListeners()
     }
 
     private fun initClickListeners() {
-        // ★★★ 카카오 로그인 버튼 ★★★
+        // 카카오 로그인 버튼
         binding.btnKakaoLogin.setOnClickListener {
             performKakaoLogin()
         }
 
-        // ★★★ 네이버 로그인 버튼 ★★★
+        // 네이버 로그인 버튼
         binding.btnNaverLogin.setOnClickListener {
             performNaverLogin()
         }
@@ -54,37 +50,30 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * 카카오 로그인 실행
+     * 카카오 로그인 - 서버에서 로그인 URL 받아서 웹뷰로 이동
      */
     private fun performKakaoLogin() {
-        // 버튼 비활성화 (중복 클릭 방지)
         binding.btnKakaoLogin.isEnabled = false
 
         lifecycleScope.launch {
-            val result = SocialAuthRepository.loginWithKakao(this@LoginActivity)
+            val result = SocialAuthRepository.getKakaoLoginUrl()
 
-            result.onSuccess { response ->
-                Log.d(tag, "카카오 로그인 성공: ${response.name}")
-                Toast.makeText(
-                    this@LoginActivity,
-                    "${response.name}님 환영합니다!",
-                    Toast.LENGTH_SHORT
-                ).show()
+            result.onSuccess { loginUrl ->
+                Log.d(tag, "카카오 로그인 URL: $loginUrl")
 
-                // 로그인 상태 저장
-                saveLoginState()
+                // 웹뷰 화면으로 이동
+                val intent = Intent(this@LoginActivity, SocialLoginWebViewActivity::class.java)
+                intent.putExtra(SocialLoginWebViewActivity.EXTRA_LOGIN_TYPE, SocialLoginWebViewActivity.TYPE_KAKAO)
+                intent.putExtra(SocialLoginWebViewActivity.EXTRA_LOGIN_URL, loginUrl)
+                startActivity(intent)
 
-                // 신규 회원이면 온보딩, 기존 회원이면 메인
-                if (response.isNewUser) {
-                    navigateToOnboarding()
-                } else {
-                    navigateToMain()
-                }
+                binding.btnKakaoLogin.isEnabled = true
+
             }.onFailure { error ->
-                Log.e(tag, "카카오 로그인 실패: ${error.message}")
+                Log.e(tag, "카카오 로그인 URL 조회 실패: ${error.message}")
                 Toast.makeText(
                     this@LoginActivity,
-                    error.message ?: "카카오 로그인에 실패했습니다.",
+                    error.message ?: "카카오 로그인을 시작할 수 없습니다.",
                     Toast.LENGTH_SHORT
                 ).show()
                 binding.btnKakaoLogin.isEnabled = true
@@ -93,79 +82,34 @@ class LoginActivity : AppCompatActivity() {
     }
 
     /**
-     * 네이버 로그인 실행
+     * 네이버 로그인 - 서버에서 로그인 URL 받아서 웹뷰로 이동
      */
     private fun performNaverLogin() {
-        // 버튼 비활성화 (중복 클릭 방지)
         binding.btnNaverLogin.isEnabled = false
 
         lifecycleScope.launch {
-            val result = SocialAuthRepository.loginWithNaver(this@LoginActivity)
+            val result = SocialAuthRepository.getNaverLoginUrl()
 
-            result.onSuccess { response ->
-                Log.d(tag, "네이버 로그인 성공: ${response.name}")
-                Toast.makeText(
-                    this@LoginActivity,
-                    "${response.name}님 환영합니다!",
-                    Toast.LENGTH_SHORT
-                ).show()
+            result.onSuccess { loginUrl ->
+                Log.d(tag, "네이버 로그인 URL: $loginUrl")
 
-                // 로그인 상태 저장
-                saveLoginState()
+                // 웹뷰 화면으로 이동
+                val intent = Intent(this@LoginActivity, SocialLoginWebViewActivity::class.java)
+                intent.putExtra(SocialLoginWebViewActivity.EXTRA_LOGIN_TYPE, SocialLoginWebViewActivity.TYPE_NAVER)
+                intent.putExtra(SocialLoginWebViewActivity.EXTRA_LOGIN_URL, loginUrl)
+                startActivity(intent)
 
-                // 신규 회원이면 온보딩, 기존 회원이면 메인
-                if (response.isNewUser) {
-                    navigateToOnboarding()
-                } else {
-                    navigateToMain()
-                }
+                binding.btnNaverLogin.isEnabled = true
+
             }.onFailure { error ->
-                Log.e(tag, "네이버 로그인 실패: ${error.message}")
+                Log.e(tag, "네이버 로그인 URL 조회 실패: ${error.message}")
                 Toast.makeText(
                     this@LoginActivity,
-                    error.message ?: "네이버 로그인에 실패했습니다.",
+                    error.message ?: "네이버 로그인을 시작할 수 없습니다.",
                     Toast.LENGTH_SHORT
                 ).show()
                 binding.btnNaverLogin.isEnabled = true
             }
         }
-    }
-
-    /**
-     * 로그인 상태 저장
-     */
-    private fun saveLoginState() {
-        getSharedPreferences("auth", MODE_PRIVATE)
-            .edit()
-            .putBoolean("keep_login", true)
-            .apply()
-    }
-
-    /**
-     * 온보딩 화면으로 이동 (신규 회원)
-     */
-    private fun navigateToOnboarding() {
-        val intent = Intent(this, OnboardingActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
-    }
-
-    /**
-     * 메인 화면으로 이동
-     */
-    private fun navigateToMain() {
-        val pref = getSharedPreferences("auth", MODE_PRIVATE)
-        val isOnboardingDone = pref.getBoolean("onboarding_done", false)
-
-        val intent = if (isOnboardingDone) {
-            Intent(this, MainActivity::class.java)
-        } else {
-            Intent(this, OnboardingActivity::class.java)
-        }
-
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
     }
 }
