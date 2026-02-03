@@ -3,13 +3,13 @@ package com.example.areumdap.Network.model
 import com.google.gson.annotations.SerializedName
 
 /**
- * [추가] 서버의 공통 응답 형식을 처리하는 클래스 (택배 박스)
+ * 서버의 공통 응답 형식
  */
 data class BaseResponse<T>(
     @SerializedName("isSuccess") val isSuccess: Boolean,
     @SerializedName("code") val code: String,
     @SerializedName("message") val message: String,
-    @SerializedName("data") val data: T? // 실제 내용물
+    @SerializedName("data") val data: T?
 )
 
 /**
@@ -21,14 +21,28 @@ data class LoginRequest(
 )
 
 /**
- * 로그인 응답 (내용물)
+ * 로그인 응답 (이메일/카카오/네이버 공통)
  */
 data class LoginResponse(
     @SerializedName("userId") val userId: Long,
-    @SerializedName("email") val email: String,
-    @SerializedName("name") val name: String,
+    @SerializedName("email") val email: String?,
+    @SerializedName("name") val name: String?,
     @SerializedName("accessToken") val accessToken: String,
     @SerializedName("refreshToken") val refreshToken: String
+)
+
+/**
+ * OAuth 로그인 URL 응답
+ */
+data class OAuthLoginUrlResponse(
+    @SerializedName("loginUrl") val loginUrl: String
+)
+
+/**
+ * 카카오 로그인 요청 (인가 코드 전송)
+ */
+data class KakaoLoginRequest(
+    @SerializedName("code") val code: String
 )
 
 /**

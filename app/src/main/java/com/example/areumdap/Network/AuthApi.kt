@@ -3,7 +3,9 @@ package com.example.areumdap.Network
 import com.example.areumdap.Network.model.*
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface AuthApi {
 
@@ -15,14 +17,46 @@ interface AuthApi {
         @Body request: LoginRequest
     ): Response<BaseResponse<LoginResponse>>
 
+    // ========================================
+    // 카카오 OAuth
+    // ========================================
+
     /**
-     * ★★★ 소셜 로그인 (카카오/네이버) ★★★
-     * 소셜 플랫폼에서 받은 정보를 서버로 전송하여 자체 JWT 발급
+     * 카카오 로그인 URL 조회
      */
-    @POST("/api/auth/social-login")
-    suspend fun socialLogin(
-        @Body request: SocialLoginRequest
-    ): Response<BaseResponse<SocialLoginResponse>>
+    @GET("/api/oauth/kakao/login-uri")
+    suspend fun getKakaoLoginUri(): Response<BaseResponse<OAuthLoginUrlResponse>>
+
+    /**
+     * 카카오 로그인 (인가 코드 전송)
+     */
+    @POST("/api/oauth/kakao/login")
+    suspend fun kakaoLogin(
+        @Body request: KakaoLoginRequest
+    ): Response<BaseResponse<LoginResponse>>
+
+    // ========================================
+    // 네이버 OAuth
+    // ========================================
+
+    /**
+     * 네이버 로그인 URL 조회
+     */
+    @GET("/api/oauth/naver/login-uri")
+    suspend fun getNaverLoginUri(): Response<BaseResponse<OAuthLoginUrlResponse>>
+
+    /**
+     * 네이버 로그인 (인가 코드 + state 전송)
+     */
+    @GET("/api/oauth/naver/login")
+    suspend fun naverLogin(
+        @Query("code") code: String,
+        @Query("state") state: String
+    ): Response<BaseResponse<LoginResponse>>
+
+    // ========================================
+    // 기타 인증 API
+    // ========================================
 
     /**
      * 회원가입
@@ -53,4 +87,10 @@ interface AuthApi {
      */
     @POST("/api/auth/logout")
     suspend fun logout(): Response<Unit>
+
+    /**
+     * 내 캐릭터 조회
+     */
+    @GET("/api/characters/my")
+    suspend fun getMyCharacterInfo(): Response<Any>
 }
