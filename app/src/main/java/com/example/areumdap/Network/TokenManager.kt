@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 
 /**
  * JWT 토큰 저장 및 관리 클래스
+ * 소셜 로그인 정보 저장 기능 추가
  */
 object TokenManager {
     private const val PREF_NAME = "auth_token"
@@ -13,6 +14,11 @@ object TokenManager {
     private const val KEY_USER_ID = "user_id"
     private const val KEY_USER_EMAIL = "user_email"
     private const val KEY_USER_NAME = "user_name"
+
+    // ★★★ 소셜 로그인 관련 키 추가 ★★★
+    private const val KEY_SOCIAL_PROVIDER = "social_provider"  // "kakao", "naver", "email"
+    private const val KEY_SOCIAL_ID = "social_id"
+    private const val KEY_PROFILE_IMAGE = "profile_image"
 
     private lateinit var prefs: SharedPreferences
 
@@ -73,10 +79,63 @@ object TokenManager {
     }
 
     /**
+     * 사용자 이메일 가져오기
+     */
+    fun getUserEmail(): String? {
+        return prefs.getString(KEY_USER_EMAIL, null)
+    }
+
+    /**
      * 로그인 여부 확인
      */
     fun isLoggedIn(): Boolean {
         return getAccessToken() != null
+    }
+
+    // ========================================
+    // ★★★ 소셜 로그인 관련 메서드 추가 ★★★
+    // ========================================
+
+    /**
+     * 소셜 로그인 정보 저장
+     * @param provider "kakao", "naver", "email"
+     */
+    fun saveSocialLoginInfo(provider: String, socialId: String? = null, profileImage: String? = null) {
+        prefs.edit()
+            .putString(KEY_SOCIAL_PROVIDER, provider)
+            .putString(KEY_SOCIAL_ID, socialId)
+            .putString(KEY_PROFILE_IMAGE, profileImage)
+            .apply()
+    }
+
+    /**
+     * 소셜 로그인 제공자 가져오기
+     * @return "kakao", "naver", "email", 또는 null
+     */
+    fun getSocialProvider(): String? {
+        return prefs.getString(KEY_SOCIAL_PROVIDER, null)
+    }
+
+    /**
+     * 소셜 ID 가져오기
+     */
+    fun getSocialId(): String? {
+        return prefs.getString(KEY_SOCIAL_ID, null)
+    }
+
+    /**
+     * 프로필 이미지 URL 가져오기
+     */
+    fun getProfileImage(): String? {
+        return prefs.getString(KEY_PROFILE_IMAGE, null)
+    }
+
+    /**
+     * 소셜 로그인 여부 확인
+     */
+    fun isSocialLogin(): Boolean {
+        val provider = getSocialProvider()
+        return provider == "kakao" || provider == "naver"
     }
 
     /**

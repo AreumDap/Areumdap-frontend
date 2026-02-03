@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.example.areumdap.R
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.UI.Onboarding.fragment.*
+import com.example.areumdap.Utils.SeasonManager  // 추가
 import com.example.areumdap.databinding.ActivityOnboardingBinding
 
 class OnboardingActivity : AppCompatActivity() {
@@ -420,8 +421,21 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun isNicknameValid(): Boolean = !viewModel.nickname.value.isNullOrEmpty()
 
+    // ============ 수정된 부분 ============
     private fun navigateToMain() {
+        // 선택한 계절 저장
+        viewModel.selectedSeason.value?.let { season ->
+            SeasonManager.saveSeason(this, season)
+        }
+
+        // 온보딩 완료 표시
+        getSharedPreferences("auth", MODE_PRIVATE)
+            .edit()
+            .putBoolean("onboarding_done", true)
+            .apply()
+
         startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
+    // ====================================
 }
