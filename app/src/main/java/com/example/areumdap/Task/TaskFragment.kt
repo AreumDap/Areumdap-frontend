@@ -121,6 +121,9 @@ class TaskFragment : Fragment() {
         viewModel.completedMissions.observe(viewLifecycleOwner) { missionList ->
             missionList?.let {
                 Log.d("FRAGMENT_OBSERVER", "데이터 전달받음: ${it.size}개")
+
+                binding.taskFinishTv.text = "${it.size}"
+                binding.taskTotalTv.text = "${it.size}"
                 taskRVAdapter.updateData(it)
             }
         }
