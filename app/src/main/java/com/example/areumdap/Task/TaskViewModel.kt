@@ -17,7 +17,12 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
     // 완료 과제
     private val _completedMissions = MutableLiveData<List<MissionItem>>()
     val completedMissions: LiveData<List<MissionItem>> = _completedMissions
-
+    // 전체 과제 개수
+    private val _totalMissionCount = MutableLiveData<Int>(0)
+    val totalMissionCount: LiveData<Int> = _totalMissionCount
+    // 저장한 질문
+    private val _questionTotalCount = MutableLiveData<Int>(0)
+    val questionTotalCount: LiveData<Int> = _questionTotalCount
     //다음 페이지 존재 여부
     private val _hasNext = MutableLiveData<Boolean>()
     val hasNext: LiveData<Boolean> = _hasNext
@@ -47,22 +52,18 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                 )
 
                 if (response.isSuccessful) {
-                    val missions = response.body()?.missions
-                    Log.d("API_SUCCESS_DATA", "받아온 데이터 개수: ${missions?.size ?: 0}")
-                    //_completedMissions.value = missions
-                    // 성공 로직
-                    _completedMissions.value = response.body()?.missions
+                    response.body()?.let { body ->
+                        _totalMissionCount.value = body.totalCount
 
-                    nextCursorTime = response.body()?.nextCursorTime
-                    nextCursorId = response.body()?.nextCursorId
-                    _hasNext.value = response.body()?.hasNext ?: false
+                        _completedMissions.value = body.missions
+                        nextCursorTime = body.nextCursorTime
+                        nextCursorId = body.nextCursorId
+                        _hasNext.value = body.hasNext
+                    }
                 } else {
-                    val errorDetail = response.errorBody()?.string()
-                    Log.e("API_ERROR_DETAIL", "서버가 보낸 에러 내용: $errorDetail")
                     _errorMessage.value = "서버 에러: ${response.code()}"
                 }
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Exception: ${e.message}")
                 _errorMessage.value = "네트워크 오류가 발생했습니다."
             } finally {
                 _isLoading.value = false
@@ -115,22 +116,25 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                     size = size
                 )
 
+                Log.d("API_CHECK", "Status Code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     response.body()?.let { responseBody ->
                         val data = responseBody.data
-                        val questions = data.questions
+                        _questionTotalCount.value = data.totalCount
 
-                        Log.d("QUESTION_API_SUCCESS", "받아온 질문 개수: ${questions.size}")
+                        Log.d("API_CHECK", "Total Count from Server: ${data.totalCount}")
+                        Log.d("API_CHECK", "Questions Size: ${data.questions.size}")
 
-                        _savedQuestions.value = questions
+                        _savedQuestions.value = data.questions
                         questionsNextCursorTime = data.nextCursorTime
                         questionsNextCursorId = data.nextCursorId
                         _questionsHasNext.value = data.hasNext
                     }
                 } else {
-                    val errorDetail = response.errorBody()?.string()
-                    Log.e("QUESTION_API_ERROR", "서버 에러: $errorDetail")
-                    _errorMessage.value = "질문을 가져오는데 실패했습니다: ${response.code()}"
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("API_CHECK", "Server Error Body: $errorBody")
+                    _errorMessage.value = "서버 에러: ${response.code()}"
                 }
             } catch (e: Exception) {
                 Log.e("QUESTION_API_ERROR", "Exception: ${e.message}")
@@ -156,11 +160,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                 )
 
                 if (response.isSuccessful) {
-                    response.body()?.let { responseBody ->  // ✅ 첫 번째 let에서 responseBody 가져오기
-                        val data = responseBody.data        // ✅ data 객체 가져오기
+                    response.body()?.let { responseBody ->
+                        val data = responseBody.data
 
                         val currentList = _savedQuestions.value?.toMutableList() ?: mutableListOf()
-                        currentList.addAll(data.questions)  // ✅ data.questions 사용
+                        currentList.addAll(data.questions)
                         _savedQuestions.value = currentList
 
                         _questionsHasNext.value = data.hasNext
@@ -180,5 +184,39 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
     private fun getCurrentTimeISO(): String {
         val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", java.util.Locale.getDefault())
         return sdf.format(java.util.Date())
+    }
+
+    // 과제 삭제 (로컬)
+    fun deleteCompletedMission(missionId: Int) {
+        val currentList = _completedMissions.value?.toMutableList() ?: return
+        val itemToRemove = currentList.find { it.missionId == missionId }
+
+        if (itemToRemove != null) {
+            currentList.remove(itemToRemove)
+            _completedMissions.value = currentList
+            
+            // 토탈 개수 감소
+            val currentCount = _totalMissionCount.value ?: 0
+            if (currentCount > 0) {
+                _totalMissionCount.value = currentCount - 1
+            }
+        }
+    }
+
+    // 질문 삭제 (로컬)
+    fun deleteSavedQuestion(userQuestionId: Int) {
+        val currentList = _savedQuestions.value?.toMutableList() ?: return
+        val itemToRemove = currentList.find { it.userQuestionId == userQuestionId }
+
+        if (itemToRemove != null) {
+            currentList.remove(itemToRemove)
+            _savedQuestions.value = currentList
+
+            // 토탈 개수 감소
+            val currentCount = _questionTotalCount.value ?: 0
+            if (currentCount > 0) {
+                _questionTotalCount.value = currentCount - 1
+            }
+        }
     }
 }
