@@ -17,7 +17,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // ★★★ 카카오 네이티브 앱 키 설정 (발급받은 키로 변경) ★★★
-        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = "YOUR_KAKAO_NATIVE_APP_KEY"
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = "a21690c0113fea3822765e107e26bc1e"
     }
 
     buildTypes {
