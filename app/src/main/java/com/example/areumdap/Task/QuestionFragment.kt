@@ -52,12 +52,13 @@ class QuestionFragment : Fragment() {
         // 저장한 질문 목록 관찰
         viewModel.savedQuestions.observe(viewLifecycleOwner) { questions ->
             questions?.let{
-                binding.questionTotalTv.text = "${it.size}"
-
                 questionRVAdapter.updateData(it)
             }
         }
 
+        viewModel.questionTotalCount.observe(viewLifecycleOwner){ total ->
+            binding.questionTotalTv.text = "$total"
+        }
         // 에러 메시지 관찰
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMsg ->
             errorMsg?.let {
@@ -68,6 +69,22 @@ class QuestionFragment : Fragment() {
 
     private fun setupRecyclerView() {
         questionRVAdapter = QuestionRVAdapter(arrayListOf())
+
+        questionRVAdapter.itemDeleteListener = { userQuestionId ->
+            viewModel.deleteSavedQuestion(userQuestionId)
+        }
+
+        questionRVAdapter.itemClickListener = { questionItem ->
+            val chatFragment = com.example.areumdap.UI.Chat.ChatFragment()
+            val bundle = Bundle()
+            bundle.putString("prefill_question", questionItem.content)
+            chatFragment.arguments = bundle
+
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm, chatFragment)
+                .addToBackStack(null)
+                .commit()
+        }
 
         binding.questionListRv.apply {
             adapter = questionRVAdapter

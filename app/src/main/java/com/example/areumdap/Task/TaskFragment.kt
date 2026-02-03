@@ -108,6 +108,10 @@ class TaskFragment : Fragment() {
                 .commit()
         }
 
+        taskRVAdapter.itemDeleteListener = { missionId ->
+            viewModel.deleteCompletedMission(missionId)
+        }
+
         binding.taskListRv.apply {
             adapter = taskRVAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
@@ -123,9 +127,13 @@ class TaskFragment : Fragment() {
                 Log.d("FRAGMENT_OBSERVER", "데이터 전달받음: ${it.size}개")
 
                 binding.taskFinishTv.text = "${it.size}"
-                binding.taskTotalTv.text = "${it.size}"
                 taskRVAdapter.updateData(it)
             }
+        }
+
+        viewModel.totalMissionCount.observe(viewLifecycleOwner) { total ->
+            Log.d("TOTAL_COUNT", "서버에서 받은 전체 개수: $total")
+            binding.taskTotalTv.text = "$total"
         }
 
         // 로딩 상태 관찰

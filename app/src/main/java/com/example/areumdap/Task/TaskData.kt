@@ -27,6 +27,9 @@ data class CompletedMissionsResponse(
     @SerializedName("missions")
     val missions: List<MissionItem>,
 
+    @SerializedName("totalCount")
+    val totalCount: Int,
+
     @SerializedName("nextCursorTime")
     val nextCursorTime: String?,
 
@@ -85,6 +88,9 @@ data class SavedQuestionsResponse(
 )
 
 data class QuestionData(
+    @SerializedName("totalCount")
+    val totalCount: Int,
+
     @SerializedName("questions")
     val questions: List<QuestionItem>,
 
