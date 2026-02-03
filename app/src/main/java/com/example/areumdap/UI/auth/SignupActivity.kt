@@ -2,158 +2,431 @@ package com.example.areumdap.UI.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.example.areumdap.Network.AuthRepository
+import com.example.areumdap.Network.TokenManager
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivitySignupBinding
+import kotlinx.coroutines.launch
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
     private var isEmailVerified = false
+    private val tag = "SignupActivity" // 소문자로 변경
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        Log.d(tag, "SignupActivity 생성됨")
+
+        // TokenManager 초기화
+        TokenManager.init(this)
+
         initClickListeners()
     }
 
     private fun initClickListeners() {
+        Log.d(tag, "클릭 리스너 초기화")
+
         // 뒤로가기 버튼
         binding.btnBack.setOnClickListener {
+            Log.d(tag, "뒤로가기 버튼 클릭")
             finish()
         }
 
         // 이메일 인증 요청 버튼
         binding.btnEmailCheck.setOnClickListener {
+            Log.d(tag, "이메일 인증 요청 버튼 클릭")
             requestEmailVerification()
         }
 
         // 인증번호 확인 버튼
         binding.btnAuthConfirm.setOnClickListener {
+            Log.d(tag, "인증번호 확인 버튼 클릭")
             verifyAuthCode()
         }
 
         // 회원가입 버튼
         binding.btnSignUp.setOnClickListener {
+            Log.d(tag, "=== 회원가입 버튼 클릭됨! ===")
             performSignup()
         }
     }
 
     private fun requestEmailVerification() {
+        Log.d(tag, "requestEmailVerification() 시작")
+
         val email = binding.etEmail.text.toString().trim()
 
+        Log.d(tag, "이메일 인증 요청: $email")
+
         if (email.isEmpty()) {
+            Log.w(tag, "이메일이 비어있음")
             Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (!isValidEmail(email)) {
+            Log.w(tag, "이메일 형식이 잘못됨: $email")
             Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        Toast.makeText(this, "인증번호가 발송되었습니다. (임시: 1234)", Toast.LENGTH_LONG).show()
-        binding.btnEmailCheck.text = "재요청"
+        // 버튼 비활성화 (중복 클릭 방지)
+        binding.btnEmailCheck.isEnabled = false
+
+        // 실제 API 호출
+        lifecycleScope.launch {
+            Log.d(tag, "=== 이메일 인증 API 호출 시작 ===")
+            Log.d(tag, "요청 이메일: $email")
+
+            try {
+                val result = AuthRepository.sendEmailVerificationCode(email)
+
+                result.onSuccess {
+                    Log.d(tag, "✅ 이메일 인증 요청 성공")
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "인증번호가 발송되었습니다. 이메일을 확인해주세요.",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    // 버튼 텍스트 변경
+                    binding.btnEmailCheck.text = "재요청"
+                    binding.btnEmailCheck.isEnabled = true
+                }.onFailure { error ->
+                    Log.e(tag, "❌ 이메일 인증 요청 실패")
+                    Log.e(tag, "에러 메시지: ${error.message}")
+                    Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
+
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "인증번호 발송 실패: ${error.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    binding.btnEmailCheck.isEnabled = true
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "이메일 인증 요청 중 예외 발생: ${e.message}", e)
+                Toast.makeText(
+                    this@SignupActivity,
+                    "이메일 인증 요청 중 오류가 발생했습니다: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                binding.btnEmailCheck.isEnabled = true
+            }
+        }
     }
 
     private fun verifyAuthCode() {
+        Log.d(tag, "verifyAuthCode() 시작")
+
+        val email = binding.etEmail.text.toString().trim()
         val authCode = binding.etAuthCode.text.toString().trim()
 
+        Log.d(tag, "인증 시도: 이메일=$email, 인증번호=$authCode")
+
         if (authCode.isEmpty()) {
+            Log.w(tag, "인증번호가 비어있음")
             Toast.makeText(this, "인증번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (authCode == "1234") {
-            isEmailVerified = true
-            Toast.makeText(this, "이메일 인증이 완료되었습니다.", Toast.LENGTH_SHORT).show()
-            binding.btnAuthConfirm.text = "인증완료"
-            binding.btnAuthConfirm.isEnabled = false
-            binding.etAuthCode.isEnabled = false
-        } else {
-            Toast.makeText(this, "인증번호가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+        // 버튼 비활성화
+        binding.btnAuthConfirm.isEnabled = false
+
+        // 실제 API 호출
+        lifecycleScope.launch {
+            Log.d(tag, "=== 인증번호 확인 API 호출 시작 ===")
+            Log.d(tag, "요청 데이터: email=$email, code=$authCode")
+
+            try {
+                val result = AuthRepository.confirmEmailVerificationCode(email, authCode)
+
+                result.onSuccess {
+                    Log.d(tag, "✅ 이메일 인증 확인 성공!")
+                    isEmailVerified = true // ★★★ 이 부분이 핵심!
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "이메일 인증이 완료되었습니다.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    binding.btnAuthConfirm.text = "인증완료"
+                    binding.etAuthCode.isEnabled = false
+
+                    Log.d(tag, "✅ isEmailVerified 변경됨: $isEmailVerified")
+                }.onFailure { error ->
+                    Log.e(tag, "❌ 이메일 인증 확인 실패")
+                    Log.e(tag, "에러 메시지: ${error.message}")
+                    Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
+
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "인증 실패: ${error.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    binding.btnAuthConfirm.isEnabled = true
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "인증번호 확인 중 예외 발생: ${e.message}", e)
+                Toast.makeText(
+                    this@SignupActivity,
+                    "인증번호 확인 중 오류가 발생했습니다: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                binding.btnAuthConfirm.isEnabled = true
+            }
         }
     }
 
     private fun performSignup() {
+        Log.d(tag, "=== performSignup() 호출됨 ===")
+
+        // 입력값 검증
         if (!validateInputs()) {
+            Log.w(tag, "❌ 입력값 검증 실패")
             return
         }
 
-        Toast.makeText(this, "회원가입이 완료되었습니다!", Toast.LENGTH_SHORT).show()
-        navigateToOnboarding()
+        Log.d(tag, "✅ 입력값 검증 통과 - API 호출 준비")
+
+        val name = binding.etName.text.toString().trim()
+        val birth = binding.etBirth.text.toString().trim()
+        val email = binding.etEmail.text.toString().trim()
+        val password = binding.etPw.text.toString().trim()
+
+        // ★★★ 생년월일 형식 변환: 20030213 → 2003-02-13 ★★★
+        val formattedBirth = formatBirth(birth)
+
+        Log.d(tag, "📝 회원가입 요청 데이터:")
+        Log.d(tag, "   - 이름: $name")
+        Log.d(tag, "   - 원래 생년월일: $birth")
+        Log.d(tag, "   - 변환된 생년월일: $formattedBirth")
+        Log.d(tag, "   - 이메일: $email")
+        Log.d(tag, "   - 비밀번호: ${"*".repeat(password.length)}")
+
+        // 버튼 비활성화
+        binding.btnSignUp.isEnabled = false
+
+        // 실제 API 호출
+        lifecycleScope.launch {
+            Log.d(tag, "=== 🚀 회원가입 API 호출 시작 ===")
+
+            try {
+                val result = AuthRepository.signUp(name, formattedBirth, email, password)
+
+                result.onSuccess {
+                    Log.d(tag, "✅ 회원가입 API 성공!")
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "회원가입이 완료되었습니다!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    // 회원가입 후 온보딩으로 이동
+                    navigateToOnboarding()
+                }.onFailure { error ->
+                    Log.e(tag, "❌ 회원가입 API 실패")
+                    Log.e(tag, "에러 메시지: ${error.message}")
+                    Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
+
+                    Toast.makeText(
+                        this@SignupActivity,
+                        "회원가입 실패: ${error.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    binding.btnSignUp.isEnabled = true
+                }
+            } catch (e: Exception) {
+                Log.e(tag, "❌ 회원가입 중 예외 발생")
+                Log.e(tag, "예외 메시지: ${e.message}")
+                Log.e(tag, "예외 타입: ${e.javaClass.simpleName}")
+
+                Toast.makeText(
+                    this@SignupActivity,
+                    "회원가입 중 오류 발생: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                binding.btnSignUp.isEnabled = true
+            }
+        }
+    }
+
+    /**
+     * ★★★ 생년월일 형식 변환 함수 ★★★
+     * 20030213 → 2003-02-13
+     */
+    private fun formatBirth(birth: String): String {
+        Log.d(tag, "formatBirth() 호출: 입력값 = $birth")
+
+        if (birth.length == 8) {
+            val year = birth.take(4)           // 2003
+            val month = birth.drop(4).take(2)  // 02
+            val day = birth.drop(6).take(2)    // 13
+            val formatted = "$year-$month-$day" // 2003-02-13
+
+            Log.d(tag, "생년월일 변환: $birth → $formatted")
+            return formatted
+        } else {
+            Log.w(tag, "생년월일 형식이 잘못됨: $birth (길이: ${birth.length})")
+            return birth
+        }
     }
 
     private fun validateInputs(): Boolean {
+        Log.d(tag, "🔍 validateInputs() 검증 시작")
+
         val name = binding.etName.text.toString().trim()
         val birth = binding.etBirth.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPw.text.toString().trim()
         val passwordConfirm = binding.etPwConfirm.text.toString().trim()
 
+        Log.d(tag, "📋 검증할 데이터:")
+        Log.d(tag, "   - 이름: '$name' (${if(name.isEmpty()) "비어있음" else "OK"})")
+        Log.d(tag, "   - 생년월일: '$birth' (길이: ${birth.length})")
+        Log.d(tag, "   - 이메일: '$email'")
+        Log.d(tag, "   - 이메일 인증 상태: $isEmailVerified")
+        Log.d(tag, "   - 비밀번호 길이: ${password.length}")
+        Log.d(tag, "   - 비밀번호 확인 일치: ${password == passwordConfirm}")
+
         if (name.isEmpty()) {
+            Log.w(tag, "❌ 이름 빈값 에러")
             Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etName.requestFocus()
             return false
         }
 
         if (birth.isEmpty()) {
+            Log.w(tag, "❌ 생년월일 빈값 에러")
             Toast.makeText(this, "생년월일을 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etBirth.requestFocus()
             return false
         }
 
         if (birth.length != 8) {
+            Log.w(tag, "❌ 생년월일 길이 에러: ${birth.length}자리 (8자리 필요)")
             Toast.makeText(this, "생년월일을 8자리로 입력해주세요. (예: 19900101)", Toast.LENGTH_SHORT).show()
             binding.etBirth.requestFocus()
             return false
         }
 
+        if (!isValidBirth(birth)) {
+            Log.w(tag, "❌ 생년월일 날짜 유효성 에러: $birth")
+            Toast.makeText(this, "올바른 날짜를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            binding.etBirth.requestFocus()
+            return false
+        }
+
         if (email.isEmpty()) {
+            Log.w(tag, "❌ 이메일 빈값 에러")
             Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etEmail.requestFocus()
             return false
         }
 
         if (!isValidEmail(email)) {
+            Log.w(tag, "❌ 이메일 형식 에러: $email")
             Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etEmail.requestFocus()
             return false
         }
 
         if (!isEmailVerified) {
-            Toast.makeText(this, "이메일 인증을 완료해주세요.", Toast.LENGTH_SHORT).show()
+            Log.w(tag, "❌ 이메일 미인증 에러 - isEmailVerified = $isEmailVerified")
+            Log.w(tag, "이메일 인증을 먼저 완료해야 합니다!")
+            Toast.makeText(this, "이메일 인증을 완료해주세요.", Toast.LENGTH_LONG).show()
             return false
         }
 
         if (password.isEmpty()) {
+            Log.w(tag, "❌ 비밀번호 빈값 에러")
             Toast.makeText(this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etPw.requestFocus()
             return false
         }
 
         if (password.length < 6) {
+            Log.w(tag, "❌ 비밀번호 길이 에러: ${password.length}자리 (최소 6자리)")
             Toast.makeText(this, "비밀번호는 6자리 이상 입력해주세요.", Toast.LENGTH_SHORT).show()
             binding.etPw.requestFocus()
             return false
         }
 
         if (password != passwordConfirm) {
+            Log.w(tag, "❌ 비밀번호 확인 불일치 에러")
             Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             binding.etPwConfirm.requestFocus()
             return false
         }
 
+        Log.d(tag, "✅ 모든 입력값 검증 통과!")
         return true
     }
 
+    /**
+     * ★★★ 생년월일 날짜 유효성 검증 ★★★
+     */
+    private fun isValidBirth(birth: String): Boolean {
+        if (birth.length != 8) return false
+
+        try {
+            val year = birth.take(4).toInt()
+            val month = birth.drop(4).take(2).toInt()
+            val day = birth.drop(6).take(2).toInt()
+
+            Log.d(tag, "생년월일 파싱: ${year}년 ${month}월 ${day}일")
+
+            // 기본적인 날짜 유효성 검증
+            if (year !in 1900..2024) {
+                Log.w(tag, "연도 범위 초과: $year")
+                return false
+            }
+            if (month !in 1..12) {
+                Log.w(tag, "월 범위 초과: $month")
+                return false
+            }
+            if (day !in 1..31) {
+                Log.w(tag, "일 범위 초과: $day")
+                return false
+            }
+
+            // 월별 일수 검증 (간단한 버전)
+            val maxDayInMonth = when (month) {
+                2 -> 29 // 윤년 고려 안함 (간단화)
+                4, 6, 9, 11 -> 30
+                else -> 31
+            }
+
+            if (day > maxDayInMonth) {
+                Log.w(tag, "${month}월 일수 초과: $day (최대: $maxDayInMonth)")
+                return false
+            }
+
+            Log.d(tag, "생년월일 유효성 검증 통과")
+            return true
+        } catch (e: Exception) {
+            Log.e(tag, "생년월일 파싱 실패: ${e.message}")
+            return false
+        }
+    }
+
     private fun isValidEmail(email: String): Boolean {
-        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        val isValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        Log.d(tag, "이메일 형식 검증: $email -> $isValid")
+        return isValid
     }
 
     private fun navigateToOnboarding() {
+        Log.d(tag, "온보딩 화면으로 이동")
         val intent = Intent(this, OnboardingActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

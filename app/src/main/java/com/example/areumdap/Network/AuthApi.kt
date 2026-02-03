@@ -9,12 +9,20 @@ interface AuthApi {
 
     /**
      * 이메일 로그인
-     * 반환 타입을 BaseResponse로 감싸주어야 합니다.
      */
     @POST("/api/auth/login")
     suspend fun login(
         @Body request: LoginRequest
     ): Response<BaseResponse<LoginResponse>>
+
+    /**
+     * ★★★ 소셜 로그인 (카카오/네이버) ★★★
+     * 소셜 플랫폼에서 받은 정보를 서버로 전송하여 자체 JWT 발급
+     */
+    @POST("/api/auth/social-login")
+    suspend fun socialLogin(
+        @Body request: SocialLoginRequest
+    ): Response<BaseResponse<SocialLoginResponse>>
 
     /**
      * 회원가입
