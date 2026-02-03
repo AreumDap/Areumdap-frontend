@@ -421,7 +421,18 @@ class OnboardingActivity : AppCompatActivity() {
     private fun isNicknameValid(): Boolean = !viewModel.nickname.value.isNullOrEmpty()
 
     private fun navigateToMain() {
-        startActivity(Intent(this, MainActivity::class.java))
+        // ★ [핵심] 온보딩 완료 상태 저장
+        getSharedPreferences("auth", MODE_PRIVATE)
+            .edit()
+            .putBoolean("onboarding_done", true)
+            .apply()
+
+        // 메인으로 이동
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
         finish()
     }
+
+
 }
