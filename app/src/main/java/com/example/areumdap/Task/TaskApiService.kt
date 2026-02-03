@@ -8,8 +8,18 @@ import retrofit2.http.Query
 
 interface TaskApiService {
     @GET("api/missions/completed")
-    suspend fun getCompletedMissions(@Query("tag") tag: String?,
-                                     @Query("cursorTime") cursorTime: String,
-                                     @Query("cursorId") cursorId: Int,
-                                     @Query("size") size: Int): Response<CompletedMissionsResponse>
+    suspend fun getCompletedMissions(
+        @Query("tag") tag: String?,
+        @Query("cursorTime") cursorTime: String,
+        @Query("cursorId") cursorId: Int,
+        @Query("size") size: Int
+    ): Response<CompletedMissionsResponse>
+
+    @GET("api/questions")
+    suspend fun getSavedQuestions(
+        @Query("tag") tag: String?,
+        @Query("cursorTime") cursorTime: String,
+        @Query("cursorId") cursorId: Int,
+        @Query("size") size: Int
+    ): Response<SavedQuestionsResponse>
 }
