@@ -29,7 +29,7 @@ class RecommendQuestionViewModel(
                     _questions.value = res.data?.questions ?: emptyList()
                     _error.value = null
                 }
-                .onFailure { e -> _error.value = e.message ?: "��õ ���� �ҷ����� ����" }
+                .onFailure { e -> _error.value = e.message ?: "추천 질문 불러오기 실패" }
             _loading.value = false
         }
     }
