@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.Network.AuthRepository
 import com.example.areumdap.Network.TokenManager
+import com.example.areumdap.R
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.UI.auth.LoginActivity
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 스플래시 화면 레이아웃이 있다면 설정 (없다면 생략 가능하거나 로고만 있는 xml 생성)
-        // setContentView(R.layout.activity_splash)
+        setContentView(R.layout.activity_splash)
 
         TokenManager.init(this)
 
