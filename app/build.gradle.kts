@@ -83,4 +83,6 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.8.2")
 // 2. Glide (bumptech) 라이브러리
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    // 2. Glide (bumptech) 라이브러리
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 }

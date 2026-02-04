@@ -11,6 +11,8 @@ import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.RVAdapter.CharacterHistoryRVAdapter
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.databinding.FragmentCharacterHistoryBinding
+import com.bumptech.glide.Glide
+import com.example.areumdap.R
 
 
 class CharacterHistoryFragment : Fragment() {
@@ -52,7 +54,18 @@ class CharacterHistoryFragment : Fragment() {
                 binding.presentContentTv.text = it.presentDescription ?: ""
 
                 // 리사이클러뷰 데이터 갱신
-                historyAdapter.updateData(it.historyList)
+                historyAdapter.updateData(it.historyList ?: emptyList())
+
+                // 상단 메인 캐릭터 이미지 로드 (가장 최근 히스토리 아이템의 이미지 사용)
+                it.historyList?.lastOrNull()?.imageUrl?.let { url ->
+                    Glide.with(this)
+                        .load(url)
+                        .placeholder(R.drawable.ic_character)
+                        .error(R.drawable.ic_character)
+                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(binding.characterHistoryIv)
+                }
             }
         }
         // 예외처리

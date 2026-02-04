@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.VPAdapter.TaskPageVPAdapter
 import com.example.areumdap.databinding.FragmentCharacterBinding
+import com.bumptech.glide.Glide
 
 class CharacterFragment : Fragment() {
     private var _binding: FragmentCharacterBinding? = null
@@ -101,22 +102,33 @@ class CharacterFragment : Fragment() {
     }
 
     private fun updateCharacterUI(levelData: com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse){
-        // 레벨 업데이트
-        binding.characterLevelTv.text = "${levelData.previousLevel}"
+        // 레벨 업데이트 (level 혹은 previousLevel 사용)
+        val displayLevel = levelData.level ?: levelData.previousLevel ?: 0
+        binding.characterLevelTv.text = "$displayLevel"
 
-        binding.characterProgressBar.max = levelData.requiredXpForNextLevel
+        // 경험치 최대치 (goalXp 혹은 requiredXpForNextLevel 사용)
+        val maxProgress = levelData.goalXp ?: levelData.requiredXpForNextLevel ?: 0
+        binding.characterProgressBar.max = maxProgress
         binding.characterProgressBar.progress = levelData.currentXp
 
         binding.characterXpLevelTv.text = "${levelData.currentXp}"
-        binding.characterFinalLevelTv.text = "${levelData.requiredXpForNextLevel}"
+        binding.characterFinalLevelTv.text = "$maxProgress"
+
+        // 캐릭터 이미지 로드
+        Glide.with(this)
+            .load(levelData.imageUrl)
+            .placeholder(R.drawable.ic_character) // 로딩 중 기본 이미지
+            .error(R.drawable.ic_character)       // 에러 시 기본 이미지
+            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+            .skipMemoryCache(true)
+            .into(binding.characterIv)
 
         // 경험치가 다 채워졌으면 다음버튼 활성화
-        if(levelData.currentXp >= levelData.requiredXpForNextLevel && levelData.requiredXpForNextLevel > 0){
+        if(levelData.currentXp >= maxProgress && maxProgress > 0){
             binding.characterNextLevelBtn.visibility = View.VISIBLE
         } else {
             binding.characterNextLevelBtn.visibility = View.GONE
         }
-
     }
     override fun onDestroyView() {
         super.onDestroyView()
