@@ -22,7 +22,9 @@ import com.example.areumdap.databinding.FragmentSettingBinding
 import java.util.Calendar
 import android.content.Intent
 import com.example.areumdap.Network.TokenManager
-
+import com.example.areumdap.Network.AuthRepository  // Import 추가
+import androidx.lifecycle.lifecycleScope // Import 추가
+import kotlinx.coroutines.launch // Import 추가
 import com.example.areumdap.UI.auth.LoginActivity
 
 class SettingFragment : Fragment() {
@@ -230,22 +232,31 @@ class SettingFragment : Fragment() {
             .setTitle("로그아웃")
             .setMessage("정말 로그아웃 하시겠어요?")
             .setPositiveButton("로그아웃") { _, _ ->
-                // 1. 저장된 로그인/온보딩 정보 삭제 (핵심!)
-                val prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE)
-                prefs.edit().clear().apply() // 모든 저장 데이터 삭제
+                viewLifecycleOwner.lifecycleScope.launch {
+                    // 1. 서버 로그아웃 요청 (실패하더라도 로컬 로그아웃은 진행)
+                    try {
+                        AuthRepository.logout()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
 
-                // 2. 토큰 삭제
-                TokenManager.clearAll()
+                    // 2. 저장된 로그인/온보딩 정보 삭제
+                    val prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE)
+                    prefs.edit().clear().apply()
 
-                val cookieManager = android.webkit.CookieManager.getInstance()
-                cookieManager.removeAllCookies(null)
-                cookieManager.flush()
+                    // 3. 토큰 및 쿠키 삭제
+                    TokenManager.clearAll()
 
-                // 3. 로그인 화면으로 이동
-                val intent = Intent(requireContext(), LoginActivity::class.java) // LoginActivity import 필요
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                requireActivity().finish()
+                    val cookieManager = android.webkit.CookieManager.getInstance()
+                    cookieManager.removeAllCookies(null)
+                    cookieManager.flush()
+
+                    // 4. 로그인 화면으로 이동
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    requireActivity().finish()
+                }
             }
             .setNegativeButton("취소", null)
             .show()
@@ -257,7 +268,34 @@ class SettingFragment : Fragment() {
             .setTitle("계정탈퇴")
             .setMessage("정말 탈퇴하시겠어요?\n모든 데이터가 삭제되며 복구할 수 없습니다.")
             .setPositiveButton("탈퇴") { _, _ ->
-                // TODO: 계정탈퇴 처리
+                viewLifecycleOwner.lifecycleScope.launch {
+                    try {
+                        val result = AuthRepository.withdraw()
+                        result.onSuccess {
+                            // 1. 성공 메시지
+                            Toast.makeText(requireContext(), "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+
+                            // 2. 로컬 데이터 삭제
+                            val prefs = requireContext().getSharedPreferences("auth", android.content.Context.MODE_PRIVATE)
+                            prefs.edit().clear().apply()
+                            TokenManager.clearAll()
+                            
+                            val cookieManager = android.webkit.CookieManager.getInstance()
+                            cookieManager.removeAllCookies(null)
+                            cookieManager.flush()
+
+                            // 3. 로그인 화면으로 이동
+                            val intent = Intent(requireContext(), LoginActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            requireActivity().finish()
+                        }.onFailure { error ->
+                            Toast.makeText(requireContext(), error.message ?: "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(requireContext(), "오류 발생: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             .setNegativeButton("취소", null)
             .show()

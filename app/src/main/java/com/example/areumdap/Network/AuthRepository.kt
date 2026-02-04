@@ -126,6 +126,30 @@ object AuthRepository {
         }
     }
 
+
+
+    /**
+     * 포기하기 (회원탈퇴)
+     */
+    suspend fun withdraw(): Result<Unit> {
+        return try {
+            val response = authApi.withdraw()
+            if (response.isSuccessful) {
+                // 성공 시에도 로컬 데이터 클리어
+                TokenManager.clearAll()
+                Result.success(Unit)
+            } else {
+                val errorMessage = when (response.code()) {
+                    404 -> "유저가 존재하지 않습니다."
+                    else -> "탈퇴 처리에 실패했습니다. (코드: ${response.code()})"
+                }
+                Result.failure(Exception(errorMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("네트워크 오류가 발생했습니다."))
+        }
+    }
+
     /**
      * 로그아웃
      */
