@@ -49,9 +49,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * 카카오 로그인 - 서버에서 로그인 URL 받아서 웹뷰로 이동
-     */
+
     private fun performKakaoLogin() {
         binding.btnKakaoLogin.isEnabled = false
 
@@ -81,9 +79,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * 네이버 로그인 - 서버에서 로그인 URL 받아서 웹뷰로 이동
-     */
+
     private fun performNaverLogin() {
         binding.btnNaverLogin.isEnabled = false
 

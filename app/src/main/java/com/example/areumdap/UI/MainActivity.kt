@@ -10,6 +10,8 @@ import com.example.areumdap.UI.Character.CharacterFragment
 import com.example.areumdap.UI.Home.HomeFragment
 import com.example.areumdap.UI.record.RecordFragment
 import com.example.areumdap.databinding.ActivityMainBinding
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
@@ -20,6 +22,29 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initBottomNavigation()
+        checkFcmToken()
+    }
+
+    private fun checkFcmToken() {
+        com.google.firebase.messaging.FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                android.util.Log.w("MainActivity", "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            // Get new FCM registration token
+            val token = task.result
+            android.util.Log.d("MainActivity", "FCM Token: $token")
+
+            // 서버에 토큰 전송
+            lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                try {
+                    com.example.areumdap.Network.UserRepository.updateFcmToken(token)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 
     private fun initBottomNavigation(){
