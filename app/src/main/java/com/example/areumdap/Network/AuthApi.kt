@@ -97,6 +97,6 @@ interface AuthApi {
     /**
      * 내 캐릭터 조회
      */
-    @GET("/api/characters/my")
+    @GET("/api/characters/me")
     suspend fun getMyCharacterInfo(): Response<Any>
 }

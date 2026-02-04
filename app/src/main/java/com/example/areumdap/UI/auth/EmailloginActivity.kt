@@ -63,14 +63,6 @@ class EmailLoginActivity : AppCompatActivity() {
             return
         }
 
-        // 테스트용 로그인 (1234 / 1234)
-        if (email == "1234" && password == "1234") {
-            Toast.makeText(this, "테스트 로그인 성공!", Toast.LENGTH_SHORT).show()
-            saveLoginState()
-            navigateToMain()
-            return
-        }
-
         // 이메일 형식 검증
         if (!isValidEmail(email)) {
             Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
@@ -119,9 +111,6 @@ class EmailLoginActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * [수정됨] 캐릭터 정보 조회 후 화면 분기
-     */
     private fun checkCharacterAndNavigate() {
         lifecycleScope.launch {
             try {

@@ -145,7 +145,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="16dp">
 
-            <!-- 이름 -->
+            <!-- 이름 (인라인 편집 지원) -->
             <LinearLayout
                 android:id="@+id/layoutName"
                 android:layout_width="match_parent"
@@ -162,6 +162,7 @@
                     android:textColor="#1A1A1A"
                     android:textSize="15sp" />
 
+                <!-- 이름 표시용 TextView -->
                 <TextView
                     android:id="@+id/tvName"
                     android:layout_width="wrap_content"
@@ -169,6 +170,24 @@
                     android:text="최지은"
                     android:textColor="#888888"
                     android:textSize="15sp" />
+
+                <!-- 이름 편집용 EditText (처음엔 숨김) -->
+                <EditText
+                    android:id="@+id/etName"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_edittext_underline"
+                    android:gravity="end|center_vertical"
+                    android:hint="이름 입력"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:maxLength="10"
+                    android:paddingHorizontal="8dp"
+                    android:singleLine="true"
+                    android:textColor="#1A1A1A"
+                    android:textColorHint="#CCCCCC"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
 
                 <ImageView
                     android:layout_width="20dp"
