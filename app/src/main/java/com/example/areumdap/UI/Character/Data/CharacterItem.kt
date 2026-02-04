@@ -13,24 +13,32 @@ data class HistoryItem(
 
 data class CharacterHistoryResponse(
     @SerializedName("pastDescription")
-    val pastDescription: String,    // 과거의 고민 설명
+    val pastDescription: String?,    // 과거의 고민 설명
     @SerializedName("presentDescription")
-    val presentDescription: String, // 현재의 성장 설명
+    val presentDescription: String?, // 현재의 성장 설명
     @SerializedName("historyList")
-    val historyList: List<HistoryItem> // 성장 기록 리스트
+    val historyList: List<HistoryItem>? // 성장 기록 리스트
 )
 
 data class CharacterLevelUpResponse(
     @SerializedName("characterId")
     val characterId: Int,
-    @SerializedName("characterName")
-    val characterName: String,
-    @SerializedName("previousLevel") // 이전 레벨
-    val previousLevel: Int,
-    @SerializedName("currentLevel") //현재 레벨
-    val currentLevel: Int,
-    @SerializedName("currentXp") // 현재 경험치
+    @SerializedName("characterName") // POST /level 에서는 characterName
+    val characterName: String?,
+    @SerializedName("nickname") // GET /me 에서는 nickname
+    val nickname: String?,
+    @SerializedName("previousLevel")
+    val previousLevel: Int?,
+    @SerializedName("currentLevel")
+    val currentLevel: Int?,
+    @SerializedName("level") // GET /me 에서는 level
+    val level: Int?,
+    @SerializedName("currentXp")
     val currentXp: Int,
-    @SerializedName("requiredXpForNextLevel") // 다음 레벨까지 필요한 경험치
-    val requiredXpForNextLevel: Int
+    @SerializedName("requiredXpForNextLevel") // POST /level
+    val requiredXpForNextLevel: Int?,
+    @SerializedName("goalXp") // GET /me
+    val goalXp: Int?,
+    @SerializedName("imageUrl")
+    val imageUrl: String?
 )

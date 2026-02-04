@@ -32,8 +32,8 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
                 val response = apiService.getCharacterHistory()
                 if (response.isSuccessful) {
                     val responseBody = response.body()
-                    if (responseBody != null) {
-                        _historyData.value = responseBody
+                    if (responseBody?.data != null) {
+                        _historyData.value = responseBody.data
                     }
                 }
             } catch (e: Exception) {
@@ -50,9 +50,12 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
             try {
                 val response = apiService.postCharacterLevel()
                 if(response.isSuccessful){
-                    _characterLevel.value = response.body()
+                    val body = response.body()
+                    if (body?.data != null) {
+                        _characterLevel.value = body.data
+                    }
                 } else{
-                    _errorMessage.value = "레벨 정보를 가죠오는데 실패했습니다"
+                    _errorMessage.value = "레벨 정보를 가져오는데 실패했습니다"
                 }
             }  catch (e: Exception) {
                 _errorMessage.value = "네트워크 오류가 발생했습니다"
@@ -68,12 +71,14 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
             try{
                 val response = apiService.getMycharacter()
                 if(response.isSuccessful){
-                    _characterLevel.value = response.body()
+                    val body = response.body()
+                    if (body?.data != null) {
+                        _characterLevel.value = body.data
+                    }
                 } else{
                     _errorMessage.value = "캐릭터 정보를 가져오는데 실패"
                 }
             } catch (e: Exception){
-                Log.e("CharacterViewModel", "fetchMyCharacter 실패", e)
                 _errorMessage.value = "네트워크 오류가 발생"
             } finally {
                 _isLoading.value = false

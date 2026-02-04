@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.databinding.FragmentCharacterXpBinding
+import com.bumptech.glide.Glide
 import kotlin.getValue
 
 class CharacterXpFragment : Fragment() {
@@ -37,9 +38,19 @@ class CharacterXpFragment : Fragment() {
 
         viewModel.characterLevel.observe(viewLifecycleOwner){ data ->
             data?.let{
-                // 다음 성장 경험치
-                binding.characterNextXpTv.text = "${it.requiredXpForNextLevel}"
-                binding.characterXpLevelTv.text = "${it.currentXp}"
+                // 성장한 레벨 (currentLevel 혹은 level 사용)
+                binding.characterXpLevelTv.text = "${it.currentLevel ?: it.level ?: 0}"
+                // 다음 성장 버튼을 위해 필요한 경험치 (requiredXpForNextLevel 혹은 goalXp 사용)
+                binding.characterNextXpTv.text = "${it.requiredXpForNextLevel ?: it.goalXp ?: 0}"
+
+                // 캐릭터 이미지 로드
+                Glide.with(this)
+                    .load(it.imageUrl)
+                    .placeholder(R.drawable.ic_character)
+                    .error(R.drawable.ic_character)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(binding.characterXpIv)
             }
         }
 

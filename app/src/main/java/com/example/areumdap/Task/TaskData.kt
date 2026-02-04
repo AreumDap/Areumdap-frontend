@@ -117,3 +117,30 @@ data class SavedQuestionRequest(
     @SerializedName("size")
     val size: Int = 10
 )
+
+// 캐릭터 조회 응답
+data class CharacterResponse(
+    @SerializedName("characterId")
+    val characterId: Int,
+
+    @SerializedName("nickname")
+    val nickname: String,
+
+    @SerializedName("level")
+    val level: Int,
+
+    @SerializedName("currentXp")
+    val currentXp: Int,
+
+    @SerializedName("goalXp")
+    val goalXp: Int,
+
+    @SerializedName("hasLevelUpParams")
+    val hasLevelUpParams: Boolean,
+
+    @SerializedName("missions")
+    val missions: List<MissionItem>,
+
+    @SerializedName("imageUrl")
+    val imageUrl: String
+)

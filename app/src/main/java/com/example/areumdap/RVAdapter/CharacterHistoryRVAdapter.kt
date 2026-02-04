@@ -18,9 +18,11 @@ class CharacterHistoryRVAdapter(private var items: List<HistoryItem>) :
     inner class ViewHolder(private val binding: ItemCharacterHistoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: HistoryItem) {
-           /*Glide.with(binding.root.context)
+           Glide.with(binding.root.context)
                 .load(item.imageUrl) // 서버에서 온 이미지 URL
-                .into(binding.itemCharacterIv)*/
+                .placeholder(com.example.areumdap.R.drawable.ic_character)
+                .error(com.example.areumdap.R.drawable.ic_character)
+                .into(binding.itemCharacterIv)
         }
     }
 

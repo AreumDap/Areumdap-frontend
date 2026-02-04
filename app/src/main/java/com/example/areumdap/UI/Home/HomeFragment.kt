@@ -13,6 +13,7 @@ import com.example.areumdap.UI.Character.CharacterViewModel
 import com.example.areumdap.UI.Character.CharacterViewModelFactory
 import com.example.areumdap.UI.Chat.ChatFragment
 import com.example.areumdap.databinding.FragmentHomeBinding
+import com.bumptech.glide.Glide
 import com.example.areumdap.domain.model.Category
 import com.example.areumdap.domain.model.RecommendQuestion
 
@@ -81,10 +82,17 @@ class HomeFragment : Fragment() {
     private fun setupCharacterObserver() {
         viewModel.characterLevel.observe(viewLifecycleOwner) { data ->
             data?.let {
-                binding.homeCharacterLevelTv.text = " ${it.currentLevel}"
+                // level 혹은 currentLevel 사용 (GET /me 에서는 level)
+                binding.homeCharacterLevelTv.text = " ${it.level ?: it.currentLevel ?: 0}"
 
-                // 캐릭터 이미지
-                // Glide.with(this).load(it.imageUrl).into(binding.characterIv)
+                // 캐릭터 이미지 로드
+                Glide.with(this)
+                    .load(it.imageUrl)
+                    .placeholder(R.drawable.ic_character)
+                    .error(R.drawable.ic_character)
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
+                    .into(binding.characterIv)
             }
         }
     }
