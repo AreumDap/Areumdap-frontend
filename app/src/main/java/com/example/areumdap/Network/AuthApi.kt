@@ -89,6 +89,12 @@ interface AuthApi {
     suspend fun logout(): Response<Unit>
 
     /**
+     * 회원탈퇴
+     */
+    @retrofit2.http.DELETE("/api/auth/withdraw")
+    suspend fun withdraw(): Response<BaseResponse<Unit>>
+
+    /**
      * 내 캐릭터 조회
      */
     @GET("/api/characters/my")
