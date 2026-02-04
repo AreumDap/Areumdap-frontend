@@ -39,6 +39,11 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
         }
     }
 
+    override fun onDestroyView() {
+        (activity as? MainActivity)?.setToolbar(false)
+        super.onDestroyView()
+    }
+
     companion object {
         private const val ARG_SESSION_ID = "sessionId"
 

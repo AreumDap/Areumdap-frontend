@@ -6,14 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.example.areumdap.Data.api.ChatbotApi
+import com.example.areumdap.Data.repository.ChatbotRepository
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.R
 import com.example.areumdap.RVAdapter.RecommendQuestionRVAdapter
 import com.example.areumdap.UI.Character.CharacterViewModel
 import com.example.areumdap.UI.Character.CharacterViewModelFactory
 import com.example.areumdap.UI.Chat.ChatFragment
+import com.example.areumdap.UI.Home.data.RecommendQuestionViewModel
 import com.example.areumdap.databinding.FragmentHomeBinding
-import com.bumptech.glide.Glide
 import com.example.areumdap.domain.model.Category
 import com.example.areumdap.domain.model.RecommendQuestion
 
@@ -25,6 +30,16 @@ class HomeFragment : Fragment() {
     private val viewModel: CharacterViewModel by viewModels {
         CharacterViewModelFactory(RetrofitClient.service)
     }
+
+    private val recommendViewModel: RecommendQuestionViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val api = RetrofitClient.create(ChatbotApi::class.java)
+                return RecommendQuestionViewModel(ChatbotRepository(api)) as T
+            }
+        }
+    }
+
     private lateinit var adapter: RecommendQuestionRVAdapter
 
     override fun onCreateView(
@@ -40,6 +55,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupCharacterObserver()
+        setupRecommendObserver()
 
         viewModel.fetchMyCharacter()
 
@@ -47,17 +63,10 @@ class HomeFragment : Fragment() {
             goToChat(item.text)
         }
         binding.recommendQuestionRv.adapter = adapter
-        adapter.submitList(
-            listOf(
-                RecommendQuestion(1, "오늘 가장 기억에 남는 순간은?", Category.REFLECTION),
-                RecommendQuestion(2, "요즘 가장 고민되는 건?", Category.EMOTION)
-            )
-        )
+        recommendViewModel.fetch()
 
-        // 대화 바로 시작하기 버튼 클릭 시 ChatFragment로 이동
         binding.chatStartButton.setOnClickListener {
             goToChat()
-
         }
     }
 
@@ -66,10 +75,10 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun goToChat(prefill:String?=null){
-        val fragment = ChatFragment().apply{
-            arguments = Bundle().apply{
-                putString("prefill_question" , prefill)
+    private fun goToChat(prefill: String? = null) {
+        val fragment = ChatFragment().apply {
+            arguments = Bundle().apply {
+                putString("prefill_question", prefill)
             }
         }
 
@@ -81,19 +90,42 @@ class HomeFragment : Fragment() {
 
     private fun setupCharacterObserver() {
         viewModel.characterLevel.observe(viewLifecycleOwner) { data ->
-            data?.let {
-                // level 혹은 currentLevel 사용 (GET /me 에서는 level)
-                binding.homeCharacterLevelTv.text = " ${it.level ?: it.currentLevel ?: 0}"
+            data ?: return@observe
 
-                // 캐릭터 이미지 로드
-                Glide.with(this)
-                    .load(it.imageUrl)
-                    .placeholder(R.drawable.ic_character)
-                    .error(R.drawable.ic_character)
-                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(binding.characterIv)
+            binding.homeCharacterLevelTv.text = " ${data.level ?: data.currentLevel ?: 0}"
+
+            Glide.with(this)
+                .load(data.imageUrl)
+                .placeholder(R.drawable.ic_character)
+                .error(R.drawable.ic_character)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
+                .into(binding.characterIv)
+        }
+    }
+
+    private fun setupRecommendObserver() {
+        recommendViewModel.questions.observe(viewLifecycleOwner) { items ->
+            val safeItems = items ?: emptyList()
+            val mapped = safeItems.map {
+                RecommendQuestion(
+                    id = it.userQuestionId,
+                    text = it.content,
+                    category = mapCategory(it.tag)
+                )
             }
+            adapter.submitList(mapped)
+        }
+    }
+
+    private fun mapCategory(tag: String?): Category {
+        return when (tag?.trim()?.uppercase()) {
+            "REFLECTION" -> Category.REFLECTION
+            "RELATION", "RELATIONSHIP" -> Category.RELATIONSHIP
+            "CAREER" -> Category.CAREER
+            "EMOTION" -> Category.EMOTION
+            "ELSE", "ETC" -> Category.ETC
+            else -> Category.ETC
         }
     }
 }

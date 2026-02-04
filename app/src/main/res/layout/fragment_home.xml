@@ -49,7 +49,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/home_character_level_ll"
         app:layout_constraintBottom_toTopOf="@id/character_task_ll"/>
-    
+
     <TextView
         android:id="@+id/chat_start_button"
         android:layout_width="wrap_content"
