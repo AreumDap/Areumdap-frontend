@@ -239,7 +239,7 @@
                     style="@style/TA_Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="대화를 통해 발견한 것"
+                    android:text="대화를 통해 얻은 과제"
                     android:textColor="@color/black"
                     android:layout_marginBottom="20dp"/>
                 
