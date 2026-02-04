@@ -60,7 +60,7 @@ class HomeFragment : Fragment() {
         viewModel.fetchMyCharacter()
 
         adapter = RecommendQuestionRVAdapter { item ->
-            goToChat(item.text)
+            goToChat(item.text, prefillId = item.id)
         }
         binding.recommendQuestionRv.adapter = adapter
         recommendViewModel.fetch()
@@ -75,10 +75,11 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun goToChat(prefill: String? = null) {
+    private fun goToChat(prefill: String? = null,  prefillId: Long? = null) {
         val fragment = ChatFragment().apply {
             arguments = Bundle().apply {
-                putString("prefill_question", prefill)
+                if (!prefill.isNullOrBlank()) putString("prefill_question", prefill)
+                if (prefillId != null) putLong("prefill_question_id", prefillId)
             }
         }
 
