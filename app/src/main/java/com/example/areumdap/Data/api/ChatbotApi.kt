@@ -1,5 +1,7 @@
 package com.example.areumdap.Data.api
 
+import com.example.areumdap.UI.Chat.data.StartChatRequest
+import com.example.areumdap.UI.Chat.data.StartChatResponse
 import com.example.areumdap.UI.Home.data.ApiResponse
 import com.example.areumdap.domain.model.question.GetChatbotRecommendsResponse
 import retrofit2.Response
@@ -15,9 +17,4 @@ interface ChatbotApi {
     suspend fun startChat(
         @Body request: StartChatRequest
     ): Response<ApiResponse<StartChatResponse>>
-
-    @POST("api/chatbot")
-    suspend fun sendMessage(
-        @Body request: SendChatMessageRequest
-    ): Response<ApiResponse<SendChatMessageResponse>>
 }
