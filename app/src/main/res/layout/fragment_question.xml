@@ -26,7 +26,7 @@
             android:id="@+id/question_total_tv"
             android:text=" 00"
             android:textSize="20sp"
-            android:textColor="@color/pink2"
+            android:textColor="?attr/colorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="23dp"/>
 

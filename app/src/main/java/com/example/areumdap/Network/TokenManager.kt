@@ -15,6 +15,7 @@ object TokenManager {
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_SOCIAL_PROVIDER = "social_provider"
     private const val KEY_PROFILE_IMAGE = "profile_image"
+    private const val KEY_FCM_TOKEN = "fcm_token"
 
     private lateinit var prefs: SharedPreferences
 
@@ -86,5 +87,21 @@ object TokenManager {
 
     fun clearAll() {
         prefs.edit().clear().apply()
+    }
+
+    /**
+     * FCM 토큰 저장
+     */
+    fun saveFcmToken(token: String) {
+        prefs.edit()
+            .putString(KEY_FCM_TOKEN, token)
+            .apply()
+    }
+
+    /**
+     * 저장된 FCM 토큰 조회
+     */
+    fun getFcmToken(): String? {
+        return prefs.getString(KEY_FCM_TOKEN, null)
     }
 }
