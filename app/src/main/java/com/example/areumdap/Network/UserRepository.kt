@@ -141,6 +141,14 @@ object UserRepository {
      */
     suspend fun updateFcmToken(token: String): Result<Unit> {
         return try {
+            // 이미 등록된 토큰인지 확인
+            val savedToken = TokenManager.getFcmToken()
+            if (savedToken == token) {
+                // 이미 서버에 등록된 토큰이면 요청을 보내지 않음
+                Log.d(TAG, "이미 등록된 FCM 토큰입니다. 서버 전송 생략.")
+                return Result.success(Unit)
+            }
+
             val response = userApi.registerDevice(
                 DeviceTokenRequest(
                     deviceToken = token,
@@ -150,9 +158,18 @@ object UserRepository {
 
             if (response.isSuccessful) {
                 Log.d(TAG, "FCM 기기 등록 성공")
+                // 성공 시 토큰 저장
+                TokenManager.saveFcmToken(token)
                 Result.success(Unit)
             } else {
                 Log.e(TAG, "FCM 기기 등록 실패: ${response.code()}")
+                // 이미 등록된 토큰이라는 에러(500 등)가 나더라도, 클라이언트 입장에서는
+                // '이미 등록됨'으로 간주하고 저장해서 다음부터 요청 안 보내게 처리
+                if (response.code() == 500) {
+                     Log.d(TAG, "서버 에러(중복 가능성) -> 로컬에 토큰 저장 처리")
+                     TokenManager.saveFcmToken(token)
+                     return Result.success(Unit)
+                }
                 Result.failure(Exception("기기 등록 실패"))
             }
         } catch (e: Exception) {

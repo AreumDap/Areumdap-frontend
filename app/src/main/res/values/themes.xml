@@ -166,4 +166,27 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <!-- 계절 테마 -->
+    <style name="Theme.AreumDap.Spring" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/pink2</item>
+        <item name="colorPrimaryVariant">@color/pink1</item>
+    </style>
+
+    <style name="Theme.AreumDap.Summer" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/green2</item>
+        <item name="colorPrimaryVariant">@color/green1</item>
+    </style>
+
+    <style name="Theme.AreumDap.Autumn" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/yellow2</item>
+        <item name="colorPrimaryVariant">@color/yellow1</item>
+    </style>
+
+    <style name="Theme.AreumDap.Winter" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/blue2</item>
+        <item name="colorPrimaryVariant">@color/blue1</item>
+    </style>
+
+
+
 </resources>

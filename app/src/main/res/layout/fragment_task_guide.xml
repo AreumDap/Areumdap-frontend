@@ -87,13 +87,13 @@
             style="@style/TA_Body2_bold"
             app:cornerRadius="100dp"
 
-            app:strokeColor="@color/pink2"
+            app:strokeColor="?attr/colorPrimary"
             app:strokeWidth="1dp"
             app:elevation="0dp"
             android:stateListAnimator="@null"
 
             app:backgroundTint="@color/white"
-            android:textColor="@color/pink2"/>
+            android:textColor="?attr/colorPrimary"/>
 
 
         <Space
@@ -111,8 +111,8 @@
 
             android:textColor="@color/white"
             app:cornerRadius="100dp"
-
-            app:elevation="0dp"/>
+            app:backgroundTint="?attr/colorPrimary"
+            app:elevation="0dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
