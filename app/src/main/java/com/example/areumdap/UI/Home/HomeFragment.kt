@@ -75,7 +75,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun goToChat(prefill: String? = null,  prefillId: Long? = null) {
+    private fun goToChat(prefill: String? = null, prefillId: Long? = null) {
         val fragment = ChatFragment().apply {
             arguments = Bundle().apply {
                 if (!prefill.isNullOrBlank()) putString("prefill_question", prefill)
@@ -90,28 +90,29 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCharacterObserver() {
-    viewModel.characterLevel.observe(viewLifecycleOwner) { data ->
-        data?.let {
-            // level 혹은 currentLevel 사용 (GET /me 에서는 level)
-            binding.homeCharacterLevelTv.text = " ${it.level ?: it.currentLevel ?: 0}"
+        viewModel.characterLevel.observe(viewLifecycleOwner) { data ->
+            data ?: return@observe
 
-            // 캐릭터 이미지 로드
+            binding.homeCharacterLevelTv.text = " ${data.level ?: data.currentLevel ?: 0}"
+
             Glide.with(this)
-                .load(it.imageUrl)
+                .load(data.imageUrl)
+                .placeholder(R.drawable.ic_character)
                 .error(R.drawable.ic_character)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .into(binding.characterIv)
 
-            // 이미지 미리 불러오기 (다른 화면 이동 시 즉시 표시 위함)
             Glide.with(this)
-                .load(it.imageUrl)
+                .load(data.imageUrl)
                 .preload()
         }
     }
-}
 
     private fun setupRecommendObserver() {
         recommendViewModel.questions.observe(viewLifecycleOwner) { apiQuestions ->
-            val domainQuestions = apiQuestions.map { apiQuestion ->
+            val safeItems = apiQuestions ?: emptyList()
+            val domainQuestions = safeItems.map { apiQuestion ->
                 RecommendQuestion(
                     id = apiQuestion.userQuestionId,
                     text = apiQuestion.content,
