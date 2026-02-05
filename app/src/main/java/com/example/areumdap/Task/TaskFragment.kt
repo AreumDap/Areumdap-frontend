@@ -44,8 +44,6 @@ class TaskFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
 
-        // 초기 데이터 로드 (CAREER 태그로)
-        viewModel.fetchCompletedMissions(tag = "CAREER")
     }
 
     private fun setupSpinner() {
@@ -55,11 +53,11 @@ class TaskFragment : Fragment() {
         val tagMap = mapOf(
             "전체" to null,
             "진로" to "CAREER",
-            "관계" to "RELATIONSHIP",
+            "관계" to "RELATION",
             "자기성찰" to "SELF_REFLECTION",
             "감정" to "EMOTION",
             "성장" to "GROWTH",
-            "기타" to "ETC"
+            "기타" to "ELSE"
         )
 
         val spinnerAdapter = object : ArrayAdapter<String>(
@@ -100,6 +98,11 @@ class TaskFragment : Fragment() {
             val dataTaskFragment = DataTaskFragment()
             val bundle = Bundle()
             bundle.putInt("missionId", missionItem.missionId)
+            bundle.putInt("reward", missionItem.reward) // reward 전달
+            bundle.putString("title", missionItem.title) // title 전달 (깜빡임 방지)
+            bundle.putString("tag", missionItem.tag)   // tag 전달 (깜빡임 방지)
+            bundle.putBoolean("showTip", false) // 아카이브 페이지에서는 팁 숨김
+            bundle.putBoolean("isCompleted", true) // 완료된 과제
             dataTaskFragment.arguments = bundle
 
             requireActivity().supportFragmentManager.beginTransaction()

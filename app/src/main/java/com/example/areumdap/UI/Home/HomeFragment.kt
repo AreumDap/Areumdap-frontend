@@ -88,11 +88,13 @@ class HomeFragment : Fragment() {
                 // 캐릭터 이미지 로드
                 Glide.with(this)
                     .load(it.imageUrl)
-                    .placeholder(R.drawable.ic_character)
                     .error(R.drawable.ic_character)
-                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .into(binding.characterIv)
+
+                // 이미지 미리 불러오기 (다른 화면 이동 시 즉시 표시 위함)
+                Glide.with(this)
+                    .load(it.imageUrl)
+                    .preload()
             }
         }
     }

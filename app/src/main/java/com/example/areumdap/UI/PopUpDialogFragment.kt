@@ -31,7 +31,14 @@ class PopUpDialogFragment : DialogFragment() {
         binding = ActivityDialogBinding.inflate(inflater,container,false)
 
         binding.tvTitle.text = arguments?.getString("title") ?: "제목 없음"
-        binding.tvDesc.text = arguments?.getString("subtitle") ?: ""
+// ✅ subtitle이 비어있으면 TextView 숨기기
+        val subtitle = arguments?.getString("subtitle") ?: ""
+        if (subtitle.isEmpty()) {
+            binding.tvDesc.visibility = View.GONE
+        } else {
+            binding.tvDesc.visibility = View.VISIBLE
+            binding.tvDesc.text = subtitle
+        }
         binding.btnContinue.text = arguments?.getString("btnleft") ?: "이전으로"
         binding.btnRight.text = arguments?.getString("btnright") ?: "확인"
 

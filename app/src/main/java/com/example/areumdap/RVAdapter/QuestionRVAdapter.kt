@@ -22,13 +22,9 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = questionList[position]
-        // 테스트용
         holder.binding.itemQuestionTaskTv.text = item.content
         holder.binding.taskCardView.translationX = 0f
 
-        // 태그별 스타일 적용 (tag 필드가 QuestionItem에 있다고 가정)
-        // QuestionItem에 tag 필드가 없으면 추가해야 함. TaskData.kt 확인 필요.
-        // 일단 TaskRVAdapter와 동일한 로직 적용 시도.
         applyTagStyle(holder, item.tag)
 
         holder.binding.taskCardView.setOnClickListener {
@@ -64,9 +60,7 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
     }
 
     override fun getItemCount(): Int = questionList.size
-    //아이템 삭제 대신 리스너 호출로 변경됨
     fun removeItem(position: Int){
-        // viewModel에서 삭제 후 updateData가 호출되므로 여기서는 아무것도 안함
     }
 
     fun updateData(newData: List<QuestionItem>) {
@@ -86,11 +80,11 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
                 textColorRes = com.example.areumdap.R.color.career2
                 iconRes = com.example.areumdap.R.drawable.ic_career
             }
-            "RELATIONSHIP" -> {
+            "RELATIONSHIP", "RELATION" -> {
                 textColorRes = com.example.areumdap.R.color.relationship2
                 iconRes = com.example.areumdap.R.drawable.ic_relationship
             }
-            "SELF_REFLECTION" -> {
+            "REFLECTION", "SELF_REFLECTION" -> {
                 textColorRes = com.example.areumdap.R.color.reflection2
                 iconRes = com.example.areumdap.R.drawable.ic_reflection
             }
@@ -102,7 +96,7 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
                 textColorRes = com.example.areumdap.R.color.growth2
                 iconRes = com.example.areumdap.R.drawable.ic_growth
             }
-            "ETC" -> {
+            "ETC", "OTHER", "OTHERS", "ELSE" -> {
                 textColorRes = com.example.areumdap.R.color.etc2
                 iconRes = com.example.areumdap.R.drawable.ic_etc
             }

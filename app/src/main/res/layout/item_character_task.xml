@@ -76,7 +76,7 @@
             android:id="@+id/task_complete_btn"
             android:layout_width="80dp"
             android:layout_height="40dp"
-            android:text="과제 완료"
+            android:text="과제 확인"
             style="@style/task_complete_tv"
             android:background="@drawable/bg_task_complete_btn"
             app:layout_constraintEnd_toEndOf="parent"

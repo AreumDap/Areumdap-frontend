@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout
         android:id="@+id/character_level_ll"
@@ -48,7 +49,7 @@
         android:layout_height="25dp"/>
     
     <ImageView
-        android:src="@drawable/ic_character"
+        tools:src="@drawable/ic_character"
         android:id="@+id/character_iv"
         android:layout_width="211dp"
         android:layout_height="165dp"
@@ -137,13 +138,12 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/character_next_level_btn"
-        android:layout_width="98dp"
+        android:layout_width="wrap_content"
         android:layout_height="28dp"
-        style="@style/TA_Caption1"
+        style="@style/character_next_tv"
         android:text="다음 단계 확인"
         android:visibility="gone"
         android:drawableEnd="@drawable/ic_next_right"
-        android:textColor="@color/black"
         android:paddingHorizontal="7dp"
         app:layout_constraintEnd_toEndOf="@+id/character_level_cl"
         app:layout_constraintBottom_toTopOf="@id/character_level_cl"
@@ -183,9 +183,8 @@
                 android:gravity="center"
                 android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:background="@drawable/bg_spinner"
-                android:layout_marginTop="30dp"
-                android:visibility="gone"
-                android:paddingStart="18dp"
+                android:layout_marginTop="20dp"
+                android:paddingStart="10dp"
                 android:paddingEnd="5dp"
                 android:spinnerMode="dropdown"/>
 

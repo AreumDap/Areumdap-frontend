@@ -1,5 +1,6 @@
 package com.example.areumdap.UI.Character.Data
 
+import com.example.areumdap.Task.MissionItem
 import com.google.gson.annotations.SerializedName
 
 data class HistoryItem(
@@ -8,7 +9,7 @@ data class HistoryItem(
     @SerializedName("achievedDate")
     val achievedDate: String,
     @SerializedName("imageUrl")
-    val imageUrl: String
+    val imageUrl: String?
 )
 
 data class CharacterHistoryResponse(
@@ -23,22 +24,30 @@ data class CharacterHistoryResponse(
 data class CharacterLevelUpResponse(
     @SerializedName("characterId")
     val characterId: Int,
-    @SerializedName("characterName") // POST /level 에서는 characterName
+    @SerializedName("characterName")
     val characterName: String?,
-    @SerializedName("nickname") // GET /me 에서는 nickname
+    @SerializedName("nickname")
     val nickname: String?,
     @SerializedName("previousLevel")
     val previousLevel: Int?,
     @SerializedName("currentLevel")
     val currentLevel: Int?,
-    @SerializedName("level") // GET /me 에서는 level
+    @SerializedName("level")
     val level: Int?,
     @SerializedName("currentXp")
     val currentXp: Int,
-    @SerializedName("requiredXpForNextLevel") // POST /level
+    @SerializedName("requiredXpForNextLevel")
     val requiredXpForNextLevel: Int?,
-    @SerializedName("goalXp") // GET /me
+    @SerializedName("goalXp")
     val goalXp: Int?,
     @SerializedName("imageUrl")
-    val imageUrl: String?
-)
+    val imageUrl: String?,
+    @SerializedName("missions")
+    val missions: List<MissionItem>? = null
+) {
+    val maxXp: Int
+        get() = goalXp ?: requiredXpForNextLevel ?: 0
+        
+    val displayLevel: Int
+        get() = currentLevel ?: level ?: 0
+}

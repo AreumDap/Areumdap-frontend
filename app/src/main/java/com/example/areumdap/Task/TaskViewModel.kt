@@ -40,28 +40,36 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
     private var questionsNextCursorId: Int? = null
 
     // 완료된 과제 조회
-    fun fetchCompletedMissions(tag: String? = null, size: Int = 100) {
+    fun fetchCompletedMissions(tag: String? = null, size: Int = 20) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val response = apiService.getCompletedMissions(
                     tag = tag,
-                    cursorTime = getCurrentTimeISO(), // 현재 시간
+                    cursorTime = getCurrentTimeISO(),
                     cursorId = 0,
                     size = size
                 )
 
+                Log.d("TaskViewModel", "fetchCompletedMissions Response Code: ${response.code()}")
                 if (response.isSuccessful) {
-                    response.body()?.let { body ->
-                        _totalMissionCount.value = body.totalCount
+                    val body = response.body()
+                    Log.d("TaskViewModel", "isSuccess: ${body?.isSuccess}")
+                    body?.data?.let { data ->
+                        Log.d("TaskViewModel", "Total: ${data.totalCount}, Missions: ${data.missions.size}")
+                        _totalMissionCount.value = data.totalCount
 
-                        _completedMissions.value = body.missions
-                        nextCursorTime = body.nextCursorTime
-                        nextCursorId = body.nextCursorId
-                        _hasNext.value = body.hasNext
+                        _completedMissions.value = data.missions
+                        nextCursorTime = data.nextCursorTime
+                        nextCursorId = data.nextCursorId
+                        _hasNext.value = data.hasNext
+                    } ?: run {
+                        Log.e("TaskViewModel", "Data is null!")
                     }
                 } else {
-                    _errorMessage.value = "서버 에러: ${response.code()}"
+                    val errorBody = response.errorBody()?.string() ?: ""
+                    Log.e("TaskViewModel", "Error Body: $errorBody")
+                    _errorMessage.value = "서버 에러(${response.code()}): $errorBody"
                 }
             } catch (e: Exception) {
                 _errorMessage.value = "네트워크 오류가 발생했습니다."
@@ -86,7 +94,8 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                 )
 
                 if (response.isSuccessful) {
-                    response.body()?.let { data ->
+                    val body = response.body()
+                    body?.data?.let { data ->
                         val currentList = _completedMissions.value?.toMutableList() ?: mutableListOf()
                         currentList.addAll(data.missions)
                         _completedMissions.value = currentList
@@ -118,13 +127,14 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
 
                 Log.d("API_CHECK", "Status Code: ${response.code()}")
 
+                Log.d("TaskViewModel", "fetchSavedQuestions Response Code: ${response.code()}")
+
                 if (response.isSuccessful) {
-                    response.body()?.let { responseBody ->
-                        val data = responseBody.data
+                    val responseBody = response.body()
+                    responseBody?.data?.let { data ->
                         _questionTotalCount.value = data.totalCount
 
-                        Log.d("API_CHECK", "Total Count from Server: ${data.totalCount}")
-                        Log.d("API_CHECK", "Questions Size: ${data.questions.size}")
+                        Log.d("TaskViewModel", "Total Questions: ${data.totalCount}, Loaded: ${data.questions.size}")
 
                         _savedQuestions.value = data.questions
                         questionsNextCursorTime = data.nextCursorTime
@@ -132,9 +142,9 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                         _questionsHasNext.value = data.hasNext
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("API_CHECK", "Server Error Body: $errorBody")
-                    _errorMessage.value = "서버 에러: ${response.code()}"
+                    val errorBody = response.errorBody()?.string() ?: ""
+                    Log.e("TaskViewModel", "Question Server Error: ${response.code()}, Body: $errorBody")
+                    _errorMessage.value = "서버 에러(${response.code()}): $errorBody"
                 }
             } catch (e: Exception) {
                 Log.e("QUESTION_API_ERROR", "Exception: ${e.message}")
@@ -160,9 +170,8 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                 )
 
                 if (response.isSuccessful) {
-                    response.body()?.let { responseBody ->
-                        val data = responseBody.data
-
+                    val responseBody = response.body()
+                    responseBody?.data?.let { data ->
                         val currentList = _savedQuestions.value?.toMutableList() ?: mutableListOf()
                         currentList.addAll(data.questions)
                         _savedQuestions.value = currentList

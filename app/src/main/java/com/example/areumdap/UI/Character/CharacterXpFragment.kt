@@ -1,6 +1,7 @@
 package com.example.areumdap.UI.Character
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import com.example.areumdap.R
@@ -8,9 +9,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.areumdap.Network.RetrofitClient
+import com.bumptech.glide.Glide
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.databinding.FragmentCharacterXpBinding
-import com.bumptech.glide.Glide
 import kotlin.getValue
 
 class CharacterXpFragment : Fragment() {
@@ -37,19 +38,20 @@ class CharacterXpFragment : Fragment() {
         viewModel.fetchCharacterLevel()
 
         viewModel.characterLevel.observe(viewLifecycleOwner){ data ->
-            data?.let{
-                // 성장한 레벨 (currentLevel 혹은 level 사용)
-                binding.characterXpLevelTv.text = "${it.currentLevel ?: it.level ?: 0}"
-                // 다음 성장 버튼을 위해 필요한 경험치 (requiredXpForNextLevel 혹은 goalXp 사용)
-                binding.characterNextXpTv.text = "${it.requiredXpForNextLevel ?: it.goalXp ?: 0}"
+            data?.let {
 
-                // 캐릭터 이미지 로드
+                // 진화 후의 정보를 바로 보여준다.
+                // 레벨: 현재 달성한 레벨
+                binding.characterXpLevelTv.text = "${it.displayLevel}"
+                
+                // 필요 경험치: 다음 단계로 가기 위한 목표치 (maxXp)
+                binding.characterNextXpTv.text = "${it.maxXp}"
+
+                // 이미지: 진화된 캐릭터 이미지
+                binding.characterXpIv.visibility = View.VISIBLE
                 Glide.with(this)
                     .load(it.imageUrl)
-                    .placeholder(R.drawable.ic_character)
                     .error(R.drawable.ic_character)
-                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
                     .into(binding.characterXpIv)
             }
         }
@@ -58,6 +60,14 @@ class CharacterXpFragment : Fragment() {
             val transaction = parentFragmentManager.beginTransaction()
             transaction.replace(R.id.main_frm, CharacterFragment())
             transaction.commit()
+        }
+        
+        // 에러 메시지 관찰
+        viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
+            msg?.let { 
+                 android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_SHORT).show()
+                 Log.e("CharacterXpFragment", "Error occurred: $it")
+            }
         }
     }
 }
