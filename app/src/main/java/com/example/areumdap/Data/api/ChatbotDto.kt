@@ -23,3 +23,5 @@ data class SendChatMessageResponse(
     val userChatThreadId: Long,
     val isSessionEnd: Boolean
 )
+
+

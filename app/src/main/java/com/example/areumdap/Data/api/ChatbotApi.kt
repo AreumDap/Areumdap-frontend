@@ -4,8 +4,10 @@ import com.example.areumdap.UI.Home.data.ApiResponse
 import com.example.areumdap.domain.model.question.GetChatbotRecommendsResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ChatbotApi {
     @GET("api/chatbot/recommend")
@@ -20,4 +22,9 @@ interface ChatbotApi {
     suspend fun sendMessage(
         @Body request: SendChatMessageRequest
     ): Response<ApiResponse<SendChatMessageResponse>>
+
+    @DELETE("api/chatbot")
+    suspend fun stopChat(
+        @Query("UserChatThreadId") threadId: Long
+    ) : Response<ApiResponse<Unit>>
 }
