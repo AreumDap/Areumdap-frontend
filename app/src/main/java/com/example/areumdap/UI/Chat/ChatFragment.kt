@@ -30,6 +30,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         adapter = ChatMessageRVAdapter()
         val prefill = arguments?.getString("prefill_question")
         val prefillQuestionId = arguments?.getLong("prefill_question_id", -1L) ?: -1L
+        Log.d("ChatFragment", "prefill=$prefill, prefillQuestionId=$prefillQuestionId")
         if(!prefill.isNullOrBlank()){
             vm.seedPrefillQuestion(prefill)
             arguments?.remove("prefill_question")
