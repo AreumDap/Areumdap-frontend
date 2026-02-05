@@ -21,9 +21,6 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
     }
 
 
-
-    // ... (omitted)
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = questionList[position]
 
@@ -34,16 +31,16 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
             // 질문 제목 반영
             itemArchiveTaskTv.text = item.title
 
-            // 2. 날짜 및 요일 반영 (예: 2026.02.02 (월))
+            // 날짜 및 요일 반영 (예: 2026.02.02 (월))
             itemArchiveDateTv.text = formatDateWithDay(item.completedAt)
 
-            // 3. 경험치 반영 (reward 필드 사용)
+            // 경험치 반영 (reward 필드 사용)
             itemArchiveXpTv.text = item.reward.toString()
 
-            // 4. 태그별 스타일 적용
+            // 태그별 스타일 적용
             applyTagStyle(holder, item.tag)
 
-            // 카드 클릭 리스너 (스와이프 상태 확인 및 상세 페이지 이동)
+            // 카드 클릭 리스너
             taskCardView.setOnClickListener {
                 val currentX = it.translationX
                 if (currentX < 0f) {
@@ -76,25 +73,22 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
 
     override fun getItemCount(): Int = questionList.size
 
-    fun removeItem(position: Int) {
-         // viewModel에서 삭제 후 updateData가 호출되므로 여기서는 아무것도 안함
-    }
-
     fun updateData(newData: List<MissionItem>) {
         questionList.clear()
         questionList.addAll(newData)
         notifyDataSetChanged()
     }
 
-    private fun formatDateWithDay(dateString: String): String {
+    private fun formatDateWithDay(dateString: String?): String {
+        if (dateString.isNullOrEmpty()) return ""
         return try {
-            // 1. 서버에서 오는 형식 (밀리초 .SSS와 Z 포함)
+            // 서버에서 오는 형식 (밀리초 .SSS와 Z 포함)
             val inputFormat = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.getDefault())
             inputFormat.timeZone = java.util.TimeZone.getTimeZone("UTC")
 
             val date = inputFormat.parse(dateString)
 
-            // 2. 출력할 형식: 2026.02.02 (월)
+            // 출력할 형식: 2026.02.02 (월)
             val outputFormat = java.text.SimpleDateFormat("yyyy.MM.dd (E)", java.util.Locale.KOREA)
 
             date?.let {
@@ -102,7 +96,7 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
             } ?: dateString
 
         } catch (e: Exception) {
-            dateString.split("T")[0].replace("-", ".")
+            dateString.split("T").getOrNull(0)?.replace("-", ".") ?: ""
         }
     }
 
@@ -118,11 +112,11 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
                 textColorRes = com.example.areumdap.R.color.career2
                 iconRes = com.example.areumdap.R.drawable.ic_career
             }
-            "RELATIONSHIP" -> {
+            "RELATIONSHIP", "RELATION" -> {
                 textColorRes = com.example.areumdap.R.color.relationship2
                 iconRes = com.example.areumdap.R.drawable.ic_relationship
             }
-            "SELF_REFLECTION" -> {
+            "REFLECTION", "SELF_REFLECTION" -> {
                 textColorRes = com.example.areumdap.R.color.reflection2
                 iconRes = com.example.areumdap.R.drawable.ic_reflection
             }
@@ -134,7 +128,7 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
                 textColorRes = com.example.areumdap.R.color.growth2
                 iconRes = com.example.areumdap.R.drawable.ic_growth
             }
-            "ETC" -> {
+            "ETC", "OTHER", "OTHERS", "ELSE" -> {
                 textColorRes = com.example.areumdap.R.color.etc2
                 iconRes = com.example.areumdap.R.drawable.ic_etc
             }
@@ -149,7 +143,8 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
         val textColor = androidx.core.content.ContextCompat.getColor(context, textColorRes)
         binding.itemArchiveTaskTv.setTextColor(textColor)
 
-        // 아이콘 적용
+        // 아이콘 및 체크 표시 색상 적용
         binding.itemArchiveTaskIv.setImageResource(iconRes)
+        binding.itemArchiveCheckIv.setColorFilter(textColor)
     }
 }

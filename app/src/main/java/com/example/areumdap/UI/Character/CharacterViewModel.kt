@@ -25,6 +25,14 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
+    // 선택된 태그 (필터링용)
+    private val _selectedTag = MutableLiveData<String?>("전체")
+    val selectedTag: LiveData<String?> = _selectedTag
+
+    fun setSelectedTag(tag: String?) {
+        _selectedTag.value = tag
+    }
+
     //캐릭터 성장 히스토리 데이터를 가져오는 함수
     fun fetchCharacterHistory() {
         viewModelScope.launch {
@@ -49,15 +57,22 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
             _isLoading.value = true
             try {
                 val response = apiService.postCharacterLevel()
+                
                 if(response.isSuccessful){
                     val body = response.body()
+                    Log.d("DEBUG_API", "fetchCharacterLevel Body: $body")
                     if (body?.data != null) {
                         _characterLevel.value = body.data
+                    } else {
+                        Log.e("DEBUG_API", "fetchCharacterLevel Body Data is NULL")
                     }
                 } else{
-                    _errorMessage.value = "레벨 정보를 가져오는데 실패했습니다"
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("DEBUG_API", "fetchCharacterLevel Error: $errorBody")
+                    _errorMessage.value = "레벨 정보를 가져오는데 실패했습니다 (${response.code()})"
                 }
             }  catch (e: Exception) {
+                Log.e("DEBUG_API", "fetchCharacterLevel Exception", e)
                 _errorMessage.value = "네트워크 오류가 발생했습니다"
             } finally {
                 _isLoading.value = false
@@ -84,5 +99,21 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
                 _isLoading.value = false
             }
         }
+    }
+
+    // 캐릭터 경험치 로컬 업데이트
+    fun addXp(amount: Int) {
+        val currentData = _characterLevel.value ?: return
+        val currentXp = currentData.currentXp
+        val maxXp = currentData.maxXp
+        
+        // 경험치 증가
+        var newXp = currentXp + amount
+        if (maxXp > 0 && newXp > maxXp) {
+            newXp = maxXp
+        }
+        
+        val newData = currentData.copy(currentXp = newXp)
+        _characterLevel.value = newData
     }
 }

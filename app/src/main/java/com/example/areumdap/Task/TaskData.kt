@@ -18,8 +18,14 @@ data class MissionItem(
     @SerializedName("reward")
     val reward: Int,
 
+    @SerializedName("dDay")
+    val dDay: Int?,
+
+    @SerializedName("isCompleted")
+    val isCompleted: Boolean? = false,
+
     @SerializedName("completedAt")
-    val completedAt: String
+    val completedAt: String?
 )
 
 // 완료된 과제 조회 api 응답
@@ -55,6 +61,33 @@ data class CompletedMissionsRequest(
     val size: Int = 10
 )
 
+// 미션 상세 조회 응답
+data class MissionDetailResponse(
+    @SerializedName("missionId")
+    val missionId: Int,
+
+    @SerializedName("tag")
+    val tag: String,
+
+    @SerializedName("title")
+    val title: String,
+
+    @SerializedName("description")
+    val description: String?,
+
+    @SerializedName("rewardXp")
+    val rewardXp: Int,
+
+    @SerializedName("dDay")
+    val dDay: Int?,
+
+    @SerializedName("status")
+    val status: String?,
+
+    @SerializedName("guide")
+    val guide: String?
+)
+
 // 개별 질문 아이템
 data class QuestionItem(
     @SerializedName("userQuestionId")
@@ -72,22 +105,8 @@ data class QuestionItem(
     @SerializedName("createdAt")
     val createdAt: String
 )
-// 저장한 질문 목록 조회 api응답
+// 저장한 질문 목록 조회 api응답 (BaseResponse의 data 필드로 매핑됨)
 data class SavedQuestionsResponse(
-    @SerializedName("isSuccess")
-    val isSuccess: Boolean,
-
-    @SerializedName("code")
-    val code: String,
-
-    @SerializedName("message")
-    val message: String,
-
-    @SerializedName("data")
-    val data: QuestionData
-)
-
-data class QuestionData(
     @SerializedName("totalCount")
     val totalCount: Int,
 

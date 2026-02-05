@@ -1,6 +1,7 @@
 package com.example.areumdap.UI.Character
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,7 +36,6 @@ class CharacterHistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val apiService = RetrofitClient.service
-
         val factory = CharacterViewModelFactory(apiService)
         viewModel = ViewModelProvider(this, factory).get(CharacterViewModel::class.java)
 
@@ -44,34 +44,75 @@ class CharacterHistoryFragment : Fragment() {
         setupViewModel()
 
         viewModel.fetchCharacterHistory()
+        viewModel.fetchMyCharacter()
     }
     private fun setupViewModel(){
-        viewModel = ViewModelProvider(this).get(CharacterViewModel::class.java)
+        viewModel.characterLevel.observe(viewLifecycleOwner) { levelData ->
+            levelData?.imageUrl?.let { url ->
+                // 상단 메인 캐릭터 이미지 로드
+                Glide.with(this)
+                    .load(url)
+                    .error(R.drawable.ic_character)
+                    .into(binding.characterHistoryIv)
+            }
+            updateCombinedHistory()
+        }
 
         viewModel.historyData.observe(viewLifecycleOwner){ response ->
             response?.let{
                 binding.pastContentTv.text = it.pastDescription ?: ""
                 binding.presentContentTv.text = it.presentDescription ?: ""
-
-                // 리사이클러뷰 데이터 갱신
-                historyAdapter.updateData(it.historyList ?: emptyList())
-
-                // 상단 메인 캐릭터 이미지 로드 (가장 최근 히스토리 아이템의 이미지 사용)
-                it.historyList?.lastOrNull()?.imageUrl?.let { url ->
-                    Glide.with(this)
-                        .load(url)
-                        .placeholder(R.drawable.ic_character)
-                        .error(R.drawable.ic_character)
-                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
-                        .into(binding.characterHistoryIv)
+                
+                // 히스토리 목록 이미지들 미리 불러오기
+                it.historyList?.forEach { historyItem ->
+                    historyItem.imageUrl?.let { url ->
+                        Glide.with(this).load(url).preload()
+                    }
                 }
+                updateCombinedHistory()
             }
         }
-        // 예외처리
-        viewModel.errorMessage.observe(viewLifecycleOwner){ msg ->
-        }
     }
+
+    private fun updateCombinedHistory() {
+        val historyItems = viewModel.historyData.value?.historyList ?: emptyList()
+        val currentLevelData = viewModel.characterLevel.value
+
+        // 레벨별로 아이템을 저장할 맵
+        val levelMap = mutableMapOf<Int, com.example.areumdap.UI.Character.Data.HistoryItem>()
+        //  히스토리 데이터
+        historyItems.forEach { item ->
+            levelMap[item.level] = item
+        }
+
+        // 현재 레벨 데이터
+        currentLevelData?.let { current ->
+            val level = current.level ?: current.currentLevel ?: 0
+            if (level > 0 || current.imageUrl != null) {
+                levelMap[level] = com.example.areumdap.UI.Character.Data.HistoryItem(
+                    level = level,
+                    achievedDate = "", 
+                    imageUrl = current.imageUrl
+                )
+            }
+        }
+
+        val combinedList = mutableListOf<com.example.areumdap.UI.Character.Data.HistoryItem>()
+        val maxLevelInData = levelMap.keys.maxOrNull() ?: 1
+        val maxLevelToShow = maxOf(5, maxLevelInData)
+
+        for (level in 1..maxLevelToShow) {
+            val item = levelMap[level] ?: com.example.areumdap.UI.Character.Data.HistoryItem(
+                level = level,
+                achievedDate = "",
+                imageUrl = null
+            )
+            combinedList.add(item)
+        }
+
+        historyAdapter.updateData(combinedList)
+    }
+
     private fun setupRecyclerView(){
         historyAdapter = CharacterHistoryRVAdapter(emptyList())
         binding.characterHistoryRv.apply{

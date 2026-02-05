@@ -99,11 +99,11 @@ class QuestionFragment : Fragment() {
         val tagMap = mapOf(
             "전체" to null,
             "진로" to "CAREER",
-            "관계" to "RELATIONSHIP",
+            "관계" to "RELATION",
             "자기성찰" to "SELF_REFLECTION",
             "감정" to "EMOTION",
             "성장" to "GROWTH",
-            "기타" to "ETC"
+            "기타" to "ELSE"
         )
 
         val spinnerAdapter = object : ArrayAdapter<String>(

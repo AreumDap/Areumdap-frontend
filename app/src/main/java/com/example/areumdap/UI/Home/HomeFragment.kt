@@ -90,34 +90,27 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupCharacterObserver() {
-        viewModel.characterLevel.observe(viewLifecycleOwner) { data ->
-            data ?: return@observe
+    viewModel.characterLevel.observe(viewLifecycleOwner) { data ->
+        data?.let {
+            // level 혹은 currentLevel 사용 (GET /me 에서는 level)
+            binding.homeCharacterLevelTv.text = " ${it.level ?: it.currentLevel ?: 0}"
 
-            binding.homeCharacterLevelTv.text = " ${data.level ?: data.currentLevel ?: 0}"
-
+            // 캐릭터 이미지 로드
             Glide.with(this)
-                .load(data.imageUrl)
+                .load(it.imageUrl)
                 .placeholder(R.drawable.ic_character)
                 .error(R.drawable.ic_character)
                 .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .into(binding.characterIv)
-        }
-    }
 
-    private fun setupRecommendObserver() {
-        recommendViewModel.questions.observe(viewLifecycleOwner) { items ->
-            val safeItems = items ?: emptyList()
-            val mapped = safeItems.map {
-                RecommendQuestion(
-                    id = it.userQuestionId,
-                    text = it.content,
-                    category = mapCategory(it.tag)
-                )
-            }
-            adapter.submitList(mapped)
+            // 이미지 미리 불러오기 (다른 화면 이동 시 즉시 표시 위함)
+            Glide.with(this)
+                .load(it.imageUrl)
+                .preload()
         }
     }
+}
 
     private fun mapCategory(tag: String?): Category {
         return when (tag?.trim()?.uppercase()) {
