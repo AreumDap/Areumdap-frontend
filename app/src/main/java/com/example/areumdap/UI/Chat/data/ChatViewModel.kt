@@ -124,7 +124,6 @@ class ChatViewModel(
             if (res.isSuccessful) {
                 val wrapper = res.body()
                 val data = wrapper?.data
-                Log.d("ChatViewModel", "startChatInternal wrapper=$wrapper")
 
                 if (data == null) {
                     Log.e("ChatViewModel", "startChatInternal success but data=null")
