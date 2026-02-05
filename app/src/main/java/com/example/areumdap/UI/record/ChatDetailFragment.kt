@@ -18,7 +18,7 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
         // RV 연결
         val binding = FragmentChatDetailBinding.bind(view)
         val adapter = ChatDetailRVAdapter()
-        binding.chatRv.adapter = adapter  // 너 RV id로 바꿔
+        binding.chatRv.adapter = adapter
 
         // 더미 메시지 세팅
         binding.chatRv.layoutManager = LinearLayoutManager(requireContext())
@@ -37,6 +37,11 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
                 .addToBackStack(null)
                 .commit()
         }
+    }
+
+    override fun onDestroyView() {
+        (activity as? MainActivity)?.setToolbar(false)
+        super.onDestroyView()
     }
 
     companion object {

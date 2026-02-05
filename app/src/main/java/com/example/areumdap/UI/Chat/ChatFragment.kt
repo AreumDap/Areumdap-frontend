@@ -1,12 +1,10 @@
 package com.example.areumdap.UI.Chat
 
-import android.R.attr.fragment
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.util.Log
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -16,9 +14,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.areumdap.R
 import com.example.areumdap.RVAdapter.ChatMessageRVAdapter
+import com.example.areumdap.UI.Chat.data.ChatViewModel
 import com.example.areumdap.UI.MainActivity
-import com.example.areumdap.databinding.FragmentChatBinding
-import com.example.areumdap.UI.Chat.ChatViewModel
 import com.example.areumdap.UI.PopUpDialogFragment
 import kotlinx.coroutines.launch
 
@@ -32,6 +29,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         super.onViewCreated(view, savedInstanceState)
         adapter = ChatMessageRVAdapter()
         val prefill = arguments?.getString("prefill_question")
+        val prefillQuestionId = arguments?.getLong("prefill_question_id", -1L) ?: -1L
+        Log.d("ChatFragment", "prefill=$prefill, prefillQuestionId=$prefillQuestionId")
         if(!prefill.isNullOrBlank()){
             vm.seedPrefillQuestion(prefill)
             arguments?.remove("prefill_question")
@@ -39,6 +38,12 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             showExitDialog()
+        }
+
+
+
+        if (!prefill.isNullOrBlank() && prefillQuestionId != -1L){
+            vm.startChat(prefill, prefillQuestionId)
         }
 
         val rv = view.findViewById<RecyclerView>(R.id.chat_rv)
@@ -126,4 +131,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
         dialog.show(parentFragmentManager, "chat_end_dialog")
     }
+
+
+
 }

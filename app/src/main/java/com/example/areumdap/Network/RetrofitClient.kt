@@ -1,5 +1,7 @@
 package com.example.areumdap.Network
 
+import com.example.areumdap.Data.api.ChatbotApi
+import com.example.areumdap.Data.api.MissionApiService
 import com.example.areumdap.Task.TaskApiService
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -14,6 +16,7 @@ import com.example.areumdap.UI.Character.CharacterApiService
  */
 object RetrofitClient {
 
+    // 서버 베이스 URL
     private const val BASE_URL = "https://areum-dap.online/"
 
     /**
@@ -22,23 +25,22 @@ object RetrofitClient {
     private val authInterceptor = Interceptor { chain ->
         val originalRequest = chain.request()
 
-        // 토큰이 필요없는 요청들
+        // 토큰이 필요없는 요청들 (소셜 로그인 추가)
         val noAuthPaths = listOf(
             "/api/auth/login",
             "/api/auth/signup",
             "/api/auth/email-verification",
-            "/api/oauth/kakao/login-uri",  // 카카오 URL 조회
-            "/api/oauth/kakao/login",       // 카카오 로그인
-            "/api/oauth/naver/login-uri",  // 네이버 URL 조회
-            "/api/oauth/naver/login"       // 네이버 로그인
+            "/api/auth/social-login"  // ★★★ 소셜 로그인 경로 추가 ★★★
         )
 
         val path = originalRequest.url.encodedPath
 
+        // 토큰이 필요없는 요청이면 그대로 진행
         if (noAuthPaths.any { path.contains(it) }) {
             return@Interceptor chain.proceed(originalRequest)
         }
 
+        // AccessToken이 있으면 헤더에 추가
         val accessToken = try {
             TokenManager.getAccessToken()
         } catch (e: Exception) {
@@ -56,10 +58,16 @@ object RetrofitClient {
         chain.proceed(newRequest)
     }
 
+    /**
+     * 로깅 인터셉터
+     */
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
+    /**
+     * OkHttpClient 설정
+     */
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -68,23 +76,42 @@ object RetrofitClient {
         .addInterceptor(loggingInterceptor)
         .build()
 
+    /**
+     * Retrofit 인스턴스
+     */
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
+    /**
+     * API 서비스 생성 (범용)
+     */
     fun <T> create(service: Class<T>): T {
         return retrofit.create(service)
     }
 
+    /**
+     * AuthApi 인스턴스 (편의용)
+     */
     val authApi: AuthApi by lazy {
         retrofit.create(AuthApi::class.java)
     }
 
+    /**
+     * CharacterHistoryFragment에서 사용하는 service 객체
+     */
     val service: CharacterApiService by lazy {
         retrofit.create(CharacterApiService::class.java)
     }
-
     val taskService: TaskApiService = retrofit.create(TaskApiService::class.java)
+
+    val missionApi: MissionApiService by lazy {
+        retrofit.create(MissionApiService::class.java)
+    }
+    val chatbotApi: ChatbotApi by lazy {
+        retrofit.create(ChatbotApi::class.java)
+    }
+
 }

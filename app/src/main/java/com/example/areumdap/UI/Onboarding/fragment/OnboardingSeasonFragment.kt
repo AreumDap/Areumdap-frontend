@@ -48,6 +48,16 @@ class OnboardingSeasonFragment: Fragment(){
             // 새로운 계절을 선택한 경우
             resetAllButtons() // 먼저 다른 버튼들 초기화
 
+            val seasonKey = when (season) {
+                "봄" -> "spring"
+                "여름" -> "summer"
+                "가을" -> "autumn"
+                "겨울" -> "winter"
+                else -> "spring"
+            }
+            requireActivity().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+                .edit().putString("SEASON", seasonKey).apply()
+
             // 각 계절에 맞는 배경색
             val selectedColor = when (season) {
                 "봄" -> R.color.pink2
