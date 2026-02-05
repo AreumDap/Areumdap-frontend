@@ -4,4 +4,5 @@ import com.example.areumdap.Data.api.SendChatMessageResponse
 
 interface ChatRepository {
     suspend fun ask(content: String, threadId: Long): SendChatMessageResponse
+    suspend fun stopChat(threadId: Long)
 }

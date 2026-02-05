@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.areumdap.Data.ChatRepository
 import com.example.areumdap.Data.api.StartChatRequest
-import com.example.areumdap.Data.repository.RealChatRepository
+import com.example.areumdap.Data.repository.ChatRepositoryImpl
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.domain.model.ChatMessage
 import com.example.areumdap.domain.model.Sender
@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ChatViewModel(
-    private val repo: ChatRepository = RealChatRepository()
+    private val repo: ChatRepository = ChatRepositoryImpl()
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -167,6 +167,14 @@ class ChatViewModel(
         )
 
         _messages.value = listOf(base, q)
+    }
+
+    fun stopChatOnExit(){
+        val id = threadId?: return
+        viewModelScope.launch {
+            runCatching { repo.stopChat(id) }
+                .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
+        }
     }
 
     private fun addFailMessage(msg: String) {

@@ -6,4 +6,5 @@ class ChatbotRepository(
     private val api: ChatbotApi
 ) {
     suspend fun getTodayRecommendations() = api.getTodayRecommendations()
+
 }
