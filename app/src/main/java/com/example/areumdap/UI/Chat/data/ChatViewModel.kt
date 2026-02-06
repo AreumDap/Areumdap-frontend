@@ -158,6 +158,9 @@ class ChatViewModel(
                 } else {
                     threadId = data.userChatThreadId
                     Log.d("ChatViewModel", "✅ startChatInternal success threadId=$threadId")
+                    if (userQuestionId == null && data.content.isNotBlank()) {
+                        seedQuestionOnly(data.content)
+                    }
                     true
                 }
             } else {
@@ -194,6 +197,21 @@ class ChatViewModel(
 
         _messages.value = listOf(base, q)
     }
+fun seedQuestionOnly(question: String) {
+        if (_messages.value.isNotEmpty()) return
+
+        val now = System.currentTimeMillis()
+
+        _messages.value = listOf(
+            ChatMessage(
+                id = "ai_q_$now",
+                sender = Sender.AI,
+                text = question,
+                time = now,
+                status = Status.SENT
+            )
+        )
+    }
 
     // 대화 중 나가기 버튼 클릭 시
     fun stopChatOnExit(){
@@ -228,3 +246,6 @@ class ChatViewModel(
         }
     }
 }
+
+
+

@@ -30,10 +30,13 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         adapter = ChatMessageRVAdapter()
         val prefill = arguments?.getString("prefill_question")
         val prefillQuestionId = arguments?.getLong("prefill_question_id", -1L) ?: -1L
-        if(!prefill.isNullOrBlank()){
-            vm.seedPrefillQuestion(prefill)
+        if (!prefill.isNullOrBlank()) {
+            if (prefillQuestionId != -1L) {
+                vm.seedPrefillQuestion(prefill)
+            } else {
+                vm.seedQuestionOnly(prefill)
+            }
             arguments?.remove("prefill_question")
-
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             showExitDialog()
