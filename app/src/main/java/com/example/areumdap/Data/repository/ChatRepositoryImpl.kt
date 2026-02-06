@@ -1,6 +1,8 @@
 package com.example.areumdap.Data.repository
 
 import com.example.areumdap.Data.ChatRepository
+import com.example.areumdap.Data.api.ChatSummaryData
+import com.example.areumdap.Data.api.ChatSummaryRequest
 import com.example.areumdap.Data.api.SendChatMessageRequest
 import com.example.areumdap.Data.api.SendChatMessageResponse
 import com.example.areumdap.Network.RetrofitClient
@@ -34,5 +36,18 @@ class ChatRepositoryImpl : ChatRepository {
 
         val wrapper = res.body() ?: throw IllegalStateException("chatbot stop empty body")
         if (!wrapper.isSuccess) throw IllegalStateException("chatbot stop fail msg=${wrapper.message}")
+    }
+
+    override suspend fun fetchSummary(accessToken: String, threadId: Long):Result<ChatSummaryData> {
+        return runCatching {
+            val wrapper = RetrofitClient.chatbotApi.getChatSummary(
+                ChatSummaryRequest(userChatThreadId  = threadId)
+            )
+
+            if(!wrapper.isSuccess){
+                throw  IllegalStateException("chatbot summary fail code=${wrapper.code} msg=${wrapper.message}")
+            }
+            wrapper.data ?: throw IllegalStateException("chatbot summary data=null")
+        }
     }
 }

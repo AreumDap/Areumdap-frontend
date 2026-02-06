@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.areumdap.Data.ChatRepository
+import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.StartChatRequest
 import com.example.areumdap.Data.repository.ChatRepositoryImpl
 import com.example.areumdap.Network.RetrofitClient
@@ -16,6 +17,13 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+sealed interface SummaryUiState{
+    data object Idle: SummaryUiState
+    data object Loading : SummaryUiState
+    data class Success(val data : ChatSummaryData) : SummaryUiState
+    data class Error(val message:String) : SummaryUiState
+}
+
 class ChatViewModel(
     private val repo: ChatRepository = ChatRepositoryImpl()
 ) : ViewModel() {
@@ -27,6 +35,24 @@ class ChatViewModel(
     val endEvent: SharedFlow<Unit> = _endEvent
 
     private var threadId: Long? = null
+    private var lastEndedThreadId: Long? = null
+
+    private val _summaryState = MutableStateFlow<SummaryUiState>(SummaryUiState.Idle)
+    val summaryState: StateFlow<SummaryUiState> = _summaryState
+
+    fun getThreadId(): Long? = threadId
+    fun getLastEndedThreadId(): Long? = lastEndedThreadId
+
+    fun resetChatSession(endedThreadId: Long? = null) {
+        if (endedThreadId != null) {
+            lastEndedThreadId = endedThreadId
+        }
+        threadId = null
+        _messages.value = emptyList()
+        _summaryState.value = SummaryUiState.Idle
+    }
+
+
 
     //    오늘의 추천 질문
     fun startChat(content: String, userQuestionId: Long? = null) {
@@ -98,6 +124,7 @@ class ChatViewModel(
                         )
 
                 if (reply.isSessionEnd) {
+                    resetChatSession(currentThreadId)
                     _endEvent.tryEmit(Unit)
                 }
             } catch (e: Exception) {
@@ -168,6 +195,7 @@ class ChatViewModel(
         _messages.value = listOf(base, q)
     }
 
+    // 대화 중 나가기 버튼 클릭 시
     fun stopChatOnExit(){
         val id = threadId?: return
         viewModelScope.launch {
@@ -184,5 +212,19 @@ class ChatViewModel(
             time = System.currentTimeMillis(),
             status = Status.FAILED
         )
+    }
+
+    fun fetchSummary(accessToken : String, threadId:Long){
+        viewModelScope.launch {
+            _summaryState.value = SummaryUiState.Loading
+
+            repo.fetchSummary(accessToken, threadId)
+                .onSuccess { data ->
+                    _summaryState.value = SummaryUiState.Success(data)
+                }
+                .onFailure { e ->
+                    _summaryState.value = SummaryUiState.Error(e.message ?: "요약 불러오기 실패")
+                }
+        }
     }
 }

@@ -62,7 +62,7 @@
             style="@style/TA_Body3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="자기성찰"
+            android:text=""
             android:textColor="@color/reflection2" />
     </LinearLayout>
 
@@ -70,20 +70,16 @@
             android:id="@+id/sum_title_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="제목"
+            android:text=""
             style="@style/TA_Body1"
             android:layout_marginBottom="38dp"/>
+
         <TextView
             android:id="@+id/sum_body_tv"
+            style="@style/TA_Caption1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="오늘은 이러이러한 대화를 나눴어요.
-이러이러한 고민을 나눴고,
-이러이러한 이야기를 이야기해줬어요.
-대화 요약내용이 들어가요 대화 요약내용이 들어가요
-대화 요약내용이 들어가요대화 요약내용이 들어가요
-대화 요약내용이 들어가요"
-            style="@style/TA_Caption1" />
+            android:text="" />
 
 
     </LinearLayout>

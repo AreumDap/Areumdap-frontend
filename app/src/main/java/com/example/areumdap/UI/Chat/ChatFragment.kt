@@ -1,4 +1,4 @@
-package com.example.areumdap.UI.Chat
+﻿package com.example.areumdap.UI.Chat
 
 import android.os.Bundle
 import android.view.View
@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.util.Log
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
-    private val vm: ChatViewModel by viewModels()
+    private val vm: ChatViewModel by activityViewModels()
     private lateinit var adapter: ChatMessageRVAdapter
 
 
@@ -103,6 +103,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback{
             override fun onConfirm() {
                 viewLifecycleOwner.lifecycleScope.launch {
+                    vm.resetChatSession()
                     vm.stopChatOnExit()
                     parentFragmentManager.popBackStack()
                 }
