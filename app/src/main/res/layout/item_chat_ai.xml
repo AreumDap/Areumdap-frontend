@@ -9,8 +9,7 @@
             android:id="@+id/ai_profile_iv"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/ic_splash_logo"
-            android:background="@color/white"
+            android:src="@drawable/ai_profile"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/chat_tv"/>
 
