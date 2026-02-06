@@ -1,5 +1,6 @@
-package com.example.areumdap.UI.Home.data
+﻿package com.example.areumdap.UI.Home.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 class RecommendQuestionViewModel(
     private val repo: ChatbotRepository
 ) : ViewModel() {
+    private val tag = "RecommendQuestionVM"
 
     private val _questions = MutableLiveData<List<GetChatbotRecommendResponse>>()
     val questions: LiveData<List<GetChatbotRecommendResponse>> = _questions
@@ -29,8 +31,16 @@ class RecommendQuestionViewModel(
                     _questions.value = res.data?.questions ?: emptyList()
                     _error.value = null
                 }
-                .onFailure { e -> _error.value = e.message ?: "추천 질문 불러오기 실패" }
+                .onFailure { e ->
+                    Log.e(tag, "recommend fetch failed", e)
+                    _error.value = e.message ?: "추천 질문 불러오기 실패"
+                }
             _loading.value = false
         }
     }
 }
+
+
+
+
+

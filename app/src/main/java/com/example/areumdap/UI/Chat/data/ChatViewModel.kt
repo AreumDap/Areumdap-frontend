@@ -1,4 +1,4 @@
-package com.example.areumdap.UI.Chat.data
+﻿package com.example.areumdap.UI.Chat.data
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,6 +8,7 @@ import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.StartChatRequest
 import com.example.areumdap.Data.repository.ChatRepositoryImpl
 import com.example.areumdap.Network.RetrofitClient
+import com.example.areumdap.Network.TokenManager
 import com.example.areumdap.domain.model.ChatMessage
 import com.example.areumdap.domain.model.Sender
 import com.example.areumdap.domain.model.Status
@@ -174,15 +175,27 @@ class ChatViewModel(
         }
     }
 
+    private val prefillBaseTemplates = listOf(
+        "안녕하세요 {name}님!\n오늘 나누고 싶은 이야기가 있으시군요.\n몇 가지 질문을 통해 함께 생각해볼게요.",
+        "반가워요 {name}님!\n오늘의 이야기를 시작해볼까요?\n",
+        "다시 만나서 반가워요, {name}님.\n선택하신 질문으로 대화를 시작해볼게요.",
+        "안녕하세요, {name}님.\n오늘은 이 질문을 중심으로 이야기를 시작해볼게요.",
+        "안녕하세요, {name}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요.\n"
+    )
+
     fun seedPrefillQuestion(question: String) {
         if (_messages.value.isNotEmpty()) return
 
         val now = System.currentTimeMillis()
+        val name = TokenManager.getUserName().orEmpty().ifBlank { "사용자" }
+
+        val baseText = prefillBaseTemplates.random()
+            .replace("{name}", name)
 
         val base = ChatMessage(
             id = "ai_base_$now",
             sender = Sender.AI,
-            text = "안녕하세요 지은님!\n오늘은 이런 고민이 있으시군요.\n그럼 간단한 질문 먼저 드리도록 할게요.",
+            text = baseText,
             time = now,
             status = Status.SENT
         )
@@ -246,6 +259,7 @@ fun seedQuestionOnly(question: String) {
         }
     }
 }
+
 
 
 

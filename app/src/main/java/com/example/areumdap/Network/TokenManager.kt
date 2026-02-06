@@ -13,6 +13,7 @@ object TokenManager {
     private const val KEY_USER_ID = "user_id"
     private const val KEY_USER_EMAIL = "user_email"
     private const val KEY_USER_NAME = "user_name"
+    private const val KEY_USER_NICKNAME = "user_nickname"
     private const val KEY_SOCIAL_PROVIDER = "social_provider"
     private const val KEY_PROFILE_IMAGE = "profile_image"
     private const val KEY_FCM_TOKEN = "fcm_token"
@@ -46,12 +47,22 @@ object TokenManager {
             .apply()
     }
 
+    fun saveNickname(nickname: String) {
+        prefs.edit()
+            .putString(KEY_USER_NICKNAME, nickname)
+            .apply()
+    }
+
     fun getUserId(): Long {
         return prefs.getLong(KEY_USER_ID, -1)
     }
 
     fun getUserName(): String? {
         return prefs.getString(KEY_USER_NAME, null)
+    }
+
+    fun getNickname(): String? {
+        return prefs.getString(KEY_USER_NICKNAME, null)
     }
 
     fun getUserEmail(): String? {
