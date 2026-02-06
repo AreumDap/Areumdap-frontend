@@ -27,4 +27,9 @@ interface ChatbotApi {
     suspend fun stopChat(
         @Query("UserChatThreadId") threadId: Long
     ) : Response<ApiResponse<Unit>>
+
+    @POST("api/chatbot/summary")
+    suspend fun getChatSummary(
+        @Body body:ChatSummaryRequest
+    ) : ApiResponse<ChatSummaryData>
 }

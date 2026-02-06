@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,6 +18,7 @@ import com.example.areumdap.RVAdapter.RecommendQuestionRVAdapter
 import com.example.areumdap.UI.Character.CharacterViewModel
 import com.example.areumdap.UI.Character.CharacterViewModelFactory
 import com.example.areumdap.UI.Chat.ChatFragment
+import com.example.areumdap.UI.Chat.data.ChatViewModel
 import com.example.areumdap.UI.Home.data.RecommendQuestionViewModel
 import com.example.areumdap.databinding.FragmentHomeBinding
 import com.example.areumdap.domain.model.Category
@@ -39,6 +41,8 @@ class HomeFragment : Fragment() {
             }
         }
     }
+
+    private val chatViewModel: ChatViewModel by activityViewModels()
 
     private lateinit var adapter: RecommendQuestionRVAdapter
 
@@ -66,7 +70,8 @@ class HomeFragment : Fragment() {
         recommendViewModel.fetch()
 
         binding.chatStartButton.setOnClickListener {
-            goToChat()
+            chatViewModel.startChat(content = "", userQuestionId = null)
+            goToChat("", null)
         }
     }
 
