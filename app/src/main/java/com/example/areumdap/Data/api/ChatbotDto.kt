@@ -35,7 +35,8 @@ data class ChatSummaryData(
     val startedAt : String,
     val endedAt: String,
     val durationMinutes: Int,
-    val messageCount: Int
+    val messageCount: Int,
+    val tag:String
 
 )
 

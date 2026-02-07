@@ -9,7 +9,11 @@ class MissionViewModelFactory(
     private val repo: MissionRepository
 ) : ViewModelProvider.Factory {
 
-    override fun<T: ViewModel> create(modelClass:Class<T>) : T{
-        return MissionViewModel(repo) as T
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MissionViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return MissionViewModel(repo) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
     }
 }

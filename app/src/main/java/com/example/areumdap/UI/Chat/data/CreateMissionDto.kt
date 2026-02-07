@@ -1,10 +1,14 @@
 package com.example.areumdap.UI.Chat.data
 
+import com.google.gson.annotations.SerializedName
+
 data class CreateMissionRequest(
-    @com.google.gson.annotations.SerializedName("userChatThreadId")
-    val threadId: Long
+    val userChatThreadId: Long
 )
 
 data class CreateMissionResponse(
-    val missions: List<Mission>
+    @SerializedName("userChatThreadId")
+    val userChatThreadId: Long,
+    @SerializedName(value = "missions", alternate = ["mission"])
+    val missions: List<Mission> = emptyList()
 )

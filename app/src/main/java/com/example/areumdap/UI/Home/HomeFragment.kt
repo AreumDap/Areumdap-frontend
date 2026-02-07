@@ -64,14 +64,14 @@ class HomeFragment : Fragment() {
         viewModel.fetchMyCharacter()
 
         adapter = RecommendQuestionRVAdapter { item ->
-            goToChat(item.text, prefillId = item.id)
+            goToChat(item.text, prefillId = item.id, prefillTag = item.tag.name)
         }
         binding.recommendQuestionRv.adapter = adapter
         recommendViewModel.fetch()
 
         binding.chatStartButton.setOnClickListener {
             chatViewModel.startChat(content = "", userQuestionId = null)
-            goToChat("", null)
+            goToChat("", null, null)
         }
     }
 
@@ -80,11 +80,12 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 
-    private fun goToChat(prefill: String? = null, prefillId: Long? = null) {
+    private fun goToChat(prefill: String? = null, prefillId: Long? = null, prefillTag: String? = null) {
         val fragment = ChatFragment().apply {
             arguments = Bundle().apply {
                 if (!prefill.isNullOrBlank()) putString("prefill_question", prefill)
                 if (prefillId != null) putLong("prefill_question_id", prefillId)
+                if (!prefillTag.isNullOrBlank()) putString("prefill_tag", prefillTag)
             }
         }
 
@@ -121,7 +122,7 @@ class HomeFragment : Fragment() {
                 RecommendQuestion(
                     id = apiQuestion.userQuestionId,
                     text = apiQuestion.content,
-                    category = mapCategory(apiQuestion.tag)
+                    tag = mapCategory(apiQuestion.tag)
                 )
             }
             adapter.submitList(domainQuestions)
@@ -129,13 +130,22 @@ class HomeFragment : Fragment() {
     }
 
     private fun mapCategory(tag: String?): Category {
-        return when (tag?.trim()?.uppercase()) {
-            "REFLECTION" -> Category.REFLECTION
+        val trimmed = tag?.trim()
+        val upper = trimmed?.uppercase()
+        return when (upper) {
+            "REFLECTION", "SELF_REFLECTION" -> Category.REFLECTION
             "RELATION", "RELATIONSHIP" -> Category.RELATIONSHIP
             "CAREER" -> Category.CAREER
             "EMOTION" -> Category.EMOTION
             "ELSE", "ETC" -> Category.ETC
-            else -> Category.ETC
+            else -> when (trimmed) {
+                "자기성찰" -> Category.REFLECTION
+                "관계" -> Category.RELATIONSHIP
+                "진로" -> Category.CAREER
+                "감정" -> Category.EMOTION
+                "기타" -> Category.ETC
+                else -> Category.ETC
+            }
         }
     }
 }

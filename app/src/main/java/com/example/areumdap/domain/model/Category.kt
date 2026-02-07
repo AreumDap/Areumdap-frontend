@@ -25,5 +25,16 @@ enum class Category(
                 else -> ETC
             }
         }
+        fun fromServerTag(tag: String?): Category {
+            return when (tag?.trim()?.uppercase()) {
+                "SELF_REFLECTION", "REFLECTION" -> REFLECTION
+                "RELATION", "RELATIONSHIP" -> RELATIONSHIP
+                "CAREER" -> CAREER
+                "EMOTION" -> EMOTION
+                else -> ETC
+            }
+        }
     }
+
+
 }
