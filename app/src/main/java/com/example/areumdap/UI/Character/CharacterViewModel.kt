@@ -63,6 +63,19 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
                     Log.d("DEBUG_API", "fetchCharacterLevel Body: $body")
                     if (body?.data != null) {
                         _characterLevel.value = body.data
+                        
+                        // 레벨업/정보 갱신 성공 시 히스토리 요약 업데이트 요청
+                        try {
+                            val summaryResponse = apiService.postCharacterHistorySummary()
+                            if (summaryResponse.isSuccessful) {
+                                Log.d("DEBUG_API", "History Summary Updated")
+                            } else {
+                                Log.e("DEBUG_API", "History Summary Update Failed: ${summaryResponse.code()}")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("DEBUG_API", "History Summary Update Exception", e)
+                        }
+                        
                     } else {
                         Log.e("DEBUG_API", "fetchCharacterLevel Body Data is NULL")
                     }

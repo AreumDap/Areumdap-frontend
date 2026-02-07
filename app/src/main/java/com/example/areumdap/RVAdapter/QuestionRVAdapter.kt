@@ -22,9 +22,12 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = questionList[position]
-        holder.binding.itemQuestionTaskTv.text = item.content
+        
+        // 질문 내용 바인딩 (아래쪽 텍스트)
+        holder.binding.itemQuestionContentTv.text = item.content
         holder.binding.taskCardView.translationX = 0f
 
+        // 태그 텍스트 및 스타일 적용 (위쪽 텍스트)
         applyTagStyle(holder, item.tag)
 
         holder.binding.taskCardView.setOnClickListener {
@@ -114,5 +117,17 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
         
         // 아이콘 적용
         binding.itemQuestionTaskIv.setImageResource(iconRes)
+        
+        // 태그 한글명 변환 및 적용
+        val tagName = when (tag) {
+            "CAREER" -> "진로"
+            "RELATIONSHIP", "RELATION" -> "관계"
+            "REFLECTION", "SELF_REFLECTION" -> "자기성찰"
+            "EMOTION" -> "감정"
+            "GROWTH" -> "성장"
+            "ETC", "OTHER", "OTHERS", "ELSE" -> "기타"
+            else -> "기타"
+        }
+        binding.itemQuestionTaskTv.text = tagName
     }
 }
