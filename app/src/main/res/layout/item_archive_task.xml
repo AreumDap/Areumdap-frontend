@@ -38,6 +38,7 @@
         <TextView
             android:id="@+id/item_archive_task_tv"
             android:text="자기 성찰"
+            style="@style/item_tag_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/item_archive_task_iv"

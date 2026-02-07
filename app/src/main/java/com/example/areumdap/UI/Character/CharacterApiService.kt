@@ -16,4 +16,7 @@ interface CharacterApiService {
 
     @GET("api/characters/me")
     suspend fun getMycharacter(): Response<BaseResponse<CharacterLevelUpResponse>>
+
+    @POST("api/characters/history/summary")
+    suspend fun postCharacterHistorySummary(): Response<BaseResponse<String>>
 }

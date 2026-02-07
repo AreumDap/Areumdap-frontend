@@ -49,7 +49,7 @@
 
         <TextView
             style="@style/TA_Body2"
-            android:text="나에게 가장 중요한 가치는 무엇인가요?"
+            android:id="@+id/item_question_content_tv"
             android:textColor="@color/black"
             android:layout_width="280dp"
             android:layout_height="20dp"
