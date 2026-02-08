@@ -103,10 +103,6 @@ class HomeFragment : Fragment() {
 
             Glide.with(this)
                 .load(data.imageUrl)
-                .placeholder(R.drawable.ic_character)
-                .error(R.drawable.ic_character)
-                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
                 .into(binding.characterIv)
 
             Glide.with(this)
