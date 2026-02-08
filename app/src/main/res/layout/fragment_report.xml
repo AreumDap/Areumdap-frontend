@@ -67,19 +67,13 @@
                 </LinearLayout>
 
                 <!-- 3) 해시태그 -->
-                <LinearLayout
-                    android:id="@+id/hashtag_layout"
-                    android:layout_width="wrap_content"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/hashtag_group"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingBottom="40dp">
-
-                    <include layout="@layout/item_hashtag" />
-
-                    <include layout="@layout/item_hashtag" />
-
-                    <include layout="@layout/item_hashtag" />
-                </LinearLayout>
+                    app:singleLine="false"
+                    app:chipSpacingHorizontal="8dp"
+                    app:chipSpacingVertical="8dp" />
 
                 <!-- 4) 통계 카드 2개 + 1개 -->
                 <LinearLayout
@@ -113,6 +107,7 @@
                                 android:textColor="@color/black" />
 
                             <TextView
+                                android:id="@+id/report_message_cnt_tv"
                                 style="@style/TA_Subtitle1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -143,6 +138,7 @@
                                 android:textColor="@color/black" />
 
                             <TextView
+                                android:id="@+id/report_time_cnt_tv"
                                 style="@style/TA_Subtitle1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -171,6 +167,7 @@
                             android:textColor="@color/black" />
 
                         <TextView
+                            android:id="@+id/report_depth_tv"
                             style="@style/TA_Subtitle1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -194,6 +191,7 @@
                         android:src="@drawable/ic_coner_pink" />
 
                     <TextView
+                        android:id="@+id/report_summary_tv"
                         style="@style/TA_Body3"
                         android:layout_width="300dp"
                         android:layout_height="wrap_content"
@@ -281,49 +279,14 @@
                     android:overScrollMode="never"
                     android:scrollbars="none">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:id="@+id/report_task_cv"
-                        android:layout_width="wrap_content"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/report_task_rv"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="14dp"
-                        app:cardCornerRadius="20dp">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@color/background2"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            android:paddingHorizontal="27dp"
-                            android:paddingVertical="46dp">
-
-                            <ImageView
-                                android:id="@+id/rep_task_cat_iv"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="20dp"
-                                android:src="@drawable/ic_reflection" />
-
-                            <TextView
-                                style="@style/TA_Body1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="20dp"
-                                android:gravity="center"
-                                android:text="오늘 하루\n나를 위한 시간 갖기"
-                                android:textColor="@color/black" />
-
-                            <TextView
-                                style="@style/TA_Caption1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center"
-                                android:text="아무 생각 없이 좋아하는 일을 하며 \n
-나만의 시간을 가져보세요."
-                                android:textColor="@color/black" />
-                        </LinearLayout>
-
-                    </com.google.android.material.card.MaterialCardView>
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/item_report_task"/>
 
                 </HorizontalScrollView>
             </LinearLayout>

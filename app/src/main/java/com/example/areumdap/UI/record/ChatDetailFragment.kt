@@ -64,7 +64,11 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
 
         binding.icReportIv.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, ReportFragment())
+                .replace(R.id.main_frm, ReportFragment().apply{
+                    arguments = Bundle().apply{
+                        putLong("threadId", threadId)
+                    }
+                })
                 .addToBackStack(null)
                 .commit()
         }

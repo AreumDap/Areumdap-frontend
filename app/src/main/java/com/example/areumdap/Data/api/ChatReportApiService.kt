@@ -2,6 +2,7 @@ package com.example.areumdap.Data.api
 
 
 import com.example.areumdap.UI.Home.data.ApiResponse
+import com.example.areumdap.UI.record.data.ChatReportDataDto
 import com.example.areumdap.UI.record.data.ChatThreadHistoriesDto
 import com.example.areumdap.UI.record.data.ChatThreadsData
 import retrofit2.Response
@@ -20,4 +21,9 @@ interface ChatReportApiService{
     suspend fun getThreadHistories(
         @Path("threadId") threadId:Long
     ):Response<ApiResponse<ChatThreadHistoriesDto>>
+
+    @GET("api/chat/reports/{reportId}")
+    suspend fun getChatReport(
+        @Path("reportId") reportId: Long
+    ) : Response<ApiResponse<ChatReportDataDto>>
 }
