@@ -10,84 +10,108 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.areumdap.R
-import kotlinx.coroutines.launch
 import com.example.areumdap.UI.MainActivity
+import com.example.areumdap.Network.UserRepository
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // 메시지 수신 시 처리
-        Log.d(TAG, "From: ${remoteMessage.from}")
-
-        // 데이터 메시지가 포함되어 있는지 확인
-        if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
-            // 데이터 메시지 처리 로직 (필요 시)
-        }
-
-        // 알림 메시지가 포함되어 있는지 확인
-        remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
-            sendNotification(it.title, it.body)
-        }
+    companion object {
+        private const val TAG = "FCMService"
+        private const val CHANNEL_ID = "areumdap_notification"
+        private const val CHANNEL_NAME = "철학적 질문 알림"
     }
 
+    /**
+     * FCM 토큰이 생성/갱신될 때 호출
+     */
     override fun onNewToken(token: String) {
-        Log.d(TAG, "Refreshed token: $token")
-        
-        // 토큰이 갱신되면 서버로 전송
-        // Service는 Main Thread에서 동작하므로 CoroutineScope 사용
-        kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+        super.onNewToken(token)
+        Log.d(TAG, "새 FCM 토큰: $token")
+
+        // 토큰을 서버에 등록
+        CoroutineScope(Dispatchers.IO).launch {
             try {
-                com.example.areumdap.Network.UserRepository.updateFcmToken(token)
+                UserRepository.updateFcmToken(token)
+                Log.d(TAG, "FCM 토큰 서버 등록 성공")
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.e(TAG, "FCM 토큰 서버 등록 실패: ${e.message}")
             }
         }
     }
 
     /**
-     * 알림을 생성하고 표시
+     * 푸시 알림 수신 시 호출
      */
-    private fun sendNotification(title: String?, messageBody: String?) {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        
-        // PendingIntent 생성
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
-        )
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+        Log.d(TAG, "푸시 수신 from: ${remoteMessage.from}")
 
-        val channelId = getString(R.string.default_notification_channel_id)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        
-        val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher) // 앱 아이콘 사용
-            .setContentTitle(title ?: getString(R.string.app_name))
-            .setContentText(messageBody)
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
+        // 데이터 메시지 처리
+        if (remoteMessage.data.isNotEmpty()) {
+            Log.d(TAG, "데이터: ${remoteMessage.data}")
+        }
 
+        // 알림 데이터 추출
+        val title = remoteMessage.notification?.title
+            ?: remoteMessage.data["title"]
+            ?: "아름답"
+        val body = remoteMessage.notification?.body
+            ?: remoteMessage.data["body"]
+            ?: "오늘의 철학적 질문이 도착했어요!"
+
+        // 알림 표시
+        showNotification(title, body)
+    }
+
+    /**
+     * 알림 표시
+     */
+    private fun showNotification(title: String, body: String) {
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // 오레오(API 26) 이상에서는 채널이 필요함 (GlobalApplication에서 생성하지만 안전을 위해 여기서도 체크 가능)
+        // Android 8.0 이상은 채널 필요
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                channelId,
-                "Channel human readable title",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "매일 철학적 질문을 보내드려요"
+                enableVibration(true)
+            }
             notificationManager.createNotificationChannel(channel)
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
-    }
+        // 알림 클릭 시 앱 열기
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+        )
 
-    companion object {
-        private const val TAG = "MyFirebaseMsgService"
+        // 알림 소리
+        val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        // 알림 생성
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .setSound(soundUri)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
     }
 }
