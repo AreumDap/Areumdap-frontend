@@ -53,7 +53,8 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun handleBackPress() {
-        val currentStep = OnboardingStep.fromValue(viewModel.currentStep.value ?: 0) ?: OnboardingStep.START
+        val currentStep =
+            OnboardingStep.fromValue(viewModel.currentStep.value ?: 0) ?: OnboardingStep.START
 
         when (currentStep) {
             OnboardingStep.START -> handleStartStepBackPress()
@@ -70,7 +71,8 @@ class OnboardingActivity : AppCompatActivity() {
     private fun handleStartStepBackPress() {
         // 텍스트가 변경된 상태에서만 복구 처리, 아니면 기본 뒤로가기
         if (viewModel.isTextUpdated) {
-            val startFragment = supportFragmentManager.findFragmentById(R.id.fcv_onboarding) as? OnboardingStartFragment
+            val startFragment =
+                supportFragmentManager.findFragmentById(R.id.fcv_onboarding) as? OnboardingStartFragment
             startFragment?.resetText()
             viewModel.isTextUpdated = false
             updateUI(OnboardingStep.START.value)
@@ -92,12 +94,14 @@ class OnboardingActivity : AppCompatActivity() {
                 viewModel.isKeywordSelected.value = true
                 true
             }
+
             InfoTextStep.NICKNAME_INPUT -> {
                 viewModel.infoTextStep.value = InfoTextStep.NICKNAME_INTRO.value
                 viewModel.isKeywordSelected.value = true
                 binding.btnNext.text = ButtonText.I_AM.text
                 true
             }
+
             InfoTextStep.NICKNAME_INTRO -> {
                 viewModel.infoTextStep.value = InfoTextStep.AREUM_BORN.value
                 true
@@ -128,7 +132,8 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun setupNextButtonClickListener() {
         binding.btnNext.setOnClickListener {
-            val currentStep = OnboardingStep.fromValue(viewModel.currentStep.value ?: 0) ?: OnboardingStep.START
+            val currentStep =
+                OnboardingStep.fromValue(viewModel.currentStep.value ?: 0) ?: OnboardingStep.START
 
             when (currentStep) {
                 OnboardingStep.START -> handleStartStepClick()
@@ -142,7 +147,8 @@ class OnboardingActivity : AppCompatActivity() {
     private fun handleStartStepClick() {
         // 시작 화면은 버튼을 두 번 눌러야 다음 단계로 진행 (텍스트 변경 후 이동)
         if (!viewModel.isTextUpdated) {
-            val fragment = supportFragmentManager.findFragmentById(R.id.fcv_onboarding) as? OnboardingStartFragment
+            val fragment =
+                supportFragmentManager.findFragmentById(R.id.fcv_onboarding) as? OnboardingStartFragment
             fragment?.changeText()
             viewModel.isTextUpdated = true
             binding.btnNext.text = ButtonText.I_AM.text
@@ -163,10 +169,12 @@ class OnboardingActivity : AppCompatActivity() {
                 // "아름이가 태어났어요" → "서로를 알아가기 위해..."
                 viewModel.infoTextStep.value = InfoTextStep.NICKNAME_INTRO.value
             }
+
             InfoTextStep.NICKNAME_INTRO -> {
                 // "서로를 알아가기 위해..." → 닉네임 입력 Fragment로 이동
                 goToNextStep(currentStep)
             }
+
             InfoTextStep.NICKNAME_INPUT -> {
                 // 닉네임 입력 후 → "아름이는 oo님이..."
                 if (isNicknameValid()) {
@@ -175,10 +183,11 @@ class OnboardingActivity : AppCompatActivity() {
                     binding.btnNext.text = ButtonText.START_JOURNEY.text
                 }
             }
+
             InfoTextStep.FINAL_MESSAGE -> {
                 // 최종 메시지 → 메인 화면으로
                 if (isNicknameValid()) {
-                    navigateToMain()
+                    viewModel.infoTextStep.value = 4
                 }
             }
         }
@@ -190,7 +199,12 @@ class OnboardingActivity : AppCompatActivity() {
         replaceFragment(nextFragment, nextStep.value.toString())
 
         // 선택이 필요한 단계로 이동 시 버튼 비활성화하여 사용자 선택 유도
-        if (nextStep in listOf(OnboardingStep.SEASON, OnboardingStep.KEYWORD, OnboardingStep.NICKNAME)) {
+        if (nextStep in listOf(
+                OnboardingStep.SEASON,
+                OnboardingStep.KEYWORD,
+                OnboardingStep.NICKNAME
+            )
+        ) {
             viewModel.isKeywordSelected.value = false
         }
     }
@@ -280,6 +294,7 @@ class OnboardingActivity : AppCompatActivity() {
                 val infoTextStep = InfoTextStep.fromValue(viewModel.infoTextStep.value ?: 0)
                 infoTextStep.displayProgress
             }
+
             else -> step.displayProgress
         }
     }
@@ -291,6 +306,7 @@ class OnboardingActivity : AppCompatActivity() {
             OnboardingStep.START -> {
                 if (viewModel.isTextUpdated) ButtonText.I_AM.text else ButtonText.START.text
             }
+
             OnboardingStep.FINAL -> {
                 val infoTextStep = InfoTextStep.fromValue(viewModel.infoTextStep.value ?: 0)
                 if (infoTextStep == InfoTextStep.FINAL_MESSAGE) {
@@ -299,6 +315,7 @@ class OnboardingActivity : AppCompatActivity() {
                     ButtonText.NEXT.text
                 }
             }
+
             else -> ButtonText.NEXT.text
         }
     }
@@ -420,7 +437,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun isNicknameValid(): Boolean = !viewModel.nickname.value.isNullOrEmpty()
 
-    private fun navigateToMain() {
+    public fun navigateToMain() {
         // ★ [핵심] 온보딩 완료 상태 저장
         getSharedPreferences("auth", MODE_PRIVATE)
             .edit()
@@ -433,6 +450,4 @@ class OnboardingActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
-
-
 }

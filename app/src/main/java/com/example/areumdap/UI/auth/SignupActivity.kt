@@ -177,7 +177,7 @@ class SignupActivity : AppCompatActivity() {
                     Log.e(tag, "에러 메시지: ${error.message}")
                     Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
 
-                    showCustomToast("일시적인 문제로 로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
+                    showCustomToast("인증번호 확인에 실패했습니다. 다시 시도해 주세요", isSuccess = false)
 
                     binding.btnAuthConfirm.isEnabled = true
                 }

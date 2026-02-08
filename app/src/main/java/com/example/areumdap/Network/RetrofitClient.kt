@@ -1,6 +1,6 @@
 package com.example.areumdap.Network
 
-import com.example.areumdap.Data.api.ChatbotApi
+import com.example.areumdap.Data.api.ChatbotApiService
 import com.example.areumdap.Data.api.MissionApiService
 import com.example.areumdap.Task.TaskApiService
 import okhttp3.Interceptor
@@ -32,8 +32,8 @@ object RetrofitClient {
             "/api/auth/login",
             "/api/auth/signup",
             "/api/auth/email-verification",
-            "/api/auth/social-login",
-            "/api/auth/token/reissue"// ★★★ 소셜 로그인 경로 추가 ★★★
+            "/api/auth/social-login",  // 소셜 로그인 경로
+            "/api/auth/token/reissue"  // 토큰 재발급 경로 (인증 불필요)
         )
 
         val path = originalRequest.url.encodedPath
@@ -114,8 +114,8 @@ object RetrofitClient {
     val missionApi: MissionApiService by lazy {
         retrofit.create(MissionApiService::class.java)
     }
-    val chatbotApi: ChatbotApi by lazy {
-        retrofit.create(ChatbotApi::class.java)
+    val chatbotApiService: ChatbotApiService by lazy {
+        retrofit.create(ChatbotApiService::class.java)
     }
 
 }

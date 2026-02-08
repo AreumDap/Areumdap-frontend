@@ -51,3 +51,42 @@ data class CharacterLevelUpResponse(
     val displayLevel: Int
         get() = currentLevel ?: level ?: 0
 }
+
+data class CharacterCreateRequest(
+    @SerializedName("characterSeason")
+    val characterSeason: String,
+
+    @SerializedName("keywords")
+    val keywords: List<String>,
+
+    @SerializedName("keywordType")
+    val keywordType: String = "PRESET"
+)
+
+data class CharacterCreateResponse(
+    @SerializedName("characterId")
+    val characterId: Int,
+
+    @SerializedName("imageUrl")
+    val imageUrl: String
+)
+
+data class ErrorResponse(
+    @SerializedName("isSuccess")
+    val isSuccess: Boolean,
+
+    @SerializedName("code")
+    val code: String,
+
+    @SerializedName("message")
+    val message: String,
+
+    @SerializedName("result")
+    val result: Any?
+)
+
+sealed class ApiResult<out T> {
+    data class Success<out T>(val data: T) : ApiResult<T>()
+    data class Error(val code: String, val message: String) : ApiResult<Nothing>()
+    data class Exception(val exception: Throwable) : ApiResult<Nothing>()
+}

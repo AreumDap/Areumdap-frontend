@@ -24,11 +24,20 @@ class OnboardingKeywordFragment : Fragment(){
 
     // 계절별 키워드 맵
     private val seasonKeywords = mapOf(
-        "봄" to listOf("부드러운", "다정한", "낙천적인", "밝은", "순수한", "수줍은", "상냥한", "여린", "투명한"),
-        "여름" to listOf("뜨거운", "선명한", "솔직한", "강렬한", "대담한", "적극적인", "추진력 있는", "분명한", "활발한"),
-        "가을" to listOf("담담한", "고요한", "느긋한", "깊이 있는", "성숙한", "섬세한", "안정된", "이상적인", "침착한"),
-        "겨울" to listOf("고요한", "절제된", "부드러운", "냉정한", "흔들림 없는", "무게 있는", "성숙한", "담담한", "현실적인")
+        "SPRING" to listOf("부드러운", "다정한", "낙천적인", "밝은", "순수한", "수줍은", "상냥한", "여린", "투명한"),
+        "SUMMER" to listOf("뜨거운", "선명한", "솔직한", "강렬한", "대담한", "적극적인", "추진력 있는", "분명한", "활발한"),
+        "FALL" to listOf("담담한", "고요한", "느긋한", "깊이 있는", "성숙한", "섬세한", "안정된", "이상적인", "침착한"),
+        "WINTER" to listOf("고요한", "절제된", "부드러운", "냉정한", "흔들림 없는", "무게 있는", "성숙한", "담담한", "현실적인")
     )
+
+    // 영어 → 한글 변환 맵
+    private val seasonToKorean = mapOf(
+        "SPRING" to "봄",
+        "SUMMER" to "여름",
+        "FALL" to "가을",
+        "WINTER" to "겨울"
+    )
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,8 +67,10 @@ class OnboardingKeywordFragment : Fragment(){
 
     private fun setupSeasonText() {
         viewModel.selectedSeason.observe(viewLifecycleOwner) { season ->
-            binding.tvSelectedSeasonResult.text = "${season}과 가장 닮아 계시군요!"
-            binding.tvKeywordSelectionGuide.text = "${season}의 어떤 부분과\n가장 닮았다고 생각하시나요?"
+            val seasonKorean = seasonToKorean[season] ?: "봄"
+
+            binding.tvSelectedSeasonResult.text = "${seasonKorean}과 가장 닮아 계시군요!"
+            binding.tvKeywordSelectionGuide.text = "${seasonKorean}의 어떤 부분과\n가장 닮았다고 생각하시나요?"
 
             // 계절이 바뀌면 키워드도 다시 설정
             setupKeywordChips()
@@ -67,8 +78,8 @@ class OnboardingKeywordFragment : Fragment(){
     }
 
     private fun setupKeywordChips() {
-        val selectedSeason = viewModel.selectedSeason.value ?: "봄"
-        val keywords = seasonKeywords[selectedSeason] ?: seasonKeywords["봄"]!!
+        val selectedSeason = viewModel.selectedSeason.value ?: "SPRING"
+        val keywords = seasonKeywords[selectedSeason] ?: seasonKeywords["SPRING"]!!
 
         // 기존 Chip 모두 제거
         binding.flexboxKeywords.removeAllViews()

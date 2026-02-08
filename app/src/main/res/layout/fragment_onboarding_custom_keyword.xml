@@ -46,6 +46,7 @@
         style="@style/TA_Body2"
         android:hint="내용을 적어주세요."
         android:textColorHint="@color/gray3"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide" />
