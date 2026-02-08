@@ -5,19 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.areumdap.UI.record.data.InsightDto
 import com.example.areumdap.databinding.ItemFoundCardBinding
 
-data class DiscoveryItem(
-    val id: Long,
-    val text: String
-)
 
-class DiscoveryRVAdapter : ListAdapter<DiscoveryItem, DiscoveryRVAdapter.VH>(DIFF) {
+
+class DiscoveryRVAdapter : ListAdapter<InsightDto, DiscoveryRVAdapter.VH>(DIFF) {
     inner class VH(private val binding: ItemFoundCardBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: DiscoveryItem){
-            binding.fountCardContentTv.text = item.text
+        fun bind(item: InsightDto){
+            binding.fountCardContentTv.text = item.content
         }
     }
 
@@ -33,9 +31,9 @@ class DiscoveryRVAdapter : ListAdapter<DiscoveryItem, DiscoveryRVAdapter.VH>(DIF
     }
 
     companion object {
-        private val DIFF = object: DiffUtil.ItemCallback<DiscoveryItem>(){
-            override fun areItemsTheSame(o: DiscoveryItem, n: DiscoveryItem) = o.id == n.id
-            override fun areContentsTheSame(o: DiscoveryItem, n: DiscoveryItem) = o == n
+        private val DIFF = object: DiffUtil.ItemCallback<InsightDto>(){
+            override fun areItemsTheSame(o: InsightDto, n: InsightDto) = o.insightId == n.insightId
+            override fun areContentsTheSame(o: InsightDto, n: InsightDto) = o == n
 
         }
 

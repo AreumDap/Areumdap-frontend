@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 sealed interface ChatThreadListUiState  {
     data object Idle : ChatThreadListUiState
-    data object Loding : ChatThreadListUiState
+    data object Loading : ChatThreadListUiState
     data class Success(
         val items : List<UserChatThread>,
         val hasNext : Boolean,
@@ -18,6 +18,20 @@ sealed interface ChatThreadListUiState  {
         val nextCursorId: Long?
     ) : ChatThreadListUiState
     data class Error(val message: String) : ChatThreadListUiState
+}
+
+sealed interface ThreadHistoriesUiState {
+    data object Idle : ThreadHistoriesUiState
+    data object Loading : ThreadHistoriesUiState
+    data class Success(val data: ChatThreadHistoriesDto) : ThreadHistoriesUiState
+    data class Error(val message: String) : ThreadHistoriesUiState
+}
+
+sealed interface ReportUiState {
+    data object Idle : ReportUiState
+    data object Loading : ReportUiState
+    data class Success(val data: ChatReportDataDto) : ReportUiState
+    data class Error(val message: String) : ReportUiState
 }
 
 class ChatThreadViewModel(
@@ -31,6 +45,12 @@ class ChatThreadViewModel(
 
     private val _error = MutableStateFlow<String?>(null)
     val error : StateFlow<String?> = _error.asStateFlow()
+
+    private val _historiesState = MutableStateFlow<ThreadHistoriesUiState>(ThreadHistoriesUiState.Idle)
+    val historiesState : StateFlow<ThreadHistoriesUiState> = _historiesState.asStateFlow()
+
+    private val _reportState = MutableStateFlow<ReportUiState>(ReportUiState.Idle)
+    val reportState : StateFlow<ReportUiState> = _reportState.asStateFlow()
 
     fun loadThreads(favorite:Boolean = false){
         viewModelScope.launch {
@@ -49,5 +69,37 @@ class ChatThreadViewModel(
             _loading.value = false
         }
     }
+
+    fun loadThreadHistories(threadId:Long){
+        viewModelScope.launch {
+            _historiesState.value = ThreadHistoriesUiState.Loading
+
+            repo.getThreadHistories(threadId)
+                .onSuccess { dto ->
+                    _historiesState.value = ThreadHistoriesUiState.Success(dto)
+                }
+                .onFailure { e->
+                    _historiesState.value = ThreadHistoriesUiState.Error(e.message?: "알 수 없는 오류")
+                }
+        }
+    }
+
+    fun clearReportState(){_reportState.value = ReportUiState.Idle}
+    fun clearHistoriesState() { _historiesState.value = ThreadHistoriesUiState.Idle }
+
+    fun loadReport(reportId: Long) {
+        viewModelScope.launch {
+            _reportState.value = ReportUiState.Loading
+
+            repo.fetchReport(reportId)
+                .onSuccess { data ->
+                    _reportState.value = ReportUiState.Success(data)
+                }
+                .onFailure { e ->
+                    _reportState.value = ReportUiState.Error(e.message ?: "레포트 불러오기 실패")
+                }
+        }
+    }
+
 }
 
