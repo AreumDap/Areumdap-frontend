@@ -9,7 +9,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 
-interface ChatbotApi {
+interface ChatbotApiService {
     @GET("api/chatbot/recommend")
     suspend fun getTodayRecommendations(): GetChatbotRecommendsResponse
 

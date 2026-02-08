@@ -1,6 +1,6 @@
 package com.example.areumdap.Network
 
-import com.example.areumdap.Data.api.ChatbotApi
+import com.example.areumdap.Data.api.ChatbotApiService
 import com.example.areumdap.Data.api.MissionApiService
 import com.example.areumdap.Task.TaskApiService
 import okhttp3.Interceptor
@@ -110,8 +110,8 @@ object RetrofitClient {
     val missionApi: MissionApiService by lazy {
         retrofit.create(MissionApiService::class.java)
     }
-    val chatbotApi: ChatbotApi by lazy {
-        retrofit.create(ChatbotApi::class.java)
+    val chatbotApiService: ChatbotApiService by lazy {
+        retrofit.create(ChatbotApiService::class.java)
     }
 
 }

@@ -1,6 +1,6 @@
 package com.example.areumdap.Data.repository
 
-import com.example.areumdap.Data.ChatRepository
+import com.example.areumdap.Data.repository.ChatRepository
 import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.ChatSummaryRequest
 import com.example.areumdap.Data.api.SendChatMessageRequest
@@ -9,7 +9,7 @@ import com.example.areumdap.Network.RetrofitClient
 
 class ChatRepositoryImpl : ChatRepository {
     override suspend fun ask(content: String, threadId: Long): SendChatMessageResponse {
-        val res = RetrofitClient.chatbotApi.sendMessage(
+        val res = RetrofitClient.chatbotApiService.sendMessage(
             SendChatMessageRequest(
                 content = content,
                 userChatThreadId = threadId
@@ -27,7 +27,7 @@ class ChatRepositoryImpl : ChatRepository {
     }
 
     override suspend fun stopChat(threadId: Long) {
-        val res = RetrofitClient.chatbotApi.stopChat(threadId)
+        val res = RetrofitClient.chatbotApiService.stopChat(threadId)
 
         if (!res.isSuccessful) {
             val err = runCatching { res.errorBody()?.string() }.getOrNull()
@@ -40,7 +40,7 @@ class ChatRepositoryImpl : ChatRepository {
 
     override suspend fun fetchSummary(accessToken: String, threadId: Long):Result<ChatSummaryData> {
         return runCatching {
-            val wrapper = RetrofitClient.chatbotApi.getChatSummary(
+            val wrapper = RetrofitClient.chatbotApiService.getChatSummary(
                 ChatSummaryRequest(userChatThreadId  = threadId)
             )
 
