@@ -1,6 +1,7 @@
 ﻿package com.example.areumdap.UI.record
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -22,32 +23,35 @@ import java.util.Locale
 import java.util.TimeZone
 
 class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val sessionId = requireArguments().getInt(ARG_SESSION_ID, -1)
-        val threadId = sessionId.toLong()
+        super.onViewCreated(view, savedInstanceState)
+
+        val threadId = requireArguments().getLong(ARG_THREAD_ID, -1L)
+        if (threadId == -1L) return
 
         val binding = FragmentChatDetailBinding.bind(view)
+
         val adapter = ChatDetailRVAdapter()
         binding.chatRv.adapter = adapter
         binding.chatRv.layoutManager = LinearLayoutManager(requireContext())
 
-        if (threadId != -1L) {
-            val api = RetrofitClient.create(ChatReportApiService::class.java)
-            val repo: ChatReportRepository = ChatReportRepositoryImpl(api)
+        // repo 연결 (토큰/헤더 처리는 너희 쪽에서 따로 한다고 했으니 여기선 그대로)
+        val api = RetrofitClient.create(ChatReportApiService::class.java)
+        val repo: ChatReportRepository = ChatReportRepositoryImpl(api)
 
-            viewLifecycleOwner.lifecycleScope.launch {
-                repo.getThreadHistories(threadId)
-                    .onSuccess { data ->
-                        val messages = data.histories.map { it.toChatMessage() }
-                        adapter.submitList(messages)
-                        if (messages.isNotEmpty()) {
-                            binding.chatRv.scrollToPosition(messages.size - 1)
-                        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repo.getThreadHistories(threadId)
+                .onSuccess { data ->
+                    val messages = data.histories.map { it.toChatMessage() }
+                    adapter.submitList(messages)
+                    if (messages.isNotEmpty()) {
+                        binding.chatRv.scrollToPosition(messages.size - 1)
                     }
-                    .onFailure { e ->
-                        e.printStackTrace()
-                    }
-            }
+                }
+                .onFailure { e ->
+                    e.printStackTrace()
+                }
         }
 
         (activity as? MainActivity)?.setToolbar(
@@ -72,10 +76,9 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
     }
 
     companion object {
-        private const val ARG_SESSION_ID = "sessionId"
-
-        fun newInstance(sessionId: Int) = ChatDetailFragment().apply {
-            arguments = Bundle().apply { putInt(ARG_SESSION_ID, sessionId) }
+        private const val ARG_THREAD_ID = "threadId"
+        fun newInstance(threadId: Long) = ChatDetailFragment().apply {
+            arguments = Bundle().apply { putLong(ARG_THREAD_ID, threadId) }
         }
     }
 }
@@ -95,12 +98,22 @@ private fun HistoryDto.toChatMessage(): ChatMessage {
 }
 
 private fun parseToMillis(value: String): Long {
-    return try {
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-        // 서버 시간이 KST라면 이거 켜는 게 안전
-        sdf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
-        sdf.parse(value)?.time ?: System.currentTimeMillis()
-    } catch (_: Exception) {
-        System.currentTimeMillis()
+    // createdAt 예: "2026-01-23T01:52:52"
+    val patterns = listOf(
+        "yyyy-MM-dd'T'HH:mm:ss.SSSSSS",
+        "yyyy-MM-dd'T'HH:mm:ss.SSS",
+        "yyyy-MM-dd'T'HH:mm:ss"
+    )
+
+    for (p in patterns) {
+        try {
+            val sdf = SimpleDateFormat(p, Locale.getDefault())
+            sdf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+            val t = sdf.parse(value)?.time
+            if (t != null) return t
+        } catch (e: Exception) {
+            Log.d("parseToMillis", "fail pattern=$p value=$value", e)
+        }
     }
+    return System.currentTimeMillis()
 }
