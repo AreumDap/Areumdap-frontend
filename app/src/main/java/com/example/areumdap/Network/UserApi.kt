@@ -13,7 +13,7 @@ interface UserApi {
     /**
      * 유저 온보딩 저장
      */
-    @POST("api/users/onboarding")
+    @POST("/api/users/onboarding")
     suspend fun saveOnboarding(@Body request: OnboardingRequest): Response<BaseResponse<Unit>>
 
     /**

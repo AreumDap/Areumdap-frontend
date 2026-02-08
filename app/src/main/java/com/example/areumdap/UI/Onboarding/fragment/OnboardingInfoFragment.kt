@@ -202,16 +202,20 @@ class OnboardingInfoFragment: Fragment() {
                 Log.d("CharacterAPI", "응답 성공 여부: ${response.isSuccessful}")
 
                 if (response.isSuccessful) {
-                    Log.d("CharacterAPI", "온보딩 저장 성공!")
-                    // ...
+                    saveCharacterInfo(characterId, imageUrl)
+                    characterViewModel.resetUiState()
+                    viewModel.infoTextStep.value = -1
+                    hideLoading()
+                    (activity as? OnboardingActivity)?.navigateToMain()
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Log.e("CharacterAPI", "온보딩 저장 실패: $errorBody")
-                    // ...
+                    hideLoading()
+                    showError("온보딩 저장에 실패했습니다.")
+                    characterViewModel.resetUiState()
                 }
             } catch (e: Exception) {
+                hideLoading()
                 Log.e("CharacterAPI", "예외 발생", e)
-                // ...
+                characterViewModel.resetUiState()
             }
         }
     }
