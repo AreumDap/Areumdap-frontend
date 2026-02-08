@@ -86,10 +86,8 @@ object UserRepository {
             )
 
             if (response.isSuccessful) {
-                // 로컬에도 저장
-                val userId = TokenManager.getUserId()
-                val email = TokenManager.getUserEmail() ?: ""
-                TokenManager.saveUserInfo(userId, email, nickname)
+                // 닉네임만 별도로 저장 (수정됨)
+                TokenManager.saveNickname(nickname)
 
                 Log.d(TAG, "닉네임 수정 성공: $nickname")
                 Result.success(Unit)
@@ -166,9 +164,9 @@ object UserRepository {
                 // 이미 등록된 토큰이라는 에러(500 등)가 나더라도, 클라이언트 입장에서는
                 // '이미 등록됨'으로 간주하고 저장해서 다음부터 요청 안 보내게 처리
                 if (response.code() == 500) {
-                     Log.d(TAG, "서버 에러(중복 가능성) -> 로컬에 토큰 저장 처리")
-                     TokenManager.saveFcmToken(token)
-                     return Result.success(Unit)
+                    Log.d(TAG, "서버 에러(중복 가능성) -> 로컬에 토큰 저장 처리")
+                    TokenManager.saveFcmToken(token)
+                    return Result.success(Unit)
                 }
                 Result.failure(Exception("기기 등록 실패"))
             }

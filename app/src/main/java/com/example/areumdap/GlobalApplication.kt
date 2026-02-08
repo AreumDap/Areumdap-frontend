@@ -33,5 +33,6 @@ class GlobalApplication : Application() {
             val notificationManager = getSystemService(android.app.NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
         }
+        TokenManager.init(this)
     }
 }

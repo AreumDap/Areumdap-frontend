@@ -61,7 +61,7 @@ object TokenManager {
         return prefs.getString(KEY_USER_NAME, null)
     }
 
-    fun getNickname(): String? {
+    fun getUserNickname(): String? {
         return prefs.getString(KEY_USER_NICKNAME, null)
     }
 

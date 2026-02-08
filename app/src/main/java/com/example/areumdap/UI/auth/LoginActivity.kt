@@ -3,12 +3,16 @@ package com.example.areumdap.UI.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.Network.SocialAuthRepository
 import com.example.areumdap.Network.TokenManager
+import com.example.areumdap.R
 import com.example.areumdap.databinding.ActivityLoginBinding
+import com.example.areumdap.databinding.FragmentToastDialogBinding
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -49,6 +53,28 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // 커스텀 토스트 표시 함수
+    private fun showCustomToast(message: String, isSuccess: Boolean = true) {
+        val inflater = LayoutInflater.from(this)
+        val toastBinding = FragmentToastDialogBinding.inflate(inflater)
+
+        // 토스트 메시지 설정
+        toastBinding.toastTv.text = message
+
+        // 성공/실패에 따라 아이콘 변경
+        if (isSuccess) {
+            toastBinding.toastIv.setImageResource(R.drawable.ic_success)
+        } else {
+            toastBinding.toastIv.setImageResource(R.drawable.ic_failure)
+        }
+
+        Toast(this).apply {
+            duration = Toast.LENGTH_SHORT
+            view = toastBinding.root
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 100)
+            show()
+        }
+    }
 
     private fun performKakaoLogin() {
         binding.btnKakaoLogin.isEnabled = false
@@ -69,11 +95,7 @@ class LoginActivity : AppCompatActivity() {
 
             }.onFailure { error ->
                 Log.e(tag, "카카오 로그인 URL 조회 실패: ${error.message}")
-                Toast.makeText(
-                    this@LoginActivity,
-                    error.message ?: "카카오 로그인을 시작할 수 없습니다.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showCustomToast("카카오 로그인을 시작할 수 없습니다.", isSuccess = false)
                 binding.btnKakaoLogin.isEnabled = true
             }
         }
@@ -99,11 +121,7 @@ class LoginActivity : AppCompatActivity() {
 
             }.onFailure { error ->
                 Log.e(tag, "네이버 로그인 URL 조회 실패: ${error.message}")
-                Toast.makeText(
-                    this@LoginActivity,
-                    error.message ?: "네이버 로그인을 시작할 수 없습니다.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showCustomToast("네이버 로그인을 시작할 수 없습니다.", isSuccess = false)
                 binding.btnNaverLogin.isEnabled = true
             }
         }

@@ -3,19 +3,23 @@ package com.example.areumdap.UI.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.Network.AuthRepository
 import com.example.areumdap.Network.TokenManager
+import com.example.areumdap.R
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivitySignupBinding
+import com.example.areumdap.databinding.FragmentToastDialogBinding
 import kotlinx.coroutines.launch
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
     private var isEmailVerified = false
-    private val tag = "SignupActivity" // 소문자로 변경
+    private val tag = "SignupActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +62,29 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
+    // 커스텀 토스트 표시 함수
+    private fun showCustomToast(message: String, isSuccess: Boolean = true) {
+        val inflater = LayoutInflater.from(this)
+        val toastBinding = FragmentToastDialogBinding.inflate(inflater)
+
+        // 토스트 메시지 설정
+        toastBinding.toastTv.text = message
+
+        // 성공/실패에 따라 아이콘 변경
+        if (isSuccess) {
+            toastBinding.toastIv.setImageResource(R.drawable.ic_success)
+        } else {
+            toastBinding.toastIv.setImageResource(R.drawable.ic_failure)
+        }
+
+        Toast(this).apply {
+            duration = Toast.LENGTH_SHORT
+            view = toastBinding.root
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 100)
+            show()
+        }
+    }
+
     private fun requestEmailVerification() {
         Log.d(tag, "requestEmailVerification() 시작")
 
@@ -67,13 +94,13 @@ class SignupActivity : AppCompatActivity() {
 
         if (email.isEmpty()) {
             Log.w(tag, "이메일이 비어있음")
-            Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("이메일을 입력해주세요.", isSuccess = false)
             return
         }
 
         if (!isValidEmail(email)) {
             Log.w(tag, "이메일 형식이 잘못됨: $email")
-            Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("올바른 이메일 형식을 입력해주세요.", isSuccess = false)
             return
         }
 
@@ -90,11 +117,7 @@ class SignupActivity : AppCompatActivity() {
 
                 result.onSuccess {
                     Log.d(tag, "✅ 이메일 인증 요청 성공")
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "인증번호가 발송되었습니다. 이메일을 확인해주세요.",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showCustomToast("인증번호가 발송되었습니다. 이메일을 확인해주세요.", isSuccess = true)
 
                     // 버튼 텍스트 변경
                     binding.btnEmailCheck.text = "재요청"
@@ -104,20 +127,12 @@ class SignupActivity : AppCompatActivity() {
                     Log.e(tag, "에러 메시지: ${error.message}")
                     Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
 
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "인증번호 발송 실패: ${error.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
                     binding.btnEmailCheck.isEnabled = true
                 }
             } catch (e: Exception) {
                 Log.e(tag, "이메일 인증 요청 중 예외 발생: ${e.message}", e)
-                Toast.makeText(
-                    this@SignupActivity,
-                    "이메일 인증 요청 중 오류가 발생했습니다: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                showCustomToast("이메일 인증 요청 중 오류가 발생했습니다", isSuccess = false)
                 binding.btnEmailCheck.isEnabled = true
             }
         }
@@ -133,7 +148,7 @@ class SignupActivity : AppCompatActivity() {
 
         if (authCode.isEmpty()) {
             Log.w(tag, "인증번호가 비어있음")
-            Toast.makeText(this, "인증번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("인증번호를 입력해주세요.", isSuccess = false)
             return
         }
 
@@ -150,12 +165,8 @@ class SignupActivity : AppCompatActivity() {
 
                 result.onSuccess {
                     Log.d(tag, "✅ 이메일 인증 확인 성공!")
-                    isEmailVerified = true // ★★★ 이 부분이 핵심!
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "이메일 인증이 완료되었습니다.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    isEmailVerified = true
+                    showCustomToast("이메일 인증이 완료되었습니다.", isSuccess = true)
 
                     binding.btnAuthConfirm.text = "인증완료"
                     binding.etAuthCode.isEnabled = false
@@ -166,21 +177,13 @@ class SignupActivity : AppCompatActivity() {
                     Log.e(tag, "에러 메시지: ${error.message}")
                     Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
 
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "인증 실패: ${error.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showCustomToast("일시적인 문제로 로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
 
                     binding.btnAuthConfirm.isEnabled = true
                 }
             } catch (e: Exception) {
                 Log.e(tag, "인증번호 확인 중 예외 발생: ${e.message}", e)
-                Toast.makeText(
-                    this@SignupActivity,
-                    "인증번호 확인 중 오류가 발생했습니다: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                showCustomToast("인증번호 확인 중 오류가 발생했습니다", isSuccess = false)
                 binding.btnAuthConfirm.isEnabled = true
             }
         }
@@ -202,7 +205,7 @@ class SignupActivity : AppCompatActivity() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPw.text.toString().trim()
 
-        // ★★★ 생년월일 형식 변환: 20030213 → 2003-02-13 ★★★
+        // 생년월일 형식 변환: 20030213 → 2003-02-13
         val formattedBirth = formatBirth(birth)
 
         Log.d(tag, "📝 회원가입 요청 데이터:")
@@ -224,11 +227,7 @@ class SignupActivity : AppCompatActivity() {
 
                 result.onSuccess {
                     Log.d(tag, "✅ 회원가입 API 성공!")
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "회원가입이 완료되었습니다!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showCustomToast("회원가입이 완료되었습니다!", isSuccess = true)
 
                     // 회원가입 후 온보딩으로 이동
                     navigateToOnboarding()
@@ -237,11 +236,7 @@ class SignupActivity : AppCompatActivity() {
                     Log.e(tag, "에러 메시지: ${error.message}")
                     Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
 
-                    Toast.makeText(
-                        this@SignupActivity,
-                        "회원가입 실패: ${error.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showCustomToast("회원가입 실패: ${error.message}", isSuccess = false)
 
                     binding.btnSignUp.isEnabled = true
                 }
@@ -250,18 +245,14 @@ class SignupActivity : AppCompatActivity() {
                 Log.e(tag, "예외 메시지: ${e.message}")
                 Log.e(tag, "예외 타입: ${e.javaClass.simpleName}")
 
-                Toast.makeText(
-                    this@SignupActivity,
-                    "회원가입 중 오류 발생: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                showCustomToast("회원가입 중 오류 발생: ${e.message}", isSuccess = false)
                 binding.btnSignUp.isEnabled = true
             }
         }
     }
 
     /**
-     * ★★★ 생년월일 형식 변환 함수 ★★★
+     * 생년월일 형식 변환 함수
      * 20030213 → 2003-02-13
      */
     private fun formatBirth(birth: String): String {
@@ -300,42 +291,42 @@ class SignupActivity : AppCompatActivity() {
 
         if (name.isEmpty()) {
             Log.w(tag, "❌ 이름 빈값 에러")
-            Toast.makeText(this, "이름을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("이름을 입력해주세요.", isSuccess = false)
             binding.etName.requestFocus()
             return false
         }
 
         if (birth.isEmpty()) {
             Log.w(tag, "❌ 생년월일 빈값 에러")
-            Toast.makeText(this, "생년월일을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("생년월일을 입력해주세요.", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
 
         if (birth.length != 8) {
             Log.w(tag, "❌ 생년월일 길이 에러: ${birth.length}자리 (8자리 필요)")
-            Toast.makeText(this, "생년월일을 8자리로 입력해주세요. (예: 19900101)", Toast.LENGTH_SHORT).show()
+            showCustomToast("생년월일을 8자리로 입력해주세요. (예: 19900101)", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
 
         if (!isValidBirth(birth)) {
             Log.w(tag, "❌ 생년월일 날짜 유효성 에러: $birth")
-            Toast.makeText(this, "올바른 날짜를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("올바른 날짜를 입력해주세요.", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
 
         if (email.isEmpty()) {
             Log.w(tag, "❌ 이메일 빈값 에러")
-            Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("이메일을 입력해주세요.", isSuccess = false)
             binding.etEmail.requestFocus()
             return false
         }
 
         if (!isValidEmail(email)) {
             Log.w(tag, "❌ 이메일 형식 에러: $email")
-            Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("올바른 이메일 형식을 입력해주세요.", isSuccess = false)
             binding.etEmail.requestFocus()
             return false
         }
@@ -343,27 +334,27 @@ class SignupActivity : AppCompatActivity() {
         if (!isEmailVerified) {
             Log.w(tag, "❌ 이메일 미인증 에러 - isEmailVerified = $isEmailVerified")
             Log.w(tag, "이메일 인증을 먼저 완료해야 합니다!")
-            Toast.makeText(this, "이메일 인증을 완료해주세요.", Toast.LENGTH_LONG).show()
+            showCustomToast("이메일 인증을 완료해주세요.", isSuccess = false)
             return false
         }
 
         if (password.isEmpty()) {
             Log.w(tag, "❌ 비밀번호 빈값 에러")
-            Toast.makeText(this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("비밀번호를 입력해주세요.", isSuccess = false)
             binding.etPw.requestFocus()
             return false
         }
 
         if (password.length < 6) {
             Log.w(tag, "❌ 비밀번호 길이 에러: ${password.length}자리 (최소 6자리)")
-            Toast.makeText(this, "비밀번호는 6자리 이상 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("비밀번호는 6자리 이상 입력해주세요.", isSuccess = false)
             binding.etPw.requestFocus()
             return false
         }
 
         if (password != passwordConfirm) {
             Log.w(tag, "❌ 비밀번호 확인 불일치 에러")
-            Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+            showCustomToast("비밀번호가 일치하지 않습니다.", isSuccess = false)
             binding.etPwConfirm.requestFocus()
             return false
         }
@@ -373,7 +364,7 @@ class SignupActivity : AppCompatActivity() {
     }
 
     /**
-     * ★★★ 생년월일 날짜 유효성 검증 ★★★
+     * 생년월일 날짜 유효성 검증
      */
     private fun isValidBirth(birth: String): Boolean {
         if (birth.length != 8) return false
