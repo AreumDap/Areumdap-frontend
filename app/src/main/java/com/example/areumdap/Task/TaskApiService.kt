@@ -34,4 +34,14 @@ interface TaskApiService {
         @Query("cursorId") cursorId: Int?,
         @Query("size") size: Int?
     ): Response<BaseResponse<SavedQuestionsResponse>>
+
+    @retrofit2.http.DELETE("api/missions/{missionId}")
+    suspend fun deleteCompletedMission(
+        @retrofit2.http.Path("missionId") missionId: Int
+    ): Response<BaseResponse<Unit>>
+
+    @retrofit2.http.DELETE("api/chatbot")
+    suspend fun deleteSavedQuestion(
+        @Query("userChatThreadId") threadId: Long
+    ): Response<BaseResponse<Unit>>
 }
