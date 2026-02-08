@@ -19,6 +19,13 @@ class OnboardingCustomKeywordFragment: Fragment(){
     private var _binding: FragmentOnboardingCustomKeywordBinding? = null
     private val binding get() = _binding!!
 
+    private val seasonToKorean = mapOf(
+        "SPRING" to "봄",
+        "SUMMER" to "여름",
+        "FALL" to "가을",
+        "WINTER" to "겨울"
+    )
+
     private val viewModel: OnboardingViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -36,8 +43,10 @@ class OnboardingCustomKeywordFragment: Fragment(){
 
         // 선택한 계절에 따라 텍스트 변경
         viewModel.selectedSeason.observe(viewLifecycleOwner) { season ->
-            val seasonTextResult = "${season}과 가장 닮아 계시군요!"
-            val seasonKeywordGuide = "${season}의 어떤 부분과\n가장 닮았다고 생각하시나요?"
+            val seasonKorean = seasonToKorean[season] ?: "봄"
+
+            val seasonTextResult = "${seasonKorean}과 가장 닮아 계시군요!"
+            val seasonKeywordGuide = "${seasonKorean}의 어떤 부분과\n가장 닮았다고 생각하시나요?"
             binding.tvSelectedSeasonResult.text = android.text.Html.fromHtml(seasonTextResult, android.text.Html.FROM_HTML_MODE_LEGACY)
             binding.tvKeywordSelectionGuide.text = android.text.Html.fromHtml(seasonKeywordGuide, android.text.Html.FROM_HTML_MODE_LEGACY)
         }

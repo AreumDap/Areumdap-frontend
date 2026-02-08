@@ -5,8 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.areumdap.UI.Character.Data.CharacterCreateRequest
 import com.example.areumdap.UI.Character.Data.CharacterHistoryResponse
 import com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse
+import com.example.areumdap.UI.Character.Data.ErrorResponse
+import com.google.gson.Gson
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CharacterViewModel(private val apiService: CharacterApiService) : ViewModel() {
@@ -28,6 +34,9 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
     // 선택된 태그 (필터링용)
     private val _selectedTag = MutableLiveData<String?>("전체")
     val selectedTag: LiveData<String?> = _selectedTag
+
+    private val _uiState = MutableStateFlow<CharacterUiState>(CharacterUiState.Idle)
+    val uiState: StateFlow<CharacterUiState> = _uiState.asStateFlow()
 
     fun setSelectedTag(tag: String?) {
         _selectedTag.value = tag
@@ -129,4 +138,48 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
         val newData = currentData.copy(currentXp = newXp)
         _characterLevel.value = newData
     }
+
+
+    // 캐릭터 생성
+    fun createCharacter(season: String, keywords: List<String>) {
+        viewModelScope.launch {
+            _uiState.value = CharacterUiState.Loading
+
+            try {
+                val request = CharacterCreateRequest(
+                    characterSeason = season,
+                    keywords = keywords,
+                    keywordType = "PRESET"
+                )
+
+                val response = apiService.createCharacter(request)
+
+                if (response.isSuccessful && response.body() != null) {
+                    _uiState.value = CharacterUiState.Success(
+                        characterId = response.body()!!.characterId,
+                        imageUrl = response.body()!!.imageUrl
+                    )
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    val errorMsg = try {
+                        Gson().fromJson(errorBody, ErrorResponse::class.java).message
+                    } catch (e: Exception) {
+                        "캐릭터 생성에 실패했습니다."
+                    }
+                    _uiState.value = CharacterUiState.Error(errorMsg)
+                }
+            } catch (e: Exception) {
+                _uiState.value = CharacterUiState.Error(
+                    e.message ?: "네트워크 오류가 발생했습니다."
+                )
+            }
+        }
+    }
+}
+
+sealed class CharacterUiState {
+    object Idle : CharacterUiState()
+    object Loading : CharacterUiState()
+    data class Success(val characterId: Int, val imageUrl: String?) : CharacterUiState()
+    data class Error(val message: String) : CharacterUiState()
 }

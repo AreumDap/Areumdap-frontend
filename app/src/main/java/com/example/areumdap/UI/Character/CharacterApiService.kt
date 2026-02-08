@@ -3,7 +3,10 @@ package com.example.areumdap.UI.Character
 import com.example.areumdap.UI.Character.Data.CharacterHistoryResponse
 import com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse
 import com.example.areumdap.Network.model.BaseResponse
+import com.example.areumdap.UI.Character.Data.CharacterCreateRequest
+import com.example.areumdap.UI.Character.Data.CharacterCreateResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 
@@ -19,4 +22,9 @@ interface CharacterApiService {
 
     @POST("api/characters/history/summary")
     suspend fun postCharacterHistorySummary(): Response<BaseResponse<String>>
+
+    @POST("api/characters")
+    suspend fun createCharacter(
+        @Body request: CharacterCreateRequest
+    ): Response<CharacterCreateResponse>
 }
