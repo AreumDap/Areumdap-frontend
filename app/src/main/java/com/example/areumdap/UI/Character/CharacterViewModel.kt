@@ -18,14 +18,15 @@ import kotlinx.coroutines.launch
 class CharacterViewModel(private val apiService: CharacterApiService) : ViewModel() {
     // 캐릭터 레벨 데이터
     private val _characterLevel = MutableLiveData<CharacterLevelUpResponse?>()
-    val characterLevel : LiveData<CharacterLevelUpResponse?> = _characterLevel
+    val characterLevel: LiveData<CharacterLevelUpResponse?> = _characterLevel
+
     // 캐릭터 history 데이터
     private val _historyData = MutableLiveData<CharacterHistoryResponse?>()
     val historyData: LiveData<CharacterHistoryResponse?> = _historyData
 
     // 로딩 상태 처리
     private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading : LiveData<Boolean> = _isLoading
+    val isLoading: LiveData<Boolean> = _isLoading
 
     // 에러 메시지 처리
     private val _errorMessage = MutableLiveData<String>()
@@ -61,39 +62,42 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
         }
     }
 
-    fun fetchCharacterLevel(){
+    fun fetchCharacterLevel() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val response = apiService.postCharacterLevel()
-                
-                if(response.isSuccessful){
+
+                if (response.isSuccessful) {
                     val body = response.body()
                     Log.d("DEBUG_API", "fetchCharacterLevel Body: $body")
                     if (body?.data != null) {
                         _characterLevel.value = body.data
-                        
+
                         // 레벨업/정보 갱신 성공 시 히스토리 요약 업데이트 요청
                         try {
                             val summaryResponse = apiService.postCharacterHistorySummary()
                             if (summaryResponse.isSuccessful) {
                                 Log.d("DEBUG_API", "History Summary Updated")
                             } else {
-                                Log.e("DEBUG_API", "History Summary Update Failed: ${summaryResponse.code()}")
+                                Log.e(
+                                    "DEBUG_API",
+                                    "History Summary Update Failed: ${summaryResponse.code()}"
+                                )
                             }
                         } catch (e: Exception) {
                             Log.e("DEBUG_API", "History Summary Update Exception", e)
                         }
-                        
+
                     } else {
                         Log.e("DEBUG_API", "fetchCharacterLevel Body Data is NULL")
                     }
-                } else{
+                } else {
                     val errorBody = response.errorBody()?.string()
                     Log.e("DEBUG_API", "fetchCharacterLevel Error: $errorBody")
                     _errorMessage.value = "레벨 정보를 가져오는데 실패했습니다 (${response.code()})"
                 }
-            }  catch (e: Exception) {
+            } catch (e: Exception) {
                 Log.e("DEBUG_API", "fetchCharacterLevel Exception", e)
                 _errorMessage.value = "네트워크 오류가 발생했습니다"
             } finally {
@@ -102,20 +106,20 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
         }
     }
 
-    fun fetchMyCharacter(){
-        viewModelScope.launch{
+    fun fetchMyCharacter() {
+        viewModelScope.launch {
             _isLoading.value = true
-            try{
+            try {
                 val response = apiService.getMycharacter()
-                if(response.isSuccessful){
+                if (response.isSuccessful) {
                     val body = response.body()
                     if (body?.data != null) {
                         _characterLevel.value = body.data
                     }
-                } else{
+                } else {
                     _errorMessage.value = "캐릭터 정보를 가져오는데 실패"
                 }
-            } catch (e: Exception){
+            } catch (e: Exception) {
                 _errorMessage.value = "네트워크 오류가 발생"
             } finally {
                 _isLoading.value = false
@@ -128,13 +132,13 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
         val currentData = _characterLevel.value ?: return
         val currentXp = currentData.currentXp
         val maxXp = currentData.maxXp
-        
+
         // 경험치 증가
         var newXp = currentXp + amount
         if (maxXp > 0 && newXp > maxXp) {
             newXp = maxXp
         }
-        
+
         val newData = currentData.copy(currentXp = newXp)
         _characterLevel.value = newData
     }
@@ -154,17 +158,20 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
 
                 val response = apiService.createCharacter(request)
 
-                if (response.isSuccessful && response.body() != null) {
+                val body = response.body()
+
+                if (response.isSuccessful && body?.data != null) {
+                    val data = body.data!!
                     _uiState.value = CharacterUiState.Success(
-                        characterId = response.body()!!.characterId,
-                        imageUrl = response.body()!!.imageUrl
+                        characterId = data.characterId,
+                        imageUrl = data.imageUrl
                     )
                 } else {
                     val errorBody = response.errorBody()?.string()
                     val errorMsg = try {
                         Gson().fromJson(errorBody, ErrorResponse::class.java).message
                     } catch (e: Exception) {
-                        "캐릭터 생성에 실패했습니다."
+                        response.body()?.message ?: "캐릭터 생성에 실패했습니다."
                     }
                     _uiState.value = CharacterUiState.Error(errorMsg)
                 }

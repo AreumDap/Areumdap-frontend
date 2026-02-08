@@ -26,5 +26,5 @@ interface CharacterApiService {
     @POST("api/characters")
     suspend fun createCharacter(
         @Body request: CharacterCreateRequest
-    ): Response<CharacterCreateResponse>
+    ): Response<BaseResponse<CharacterCreateResponse>>
 }
