@@ -43,7 +43,7 @@ class ChatThreadViewModel(
             ).onSuccess { data ->
                 _threads.value = data.userChatThreads
             }.onFailure { e->
-                _error.value = e.message ?: "알 수 없는 오료"
+                _error.value = e.message ?: "알 수 없는 오류"
             }
 
             _loading.value = false
