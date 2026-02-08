@@ -203,7 +203,7 @@
         <item name="colorPrimaryVariant">@color/green1</item>
     </style>
 
-    <style name="Theme.AreumDap.Autumn" parent="Theme.AreumDap">
+    <style name="Theme.AreumDap.Fall" parent="Theme.AreumDap">
         <item name="colorPrimary">@color/yellow2</item>
         <item name="colorPrimaryVariant">@color/yellow1</item>
     </style>
