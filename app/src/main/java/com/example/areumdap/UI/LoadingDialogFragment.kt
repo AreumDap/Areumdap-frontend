@@ -43,7 +43,7 @@ class LoadingDialogFragment : DialogFragment() {
         animationDrawable.start()
 
         // 닉네임 설정
-        val nickname = TokenManager.getNickname() ?: ""
+        val nickname = TokenManager.getUserNickname() ?: ""
         binding.loadingIdTv.text = nickname
     }
 }

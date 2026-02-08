@@ -43,6 +43,17 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
         _selectedTag.value = tag
     }
 
+    // 완료된 미션 ID 관리 (로컬 블랙리스트)
+    private val _completedMissionIds = mutableSetOf<Int>()
+
+    fun addCompletedMission(missionId: Int) {
+        _completedMissionIds.add(missionId)
+    }
+
+    fun isMissionCompleted(missionId: Int): Boolean {
+        return _completedMissionIds.contains(missionId)
+    }
+
     //캐릭터 성장 히스토리 데이터를 가져오는 함수
     fun fetchCharacterHistory() {
         viewModelScope.launch {
