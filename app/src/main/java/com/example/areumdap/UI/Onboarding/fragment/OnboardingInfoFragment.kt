@@ -6,13 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.areumdap.Network.OnboardingRequest
 import com.example.areumdap.Network.RetrofitClient
+import com.example.areumdap.Network.UserApi
 import com.example.areumdap.R
 import com.example.areumdap.UI.Character.CharacterUiState
 import com.example.areumdap.UI.Onboarding.OnboardingViewModel
@@ -22,6 +25,8 @@ import com.example.areumdap.UI.Character.CharacterViewModel
 import com.example.areumdap.UI.Character.CharacterViewModelFactory
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import kotlinx.coroutines.launch
+import kotlin.getValue
+import kotlin.jvm.java
 
 
 class OnboardingInfoFragment: Fragment() {
@@ -35,6 +40,12 @@ class OnboardingInfoFragment: Fragment() {
     private val characterViewModel: CharacterViewModel by viewModels {
         CharacterViewModelFactory(RetrofitClient.service)
     }
+
+    // 유저 온보딩 저장
+    private val userApi: UserApi by lazy {
+        RetrofitClient.create(UserApi::class.java)
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,10 +72,7 @@ class OnboardingInfoFragment: Fragment() {
                 1 -> showText2() // "서로를 알아가기 위해..."
                 2 -> showText3() // "좋아요! 앞으로 ..."
                 3 -> showText4() // "아름이는 oo님이..."
-                4 -> {
-                    Log.d("CharacterAPI", "step 4 감지! createCharacter() 호출")
-                    createCharacter() // 캐릭터 생성
-                }
+                4 -> createCharacter() // 캐릭터 생성
             }
         }
     }
@@ -103,6 +111,7 @@ class OnboardingInfoFragment: Fragment() {
     private fun createCharacter() {
         val season = viewModel.selectedSeason.value
         val keywords = viewModel.selectedKeywords.value ?: mutableListOf()
+        val nickname = viewModel.nickname.value
 
         Log.d("CharacterAPI", "계절: $season")
         Log.d("CharacterAPI", "키워드: $keywords")
@@ -113,7 +122,17 @@ class OnboardingInfoFragment: Fragment() {
             return
         }
 
+        if (nickname.isNullOrEmpty()) {
+            showError("닉네임을 입력해주세요.")
+            return
+        }
+
         Log.d("CharacterAPI", "API 호출 시작: season=$season, keywords=$keywords")
+
+        val currentState = characterViewModel.uiState.value
+        if (currentState is CharacterUiState.Loading || currentState is CharacterUiState.Success) {
+            return
+        }
 
         // 캐릭터 생성 API 호출
         characterViewModel.createCharacter(
@@ -140,18 +159,15 @@ class OnboardingInfoFragment: Fragment() {
                         }
                         is CharacterUiState.Success -> {
                             Log.d("CharacterAPI", "성공! ID: ${state.characterId}, URL: ${state.imageUrl}")
-                            hideLoading()
-                            saveCharacterInfo(state.characterId, state.imageUrl)
-                            (activity as? OnboardingActivity)?.navigateToMain()
+                            saveOnboardingAndNavigate(state.characterId, state.imageUrl)
                         }
                         is CharacterUiState.Error -> {
                             Log.e("CharacterAPI", "에러: ${state.message}")
                             hideLoading()
                             showError(state.message)
+                            characterViewModel.resetUiState()
                         }
-                        else -> {
-                            Log.d("CharacterAPI", "uiState: Idle")
-                        }
+                        CharacterUiState.Idle -> {}
                     }
                 }
             }
@@ -167,6 +183,37 @@ class OnboardingInfoFragment: Fragment() {
             .putInt("character_id", characterId)
             .putString("image_url", imageUrl ?: "")
             .apply()
+    }
+
+    // 온보딩 저장
+    private fun saveOnboardingAndNavigate(characterId: Int, imageUrl: String?) {
+        val nickname = viewModel.nickname.value ?: ""
+
+        Log.d("CharacterAPI", "=== 온보딩 저장 시작 ===")
+        Log.d("CharacterAPI", "닉네임: $nickname")
+        Log.d("CharacterAPI", "캐릭터 ID: $characterId")
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                Log.d("CharacterAPI", "API 호출 중...")
+                val response = userApi.saveOnboarding(OnboardingRequest(nickname = nickname))
+
+                Log.d("CharacterAPI", "응답 코드: ${response.code()}")
+                Log.d("CharacterAPI", "응답 성공 여부: ${response.isSuccessful}")
+
+                if (response.isSuccessful) {
+                    Log.d("CharacterAPI", "온보딩 저장 성공!")
+                    // ...
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("CharacterAPI", "온보딩 저장 실패: $errorBody")
+                    // ...
+                }
+            } catch (e: Exception) {
+                Log.e("CharacterAPI", "예외 발생", e)
+                // ...
+            }
+        }
     }
 
     private fun showLoading() {

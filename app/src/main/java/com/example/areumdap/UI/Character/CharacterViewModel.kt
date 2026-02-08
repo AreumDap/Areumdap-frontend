@@ -182,6 +182,10 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
             }
         }
     }
+
+    fun resetUiState() {
+        _uiState.value = CharacterUiState.Idle
+    }
 }
 
 sealed class CharacterUiState {

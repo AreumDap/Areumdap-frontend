@@ -1,6 +1,7 @@
 package com.example.areumdap.Network
 
 import com.example.areumdap.Network.model.BaseResponse
+import com.google.gson.annotations.SerializedName
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -8,6 +9,12 @@ import retrofit2.http.PATCH
 import retrofit2.http.POST
 
 interface UserApi {
+
+    /**
+     * 유저 온보딩 저장
+     */
+    @POST("api/users/onboarding")
+    suspend fun saveOnboarding(@Body request: OnboardingRequest): Response<BaseResponse<Unit>>
 
     /**
      * 유저 프로필 조회
@@ -76,6 +83,14 @@ data class UpdateNicknameRequest(
  */
 data class UpdateBirthRequest(
     val birth: String  // "yyyy-MM-dd" 형식
+)
+
+/**
+ * 유저 온보딩 저장 요청
+ */
+data class OnboardingRequest(
+    @SerializedName("nickname")
+    val nickname: String
 )
 
 /**
