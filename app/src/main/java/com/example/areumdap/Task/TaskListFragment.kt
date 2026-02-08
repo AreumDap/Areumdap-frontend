@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.R
@@ -20,7 +20,7 @@ class TaskListFragment: Fragment() {
     private var _binding: FragmentTaskListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CharacterViewModel by viewModels({ requireParentFragment() }) {
+    private val viewModel: CharacterViewModel by activityViewModels {
         CharacterViewModelFactory(RetrofitClient.service)
     }
 
@@ -44,16 +44,32 @@ class TaskListFragment: Fragment() {
         // 팝업에서 미션 완료/이미 완료 등의 신호를 받으면 데이터 새로고침
         childFragmentManager.setFragmentResultListener("missionCompleted", viewLifecycleOwner) { requestKey, bundle ->
             
-            // 1. 즉시 XP 반영 (Optimistic Update)
+            val missionId = bundle.getInt("missionId", -1)
             val reward = bundle.getInt("reward", 0)
+
+            // 1. 로컬 리스트에서 즉시 제거 (Optimistic UI)
+            if (missionId != -1) {
+                // 완료된 미션 ID를 뷰모델 블랙리스트에 추가
+                viewModel.addCompletedMission(missionId)
+
+                // 현재 어댑터에 있는 데이터 복사
+                val currentList = taskAdapter.getCurrentList().toMutableList()
+                // 완료된 미션 제거
+                val updatedList = currentList.filter { it.missionId != missionId }
+                
+                // 어댑터 갱신 (즉시 사라짐 효과)
+                taskAdapter.updateData(updatedList)
+            }
+
+            // 2. XP 반영
             if (reward > 0) {
                 viewModel.addXp(reward)
-                 Toast.makeText(context, "+${reward} XP (Local)", Toast.LENGTH_SHORT).show()
+                 Toast.makeText(context, "+${reward} XP", Toast.LENGTH_SHORT).show()
             } else {
                  Log.e("DEBUG_XP", "Reward is 0 or less")
             }
 
-            // 2. 서버 데이터 갱신 (지연 호출)
+            // 3. 서버 데이터 갱신 (지연 호출 - 데이터 정합성 맞춤)
             view?.postDelayed({
                 viewModel.fetchMyCharacter()
             }, 1000)
@@ -121,9 +137,9 @@ class TaskListFragment: Fragment() {
         val levelData = viewModel.characterLevel.value ?: return
         val currentTag = viewModel.selectedTag.value
 
-        //  활성 과제만 필터링
+        //  활성 과제만 필터링 (서버 상태 + 뷰모델 블랙리스트)
         var filteredMissions = levelData.missions?.filter { mission ->
-            mission.status != "COMPLETED" && (mission.dDay ?: 0) >= 0
+            mission.status != "COMPLETED" && (mission.dDay ?: 0) >= 0 && !viewModel.isMissionCompleted(mission.missionId)
         } ?: emptyList()
 
         // 태그 필터링

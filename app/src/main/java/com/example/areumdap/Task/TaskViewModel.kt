@@ -195,36 +195,84 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
         return sdf.format(java.util.Date())
     }
 
-    // 과제 삭제 (로컬)
+    // 과제 삭제 (API 호출)
     fun deleteCompletedMission(missionId: Int) {
-        val currentList = _completedMissions.value?.toMutableList() ?: return
-        val itemToRemove = currentList.find { it.missionId == missionId }
+        Log.d("TaskViewModel", "deleteCompletedMission 호출됨. ID: $missionId")
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val response = apiService.deleteCompletedMission(missionId)
+                Log.d("TaskViewModel", "Mission Delete Response Code: ${response.code()}")
+                
+                if (response.isSuccessful && response.body()?.isSuccess == true) {
+                    Log.d("TaskViewModel", "미션 삭제 성공")
+                    // 성공 시 로컬 리스트에서도 제거
+                    val currentList = _completedMissions.value?.toMutableList() ?: return@launch
+                    val itemToRemove = currentList.find { it.missionId == missionId }
 
-        if (itemToRemove != null) {
-            currentList.remove(itemToRemove)
-            _completedMissions.value = currentList
-            
-            // 토탈 개수 감소
-            val currentCount = _totalMissionCount.value ?: 0
-            if (currentCount > 0) {
-                _totalMissionCount.value = currentCount - 1
+                    if (itemToRemove != null) {
+                        currentList.remove(itemToRemove)
+                        _completedMissions.value = currentList
+
+                        // 토탈 개수 감소
+                        val currentCount = _totalMissionCount.value ?: 0
+                        if (currentCount > 0) {
+                            _totalMissionCount.value = currentCount - 1
+                        }
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: ""
+                    Log.e("TaskViewModel", "미션 삭제 실패. Code: ${response.code()}, ErrorBody: $errorBody")
+                    _errorMessage.value = "삭제 실패: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                Log.e("TaskViewModel", "미션 삭제 중 예외 발생: ${e.message}")
+                _errorMessage.value = "네트워크 오류가 발생했습니다."
+            } finally {
+                _isLoading.value = false
             }
         }
     }
 
-    // 질문 삭제 (로컬)
-    fun deleteSavedQuestion(userQuestionId: Int) {
-        val currentList = _savedQuestions.value?.toMutableList() ?: return
-        val itemToRemove = currentList.find { it.userQuestionId == userQuestionId }
+    // 질문 삭제 (API 호출)
+    fun deleteSavedQuestion(userQuestionId: Long) {
+        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. ID: $userQuestionId")
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                // userQuestionId를 파라미터로 전달
+                val response = apiService.deleteSavedQuestion(userQuestionId)
+                Log.d("TaskViewModel", "API Response Code: ${response.code()}")
+                
+                if (response.isSuccessful && response.body()?.isSuccess == true) {
+                    val body = response.body()
+                    Log.d("TaskViewModel", "삭제 성공. isSuccess: ${body?.isSuccess}")
+                    
+                    // 성공 시 로컬 리스트에서도 제거
+                    val currentList = _savedQuestions.value?.toMutableList() ?: return@launch
+                    val itemToRemove = currentList.find { it.userQuestionId == userQuestionId }
 
-        if (itemToRemove != null) {
-            currentList.remove(itemToRemove)
-            _savedQuestions.value = currentList
+                    if (itemToRemove != null) {
+                        currentList.remove(itemToRemove)
+                        _savedQuestions.value = currentList
 
-            // 토탈 개수 감소
-            val currentCount = _questionTotalCount.value ?: 0
-            if (currentCount > 0) {
-                _questionTotalCount.value = currentCount - 1
+                        // 토탈 개수 감소
+                        val currentCount = _questionTotalCount.value ?: 0
+                        if (currentCount > 0) {
+                            _questionTotalCount.value = currentCount - 1
+                        }
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: ""
+                   Log.e("TaskViewModel", "삭제 실패. Code: ${response.code()}, Message: ${response.message()}, ErrorBody: $errorBody")
+                    _errorMessage.value = "삭제 실패: ${response.message()}"
+                }
+            } catch (e: Exception) {
+                Log.e("TaskViewModel", "삭제 중 예외 발생: ${e.message}")
+                e.printStackTrace()
+                _errorMessage.value = "네트워크 오류가 발생했습니다."
+            } finally {
+                _isLoading.value = false
             }
         }
     }

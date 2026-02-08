@@ -91,7 +91,7 @@ data class MissionDetailResponse(
 // 개별 질문 아이템
 data class QuestionItem(
     @SerializedName("userQuestionId")
-    val userQuestionId: Int,
+    val userQuestionId: Long,
 
     @SerializedName("questionId")
     val questionId: Int,

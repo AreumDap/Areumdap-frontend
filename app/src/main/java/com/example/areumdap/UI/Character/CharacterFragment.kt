@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.VPAdapter.TaskPageVPAdapter
 import com.example.areumdap.databinding.FragmentCharacterBinding
@@ -19,8 +19,8 @@ class CharacterFragment : Fragment() {
     private var _binding: FragmentCharacterBinding? = null
     private val binding get() = _binding!!
 
-    // 뷰모델 초기화
-    private val viewModel: CharacterViewModel by viewModels {
+    // 뷰모델 초기화 (Activity Scope로 변경)
+    private val viewModel: CharacterViewModel by activityViewModels {
         CharacterViewModelFactory(RetrofitClient.service)
     }
 
@@ -108,8 +108,10 @@ class CharacterFragment : Fragment() {
             levelData?.let {
                 updateCharacterUI(it)
                 
-                // 과제가 있는지 확인
-                val hasTask = it.missions?.any { mission -> mission.status != "COMPLETED" } ?: false
+                // 과제가 있는지 확인 (서버 상태 + 로컬 블랙리스트)
+                val hasTask = it.missions?.any { mission -> 
+                    mission.status != "COMPLETED" && !viewModel.isMissionCompleted(mission.missionId)
+                } ?: false
                 
                 // 과제가 있을 때만 필터 스피너 보이기
                 binding.taskFilterSp.visibility = if (hasTask) View.VISIBLE else View.GONE
@@ -151,6 +153,11 @@ class CharacterFragment : Fragment() {
             binding.characterNextLevelBtn.visibility = View.GONE
         }
     }
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchMyCharacter()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

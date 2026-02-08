@@ -10,7 +10,7 @@ import com.example.areumdap.databinding.ItemQuestionTaskBinding
 class QuestionRVAdapter (private val questionList: ArrayList<QuestionItem>):
 RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
 
-    var itemDeleteListener: ((Int) -> Unit)? = null
+    var itemDeleteListener: ((Long) -> Unit)? = null
     var itemClickListener: ((QuestionItem) -> Unit)? = null
 
     inner class ViewHolder(val binding: ItemQuestionTaskBinding): RecyclerView.ViewHolder(binding.root)
@@ -53,6 +53,7 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
                 override fun onConfirm(){
                     val position = holder.adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
+                        android.util.Log.d("QuestionRVAdapter", "삭제 아이콘 클릭. ID: ${item.userQuestionId}")
                         itemDeleteListener?.invoke(item.userQuestionId)
                     }
                 }

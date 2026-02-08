@@ -131,10 +131,10 @@ class MainActivity : AppCompatActivity() {
     private fun applySeasonTheme() {
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         when (prefs.getString("SEASON", "spring")) {
-            "spring" -> setTheme(R.style.Theme_AreumDap_Spring)
-            "summer" -> setTheme(R.style.Theme_AreumDap_Summer)
-            "autumn" -> setTheme(R.style.Theme_AreumDap_Autumn)
-            "winter" -> setTheme(R.style.Theme_AreumDap_Winter)
+            "SPRING" -> setTheme(R.style.Theme_AreumDap_Spring)
+            "SUMMER" -> setTheme(R.style.Theme_AreumDap_Summer)
+            "FALL" -> setTheme(R.style.Theme_AreumDap_Fall)
+            "WINTER" -> setTheme(R.style.Theme_AreumDap_Winter)
         }
     }
 

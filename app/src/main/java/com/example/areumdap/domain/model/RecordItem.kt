@@ -1,7 +1,7 @@
 package com.example.areumdap.domain.model
 
 data class RecordItem(
-    val id: Int,
+    val id: Long,
     val category: Category,   // 자기성찰/성장/관계
     val title: String,
     val summary: String,

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/report_task_cv"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="14dp"
+    app:cardCornerRadius="20dp"
+    app:cardUseCompatPadding="true"
+    app:cardPreventCornerOverlap="true">
+
+    <LinearLayout
+        android:id="@+id/report_task_content_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/background2"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="27dp"
+        android:paddingVertical="46dp">
+
+        <ImageView
+            android:id="@+id/rep_task_cat_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            tools:src="@drawable/ic_reflection" />
+
+        <TextView
+            android:id="@+id/rep_task_title_tv"
+            style="@style/TA_Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            tools:text="오늘 하루\n나를 위한 시간 갖기" />
+
+        <TextView
+            android:id="@+id/rep_task_content_tv"
+            style="@style/TA_Caption1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/black"
+            tools:text="아무 생각 없이 좋아하는 일을 하며\n나만의 시간을 가져보세요." />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

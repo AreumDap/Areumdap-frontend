@@ -100,6 +100,7 @@ class DataTaskFragment: DialogFragment() {
                         // Refresh trigger
                         // reward 전달하여 즉시 UI 반영
                         val resultBundle = Bundle().apply {
+                            putInt("missionId", missionId)
                             if (currentReward > 0) {
                                 putInt("reward", currentReward)
                             }
@@ -122,6 +123,7 @@ class DataTaskFragment: DialogFragment() {
                     // Refresh trigger (to remove it from list)
                     // reward도 함께 전달하여 즉시 UI 반영
                     val resultBundle = Bundle().apply {
+                        putInt("missionId", missionId)
                         if (currentReward > 0) {
                             putInt("reward", currentReward)
                         }
