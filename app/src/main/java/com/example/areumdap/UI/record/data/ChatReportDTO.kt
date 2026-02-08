@@ -17,3 +17,16 @@ data class UserChatThread(
     val favorite: Boolean
 )
 
+data class ChatThreadHistoriesDto(
+    val threadId: Long,
+    val histories: List<HistoryDto>
+)
+
+data class HistoryDto(
+    val id: Long,
+    val content: String,
+    val senderType: String,
+    val createdAt: String
+)
+
+

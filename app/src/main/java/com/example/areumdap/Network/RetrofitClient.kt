@@ -1,5 +1,6 @@
 package com.example.areumdap.Network
 
+import com.example.areumdap.Data.api.ChatReportApiService
 import com.example.areumdap.Data.api.ChatbotApiService
 import com.example.areumdap.Data.api.MissionApiService
 import com.example.areumdap.Task.TaskApiService
@@ -107,11 +108,23 @@ object RetrofitClient {
     }
     val taskService: TaskApiService = retrofit.create(TaskApiService::class.java)
 
+
+    /**
+     * ChatFrgment에서 사용하는 service 객체
+     */
     val missionApi: MissionApiService by lazy {
         retrofit.create(MissionApiService::class.java)
     }
     val chatbotApiService: ChatbotApiService by lazy {
         retrofit.create(ChatbotApiService::class.java)
     }
+
+    /**
+     * ChatDetailFragment에서 사용하는 service 객체
+     */
+    val chatReportApi: ChatReportApiService by lazy {
+        retrofit.create(ChatReportApiService::class.java)
+    }
+
 
 }
