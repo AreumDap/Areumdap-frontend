@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import com.example.areumdap.R
 import com.example.areumdap.UI.Chat.data.ChatViewModel
 import com.example.areumdap.UI.Chat.data.SummaryUiState
+import com.example.areumdap.UI.LoadingDialogFragment
 import com.example.areumdap.databinding.FragmentCoversationSummaryBinding
 import com.example.areumdap.domain.model.Category
 import kotlinx.coroutines.launch
@@ -52,16 +53,23 @@ class ConversationSummaryFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch{
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.summaryState.collect{state ->
+                    // 로딩 다이얼로그 관리
+                    val loadingDialog = childFragmentManager.findFragmentByTag("LoadingDialog") as? LoadingDialogFragment
+
                     when(state){
                         is SummaryUiState.Idle -> Unit
                         is SummaryUiState.Loading -> {
-                            // 로딩뷰 있으면 보여주기
-                            // binding.progressBar.visibility = View.VISIBLE
+                            // 로딩뷰 보여주기
+                            if (loadingDialog == null) {
+                                LoadingDialogFragment().show(childFragmentManager, "LoadingDialog")
+                            }
                         }
                         is SummaryUiState.Success ->{
+                            // 로딩뷰 숨기기
+                            loadingDialog?.dismiss()
+
                             val data = state.data
                             val s = state.data.summaryContent
-
 
                             binding.sumTitleTv.text = s.title
                             binding.sumBodyTv.text = s.summary
@@ -71,6 +79,8 @@ class ConversationSummaryFragment : Fragment() {
                             binding.sumCatTv.setTextColor(ContextCompat.getColor(requireContext(), cat.colorRes))
                         }
                         is SummaryUiState.Error ->{
+                            // 로딩뷰 숨기기
+                            loadingDialog?.dismiss()
                             Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                         }
                     }
