@@ -94,7 +94,7 @@ class RecordFragment : Fragment() {
 private fun UserChatThread.toRecordItem(): RecordItem {
     val parsed = summary.parseSummaryJson()
     return RecordItem(
-        id = threadId.toInt(),            // 가능하면 RecordItem id를 Long으로 바꾸는 게 안전
+        id = threadId.toInt(),
         category = tag.toCategory(),
         title = parsed.title.ifBlank { content.trim() },
         summary = parsed.summary,

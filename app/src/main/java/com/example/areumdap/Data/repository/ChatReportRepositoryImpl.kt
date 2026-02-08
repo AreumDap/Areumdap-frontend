@@ -8,7 +8,7 @@ class ChatReportRepositoryImpl(
 ) : ChatReportRepository {
     override suspend fun getChatThreads(favorite: Boolean, size: Int): Result<ChatThreadsData> =
         runCatching {
-            val res = api.getChatTreads(
+            val res = api.getChatThreads(
                 favorite = favorite,
                 size = size
             )
@@ -21,7 +21,8 @@ class ChatReportRepositoryImpl(
             val body = res.body() ?: error("응답 body가 비어있음")
 
             if (!body.isSuccess || body.data == null) {
+                error("API 실패: isSuccess=${body.isSuccess}, data=${body.data}")
             }
-            body.data!!
+            body.data
         }
 }

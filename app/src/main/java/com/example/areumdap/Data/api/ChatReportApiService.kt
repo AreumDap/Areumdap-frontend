@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface ChatReportApiService{
     @GET("api/chat/threads")
-    suspend fun getChatTreads(
+    suspend fun getChatThreads(
         @Query("favorite") favorite: Boolean = false,
         @Query("size") size:Int = 10
     ) : Response<ApiResponse<ChatThreadsData>>
