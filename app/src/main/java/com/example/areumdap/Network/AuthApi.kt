@@ -4,10 +4,17 @@ import com.example.areumdap.Network.model.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface AuthApi {
+
+
+    @POST("/api/auth/token/reissue")
+    suspend fun reissueToken(
+        @Header("Authorization") refreshToken: String
+    ): Response<BaseResponse<TokenResponse>>
 
     /**
      * 이메일 로그인

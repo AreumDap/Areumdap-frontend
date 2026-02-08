@@ -63,3 +63,8 @@ data class ConfirmEmailVerificationCodeRequest(
     @SerializedName("email") val email: String,
     @SerializedName("verificationCode") val verificationCode: String
 )
+
+data class TokenResponse(
+    @SerializedName("accessToken") val accessToken: String,
+    @SerializedName("refreshToken") val refreshToken: String
+)

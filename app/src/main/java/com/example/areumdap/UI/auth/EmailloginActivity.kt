@@ -3,16 +3,20 @@ package com.example.areumdap.UI.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.Network.AuthRepository
 import com.example.areumdap.Network.TokenManager
+import com.example.areumdap.R
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivityEmailLoginBinding
+import com.example.areumdap.databinding.FragmentToastDialogBinding
 import kotlinx.coroutines.launch
-import retrofit2.HttpException // [추가됨]
+import retrofit2.HttpException
 
 class EmailLoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEmailLoginBinding
@@ -42,7 +46,30 @@ class EmailLoginActivity : AppCompatActivity() {
 
         // 비밀번호 찾기
         binding.tvForgotPw.setOnClickListener {
-            Toast.makeText(this, "비밀번호 찾기 기능은 추후 구현 예정입니다.", Toast.LENGTH_SHORT).show()
+            showCustomToast("비밀번호 찾기 기능은 추후 구현 예정입니다.", isSuccess = false)
+        }
+    }
+
+    // 커스텀 토스트 표시 함수
+    private fun showCustomToast(message: String, isSuccess: Boolean = true) {
+        val inflater = LayoutInflater.from(this)
+        val toastBinding = FragmentToastDialogBinding.inflate(inflater)
+
+        // 토스트 메시지 설정
+        toastBinding.toastTv.text = message
+
+        // 성공/실패에 따라 아이콘 변경
+        if (isSuccess) {
+            toastBinding.toastIv.setImageResource(R.drawable.ic_success)
+        } else {
+            toastBinding.toastIv.setImageResource(R.drawable.ic_failure)
+        }
+
+        Toast(this).apply {
+            duration = Toast.LENGTH_SHORT
+            view = toastBinding.root
+            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 100)
+            show()
         }
     }
 
@@ -52,20 +79,20 @@ class EmailLoginActivity : AppCompatActivity() {
 
         // 입력값 검증
         if (email.isEmpty()) {
-            Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("이메일을 입력해주세요.", isSuccess = false)
             binding.etId.requestFocus()
             return
         }
 
         if (password.isEmpty()) {
-            Toast.makeText(this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("비밀번호를 입력해주세요.", isSuccess = false)
             binding.etPassword.requestFocus()
             return
         }
 
         // 이메일 형식 검증
         if (!isValidEmail(email)) {
-            Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
+            showCustomToast("올바른 이메일 형식을 입력해주세요.", isSuccess = false)
             binding.etId.requestFocus()
             return
         }
@@ -79,11 +106,7 @@ class EmailLoginActivity : AppCompatActivity() {
                 val result = AuthRepository.login(email, password)
 
                 result.onSuccess { loginResponse ->
-                    Toast.makeText(
-                        this@EmailLoginActivity,
-                        "${loginResponse.name}님 환영합니다!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showCustomToast("${loginResponse.name}님 환영합니다!", isSuccess = true)
 
                     // 로그인 상태 저장
                     val keepLogin = binding.cbKeepLogin.isChecked
@@ -96,16 +119,12 @@ class EmailLoginActivity : AppCompatActivity() {
 
                 }.onFailure { error ->
                     Log.e(tag, "로그인 실패: ${error.message}")
-                    Toast.makeText(
-                        this@EmailLoginActivity,
-                        error.message ?: "로그인에 실패했습니다.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
                     binding.btnLogin.isEnabled = true
                 }
             } catch (e: Exception) {
                 Log.e(tag, "로그인 중 예외 발생: ${e.message}")
-                Toast.makeText(this@EmailLoginActivity, "오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                showCustomToast("오류가 발생했습니다.", isSuccess = false)
                 binding.btnLogin.isEnabled = true
             }
         }

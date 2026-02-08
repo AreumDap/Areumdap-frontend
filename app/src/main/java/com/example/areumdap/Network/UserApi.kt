@@ -86,5 +86,6 @@ data class UserProfileResponse(
     val name: String?,
     val birth: String?,
     val notificationEnabled: Boolean,
+    val nickname: String?,
     val pushNotificationTime: String?
 )

@@ -34,7 +34,7 @@ class SettingFragment : Fragment() {
     // 설정 데이터
     private var isNotificationEnabled = true
     private var notificationTime = "22:00"
-    private var userName = "최지은"
+    private var userNickname = "사용자"  // userName -> userNickname으로 변경
     private var userBirthday = "2000.01.01"
 
     override fun onCreateView(
@@ -69,8 +69,8 @@ class SettingFragment : Fragment() {
             result.onSuccess { profile ->
                 if (!isAdded) return@onSuccess  // Fragment가 붙어있지 않으면 종료
 
-                // 서버에서 가져온 데이터로 설정
-                userName = profile.name ?: "사용자"
+                // 서버에서 가져온 데이터로 설정 - nickname 우선 사용
+                userNickname = profile.nickname ?: profile.name ?: "사용자"
                 userBirthday = profile.birth?.replace("-", ".") ?: "2000.01.01"
                 isNotificationEnabled = profile.notificationEnabled
                 notificationTime = profile.pushNotificationTime ?: "22:00"
@@ -96,7 +96,8 @@ class SettingFragment : Fragment() {
     private fun loadLocalData() {
         if (!isAdded) return  // Fragment가 붙어있지 않으면 종료
 
-        TokenManager.getUserName()?.let { userName = it }
+        // TokenManager에서 닉네임 우선 가져오기 (없으면 이름 사용)
+        userNickname = TokenManager.getUserNickname() ?: TokenManager.getUserName() ?: "사용자"
 
         val prefs = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE)
         isNotificationEnabled = prefs.getBoolean("notification_enabled", true)
@@ -135,7 +136,7 @@ class SettingFragment : Fragment() {
             }
         }
 
-        // 이름 변경 (인라인 편집)
+        // 닉네임 변경 (인라인 편집)
         binding.layoutName.setOnClickListener {
             enableNameEdit()
         }
@@ -191,18 +192,18 @@ class SettingFragment : Fragment() {
     /**
      * 닉네임 서버에 저장
      */
-    private fun updateNicknameToServer(newName: String) {
+    private fun updateNicknameToServer(newNickname: String) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val result = UserRepository.updateNickname(newName)
+            val result = UserRepository.updateNickname(newNickname)
 
             result.onSuccess {
-                userName = newName
-                binding.tvName.text = userName
+                userNickname = newNickname
+                binding.tvName.text = userNickname
                 Toast.makeText(requireContext(), "닉네임이 변경되었습니다.", Toast.LENGTH_SHORT).show()
             }.onFailure { error ->
                 Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
-                // 실패시 원래 이름으로 복원
-                binding.tvName.text = userName
+                // 실패시 원래 닉네임으로 복원
+                binding.tvName.text = userNickname
             }
         }
     }
@@ -224,19 +225,16 @@ class SettingFragment : Fragment() {
                 Toast.makeText(requireContext(), "생년월일이 변경되었습니다.", Toast.LENGTH_SHORT).show()
             }.onFailure { error ->
                 Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
-                // 실패시 원래 값으로 복원
-                binding.tvBirthday.text = userBirthday
             }
         }
     }
 
-    // ============ 기능 1: 토글 연동 ============
     private fun updateNotificationTimeState() {
-        binding.layoutNotificationTime.isEnabled = isNotificationEnabled
+        binding.tvNotificationTime.isEnabled = isNotificationEnabled
         binding.layoutNotificationTime.alpha = if (isNotificationEnabled) 1.0f else 0.5f
     }
 
-    // ============ 기능 2: 닉네임 인라인 편집 ============
+    // ============ 인라인 편집 기능 ============
     private fun setupNameInlineEdit() {
         binding.etName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -257,7 +255,7 @@ class SettingFragment : Fragment() {
     private fun enableNameEdit() {
         binding.tvName.visibility = View.GONE
         binding.etName.visibility = View.VISIBLE
-        binding.etName.setText(userName)
+        binding.etName.setText(userNickname)
         binding.etName.requestFocus()
         binding.etName.setSelection(binding.etName.text.length)
 
@@ -266,7 +264,7 @@ class SettingFragment : Fragment() {
     }
 
     private fun saveNameAndDisableEdit() {
-        val newName = binding.etName.text.toString().trim()
+        val newNickname = binding.etName.text.toString().trim()
 
         // EditText 숨기고 TextView 보이기
         binding.etName.visibility = View.GONE
@@ -276,9 +274,9 @@ class SettingFragment : Fragment() {
         val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.etName.windowToken, 0)
 
-        // 이름이 변경되었으면 서버에 저장
-        if (newName.isNotEmpty() && newName != userName) {
-            updateNicknameToServer(newName)
+        // 닉네임이 변경되었으면 서버에 저장
+        if (newNickname.isNotEmpty() && newNickname != userNickname) {
+            updateNicknameToServer(newNickname)
         }
     }
 
@@ -394,7 +392,7 @@ class SettingFragment : Fragment() {
     private fun updateUI() {
         binding.switchNotification.isChecked = isNotificationEnabled
         binding.tvNotificationTime.text = notificationTime
-        binding.tvName.text = userName
+        binding.tvName.text = userNickname  // userName -> userNickname
         binding.tvBirthday.text = userBirthday
 
         updateNotificationTimeState()

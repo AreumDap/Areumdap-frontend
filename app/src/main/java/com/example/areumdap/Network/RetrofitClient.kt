@@ -19,6 +19,8 @@ object RetrofitClient {
     // 서버 베이스 URL
     private const val BASE_URL = "https://areum-dap.online/"
 
+
+
     /**
      * 인증 인터셉터 - 모든 요청에 AccessToken 자동 첨부
      */
@@ -30,7 +32,8 @@ object RetrofitClient {
             "/api/auth/login",
             "/api/auth/signup",
             "/api/auth/email-verification",
-            "/api/auth/social-login"  // ★★★ 소셜 로그인 경로 추가 ★★★
+            "/api/auth/social-login",  // 소셜 로그인 경로
+            "/api/auth/token/reissue"  // 토큰 재발급 경로 (인증 불필요)
         )
 
         val path = originalRequest.url.encodedPath
@@ -74,6 +77,7 @@ object RetrofitClient {
         .writeTimeout(30, TimeUnit.SECONDS)
         .addInterceptor(authInterceptor)
         .addInterceptor(loggingInterceptor)
+        .authenticator(TokenAuthenticator())
         .build()
 
     /**
