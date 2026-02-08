@@ -80,6 +80,8 @@ class TaskGuideVPAdapter : RecyclerView.Adapter<TaskGuideVPAdapter.VH>() {
             sumDuedayTv.visibility = if (dueText.isBlank()) View.GONE else View.VISIBLE
         }
     }
+    fun getItem(position: Int): Mission? = items.getOrNull(position)
+    fun getItems(): List<Mission> = items
 
     override fun getItemCount(): Int = items.size
 }

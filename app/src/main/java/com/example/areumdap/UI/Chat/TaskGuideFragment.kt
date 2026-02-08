@@ -31,7 +31,20 @@ class TaskGuideFragment: Fragment() {
         MissionViewModelFactory(repo)
     }
     private lateinit var pagerAdapter : TaskGuideVPAdapter
-    private var currentMissions: List<Mission> = emptyList()
+
+    private val pageCallback = object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback(){
+        override fun onPageSelected(position: Int) {
+            val isFirst  = position==0
+            binding.taskTipLl.visibility = if (isFirst) View.VISIBLE else View.GONE
+
+
+            if(isFirst){
+                binding.tipTv.text  = pagerAdapter.getItem(0)?.tip.orEmpty()
+
+            }
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,12 +54,16 @@ class TaskGuideFragment: Fragment() {
         _binding = FragmentTaskGuideBinding.inflate(inflater, container, false)
         pagerAdapter = TaskGuideVPAdapter()
         binding.vpTasks.adapter = pagerAdapter
+
+        binding.vpTasks.registerOnPageChangeCallback(pageCallback)
         // observe
         missionViewModel.missions.observe(viewLifecycleOwner) { missions ->
-            Log.d("TaskGuideFragment", "missions size=${missions.size}")
             pagerAdapter.submitList(missions)
-            val firstTip = missions.firstOrNull()?.tip.orEmpty()
-            binding.tipTv.text = firstTip
+
+            binding.vpTasks.setCurrentItem(0, false)
+            val hasMissions = missions.isNotEmpty()
+            binding.taskTipLl.visibility = if (hasMissions) View.VISIBLE else View.GONE
+            binding.tipTv.text = missions.firstOrNull()?.tip.orEmpty()
         }
         missionViewModel.loading.observe(viewLifecycleOwner) { /* 로딩 처리 */ }
         missionViewModel.error.observe(viewLifecycleOwner) { msg ->
@@ -78,6 +95,7 @@ class TaskGuideFragment: Fragment() {
         return binding.root
     }
     override fun onDestroyView() {
+        binding.vpTasks.unregisterOnPageChangeCallback(pageCallback)
         super.onDestroyView()
         _binding = null
     }
