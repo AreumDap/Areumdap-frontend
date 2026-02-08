@@ -63,6 +63,12 @@ class CharacterHistoryFragment : Fragment() {
                 binding.pastContentTv.text = it.pastDescription ?: ""
                 binding.presentContentTv.text = it.presentDescription ?: ""
                 
+                // 디버깅 로그 추가
+                Log.d("HistoryDebug", "History List Size: ${it.historyList?.size}")
+                it.historyList?.forEach { item ->
+                    Log.d("HistoryDebug", "Level: ${item.level}, ImageUrl: ${item.imageUrl}")
+                }
+
                 // 히스토리 목록 이미지들 미리 불러오기
                 it.historyList?.forEach { historyItem ->
                     historyItem.imageUrl?.let { url ->
@@ -85,6 +91,16 @@ class CharacterHistoryFragment : Fragment() {
             levelMap[item.level] = item
         }
 
+        // 현재 레벨 이미지 URL 파싱
+        var templateBaseUrl: String? = null
+        currentLevelData?.imageUrl?.let { url ->
+            val regex = "(.*stage)(\\d+)(\\.png)".toRegex()
+            val match = regex.find(url)
+            if (match != null) {
+                templateBaseUrl = match.groupValues[1]
+            }
+        }
+
         // 현재 레벨 데이터
         currentLevelData?.let { current ->
             val level = current.level ?: current.currentLevel ?: 0
@@ -101,13 +117,31 @@ class CharacterHistoryFragment : Fragment() {
         val maxLevelInData = levelMap.keys.maxOrNull() ?: 1
         val maxLevelToShow = maxOf(5, maxLevelInData)
 
+        // 현재 레벨
+        val currentLevel = currentLevelData?.currentLevel ?: currentLevelData?.level ?: 0
+
         for (level in 1..maxLevelToShow) {
-            val item = levelMap[level] ?: com.example.areumdap.UI.Character.Data.HistoryItem(
-                level = level,
-                achievedDate = "",
-                imageUrl = null
-            )
-            combinedList.add(item)
+            var item = levelMap[level]
+
+            if ((item == null || item.imageUrl.isNullOrEmpty()) 
+                && templateBaseUrl != null 
+                && level <= currentLevel) {
+                
+                val inferredUrl = "${templateBaseUrl}${level}.png"
+                item = com.example.areumdap.UI.Character.Data.HistoryItem(
+                    level = level,
+                    achievedDate = item?.achievedDate ?: "",
+                    imageUrl = inferredUrl
+                )
+            } else if (item == null) {
+                item = com.example.areumdap.UI.Character.Data.HistoryItem(
+                    level = level,
+                    achievedDate = "",
+                    imageUrl = null
+                )
+            }
+            
+            combinedList.add(item!!)
         }
 
         historyAdapter.updateData(combinedList)

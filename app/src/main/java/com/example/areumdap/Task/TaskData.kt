@@ -96,6 +96,9 @@ data class QuestionItem(
     @SerializedName("questionId")
     val questionId: Int,
 
+    @SerializedName("userChatThreadId")
+    val userChatThreadId: Long,
+
     @SerializedName("content")
     val content: String,
 
