@@ -1,4 +1,4 @@
-package com.example.areumdap.Data
+package com.example.areumdap.Data.repository
 
 import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.SendChatMessageResponse

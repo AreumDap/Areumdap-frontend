@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.areumdap.Data.api.ChatbotApi
+import com.example.areumdap.Data.api.ChatbotApiService
 import com.example.areumdap.Data.repository.ChatbotRepository
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.R
@@ -36,7 +36,7 @@ class HomeFragment : Fragment() {
     private val recommendViewModel: RecommendQuestionViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                val api = RetrofitClient.create(ChatbotApi::class.java)
+                val api = RetrofitClient.create(ChatbotApiService::class.java)
                 return RecommendQuestionViewModel(ChatbotRepository(api)) as T
             }
         }

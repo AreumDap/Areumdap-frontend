@@ -3,7 +3,7 @@
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.areumdap.Data.ChatRepository
+import com.example.areumdap.Data.repository.ChatRepository
 import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.StartChatRequest
 import com.example.areumdap.Data.repository.ChatRepositoryImpl
@@ -131,6 +131,8 @@ class ChatViewModel(
                         )
 
                 if (reply.isSessionEnd) {
+                    runCatching { repo.stopChat(currentThreadId) }
+                        .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
                     resetChatSession(currentThreadId)
                     _endEvent.tryEmit(Unit)
                 }
@@ -151,7 +153,7 @@ class ChatViewModel(
         return try {
             Log.d("ChatViewModel", "startChatInternal request: content='$content', userQuestionId=$userQuestionId")
 
-            val res = RetrofitClient.chatbotApi.startChat(
+            val res = RetrofitClient.chatbotApiService.startChat(
                 StartChatRequest(content = content, userQuestionId = userQuestionId)
             )
 
@@ -164,7 +166,6 @@ class ChatViewModel(
                     false
                 } else {
                     threadId = data.userChatThreadId
-                    Log.d("ChatViewModel", "✅ startChatInternal success threadId=$threadId")
                     if (userQuestionId == null && data.content.isNotBlank()) {
                         seedQuestionOnly(data.content)
                     }
