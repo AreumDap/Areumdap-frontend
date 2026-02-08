@@ -37,12 +37,17 @@ class ChatViewModel(
 
     private var threadId: Long? = null
     private var lastEndedThreadId: Long? = null
+    private var lastRecommendTag: String? = null
 
     private val _summaryState = MutableStateFlow<SummaryUiState>(SummaryUiState.Idle)
     val summaryState: StateFlow<SummaryUiState> = _summaryState
 
     fun getThreadId(): Long? = threadId
     fun getLastEndedThreadId(): Long? = lastEndedThreadId
+    fun getLastRecommendTag(): String? = lastRecommendTag
+    fun setRecommendTag(tag: String?) {
+        lastRecommendTag = tag
+    }
 
     fun resetChatSession(endedThreadId: Long? = null) {
         if (endedThreadId != null) {
@@ -51,6 +56,7 @@ class ChatViewModel(
         threadId = null
         _messages.value = emptyList()
         _summaryState.value = SummaryUiState.Idle
+        lastRecommendTag = null
     }
 
 
@@ -177,10 +183,10 @@ class ChatViewModel(
 
     private val prefillBaseTemplates = listOf(
         "안녕하세요 {name}님!\n오늘 나누고 싶은 이야기가 있으시군요.\n몇 가지 질문을 통해 함께 생각해볼게요.",
-        "반가워요 {name}님!\n오늘의 이야기를 시작해볼까요?\n",
+        "반가워요 {name}님!\n오늘의 이야기를 시작해볼까요?",
         "다시 만나서 반가워요, {name}님.\n선택하신 질문으로 대화를 시작해볼게요.",
         "안녕하세요, {name}님.\n오늘은 이 질문을 중심으로 이야기를 시작해볼게요.",
-        "안녕하세요, {name}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요.\n"
+        "안녕하세요, {name}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요."
     )
 
     fun seedPrefillQuestion(question: String) {

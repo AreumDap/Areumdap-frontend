@@ -30,6 +30,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         adapter = ChatMessageRVAdapter()
         val prefill = arguments?.getString("prefill_question")
         val prefillQuestionId = arguments?.getLong("prefill_question_id", -1L) ?: -1L
+        val prefillTag = arguments?.getString("prefill_tag")
+        if (!prefillTag.isNullOrBlank()) {
+            vm.setRecommendTag(prefillTag)
+        }
         if (!prefill.isNullOrBlank()) {
             if (prefillQuestionId != -1L) {
                 vm.seedPrefillQuestion(prefill)
@@ -127,8 +131,14 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
             override fun onConfirm() {
                 view?.post {
+                    val summaryFragment = ConversationSummaryFragment().apply {
+                        arguments = Bundle().apply {
+                            val tag = vm.getLastRecommendTag()
+                            if (!tag.isNullOrBlank()) putString("recommend_tag", tag)
+                        }
+                    }
                     parentFragmentManager.beginTransaction()
-                        .replace(R.id.main_frm, ConversationSummaryFragment())
+                        .replace(R.id.main_frm, summaryFragment)
                         .addToBackStack(null)
                         .commit()
                 }

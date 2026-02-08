@@ -19,10 +19,10 @@ class RecommendQuestionRVAdapter(
 
         fun bind(item: RecommendQuestion) = with(binding) {
             questionTv.text = item.text
-            categoryTv.text = item.category.label
-            categoryIv.setImageResource(item.category.iconRes)
+            categoryTv.text = item.tag.label
+            categoryIv.setImageResource(item.tag.iconRes)
 
-            val color = ContextCompat.getColor(root.context, item.category.colorRes)
+            val color = ContextCompat.getColor(root.context, item.tag.colorRes)
             categoryTv.setTextColor(color)
 
             root.setOnClickListener { onClick(item) }

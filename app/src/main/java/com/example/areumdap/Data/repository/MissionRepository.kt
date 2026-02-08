@@ -1,33 +1,33 @@
-package com.example.areumdap.Data.repository
+﻿package com.example.areumdap.Data.repository
 
-
+import android.util.Log
 import com.example.areumdap.Data.api.MissionApiService
-import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.UI.Chat.data.CreateMissionRequest
-import com.example.areumdap.UI.Chat.data.Mission
+import com.example.areumdap.UI.Chat.data.CreateMissionResponse
 
-class MissionRepository {
-    private val api: MissionApiService = RetrofitClient.missionApi
+class MissionRepository(private val api: MissionApiService) {
 
-    suspend fun createMission(threadId: Long, accessToken:String) : Result<List<Mission>>{
+    suspend fun createMissions(threadId: Long): Result<CreateMissionResponse> {
+        val req = CreateMissionRequest(threadId)
+        val res = api.createMissions(req)
 
-        if (accessToken.isBlank()) {
-            return Result.failure(Exception("로그인이 필요합니다"))
+        if (res.isSuccessful) {
+            val body = res.body() ?: return Result.failure(RuntimeException("Empty response body"))
+            Log.d("MissionRepository", "createMissions success: code=${body.code}, message=${body.message}, data=${body.data}")
+            val data = body.data
+                ?: return Result.failure(RuntimeException(body.message.ifBlank { "Response data is null" }))
+            return Result.success(data)
         }
-        return try {
-            val response = api.createMissions(
-                authorization = "Bearer $accessToken",
-                request = CreateMissionRequest(threadId)
-            )
 
-            if(response.isSuccessful && response.body()?.isSuccess == true){
-                val missions: List<Mission> = response.body()?.data?.missions ?: emptyList()
-                Result.success(missions)
-            } else {
-                Result.failure(Exception("API 호출 실패 : ${response.code()}"))
+        val errorBody = res.errorBody()?.string()
+        Log.e("MissionRepository", "createMissions failed: http=${res.code()}, errorBody=$errorBody")
+        return Result.failure(
+            when (res.code()) {
+                400 -> IllegalStateException("Bad request")
+                403 -> SecurityException("Forbidden")
+                404 -> NoSuchElementException("Not found")
+                else -> RuntimeException("Server error (${res.code()})")
             }
-        } catch(e: Exception){
-            Result.failure(e)
-        }
+        )
     }
 }

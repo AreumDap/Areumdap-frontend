@@ -10,7 +10,6 @@ interface MissionApiService {
 
     @POST("api/missions")
     suspend fun createMissions(
-        @Header("Authorization") authorization:String,
         @Body request: CreateMissionRequest
     ) : Response<ApiResponse<CreateMissionResponse>>
 }
