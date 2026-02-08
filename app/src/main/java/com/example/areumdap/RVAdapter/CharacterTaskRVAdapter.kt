@@ -55,4 +55,8 @@ class CharacterTaskRVAdapter(private val missionList: ArrayList<MissionItem>):
         missionList.addAll(newData)
         notifyDataSetChanged()
     }
+
+    fun getCurrentList(): ArrayList<MissionItem> {
+        return missionList
+    }
 }

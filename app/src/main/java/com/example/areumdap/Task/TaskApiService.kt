@@ -42,6 +42,6 @@ interface TaskApiService {
 
     @retrofit2.http.DELETE("api/chatbot")
     suspend fun deleteSavedQuestion(
-        @Query("userChatThreadId") threadId: Long
+        @Query("userChatThreadId") questionId: Long
     ): Response<BaseResponse<Unit>>
 }

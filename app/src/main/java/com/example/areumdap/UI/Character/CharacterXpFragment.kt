@@ -7,7 +7,7 @@ import android.view.View
 import com.example.areumdap.R
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.example.areumdap.Network.RetrofitClient
 import com.bumptech.glide.Glide
 import com.example.areumdap.UI.MainActivity
@@ -17,7 +17,7 @@ import kotlin.getValue
 class CharacterXpFragment : Fragment() {
     lateinit var binding : FragmentCharacterXpBinding
 
-    private val viewModel: CharacterViewModel by viewModels {
+    private val viewModel: CharacterViewModel by activityViewModels {
         CharacterViewModelFactory(RetrofitClient.service)
     }
 

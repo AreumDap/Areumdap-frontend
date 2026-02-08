@@ -53,8 +53,8 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
                 override fun onConfirm(){
                     val position = holder.adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
-                        android.util.Log.d("QuestionRVAdapter", "삭제 아이콘 클릭. ID: ${item.userQuestionId}, ThreadID: ${item.userChatThreadId}")
-                        itemDeleteListener?.invoke(item.userChatThreadId)
+                        android.util.Log.d("QuestionRVAdapter", "삭제 아이콘 클릭. ID: ${item.userQuestionId}")
+                        itemDeleteListener?.invoke(item.userQuestionId)
                     }
                 }
             })
