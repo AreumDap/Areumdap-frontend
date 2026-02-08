@@ -49,11 +49,11 @@ class OnboardingSeasonFragment: Fragment(){
             resetAllButtons() // 먼저 다른 버튼들 초기화
 
             val seasonKey = when (season) {
-                "봄" -> "spring"
-                "여름" -> "summer"
-                "가을" -> "autumn"
-                "겨울" -> "winter"
-                else -> "spring"
+                "봄" -> "SPRING"
+                "여름" -> "SUMMER"
+                "가을" -> "FALL"
+                "겨울" -> "WINTER"
+                else -> "SPRING"
             }
             requireActivity().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
                 .edit().putString("SEASON", seasonKey).apply()
@@ -82,7 +82,7 @@ class OnboardingSeasonFragment: Fragment(){
             clickedButton.icon = ContextCompat.getDrawable(requireContext(), selectedIcon)
 
             // 뷰모델 데이터 업데이트
-            viewModel.selectedSeason.value = season
+            viewModel.selectedSeason.value = seasonKey
             viewModel.isKeywordSelected.value = true
         }
     }

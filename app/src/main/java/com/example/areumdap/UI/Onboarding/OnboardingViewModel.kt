@@ -23,9 +23,8 @@ class OnboardingViewModel : ViewModel() {
     var infoTextStep = MutableLiveData<Int>(0)
 
     // 4단계: 닉네임
-    val nickname = MutableLiveData<String>()
+    val nickname = MutableLiveData<String>("")
 
-    // 미완
     fun toggleKeyword(keyword: String) {
         val current = selectedKeywords.value ?: mutableListOf()
         if (current.contains(keyword)) {
