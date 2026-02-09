@@ -243,6 +243,7 @@ fun seedQuestionOnly(question: String) {
     // 대화 중 나가기 버튼 클릭 시
     fun stopChatOnExit(){
         val id = threadId?: return
+        Log.d("ChatExit", "stopChatOnExit threadId=$id")
         viewModelScope.launch {
             runCatching { repo.stopChat(id) }
                 .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }

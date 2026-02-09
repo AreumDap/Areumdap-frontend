@@ -27,7 +27,7 @@ interface ChatbotApiService {
 
     @DELETE("api/chatbot")
     suspend fun stopChat(
-        @Query("UserChatThreadId") threadId: Long
+        @Query("userChatThreadId") threadId: Long
     ) : Response<ApiResponse<Unit>>
 
     @POST("api/chatbot/summary")

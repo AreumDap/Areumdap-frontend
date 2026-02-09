@@ -1,5 +1,6 @@
 package com.example.areumdap.Data.repository
 
+import android.util.Log
 import com.example.areumdap.Data.repository.ChatRepository
 import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.ChatSummaryRequest
@@ -28,6 +29,7 @@ class ChatRepositoryImpl : ChatRepository {
     }
 
     override suspend fun stopChat(threadId: Long) {
+        Log.d("ChatExit", "stopChat request threadId=$threadId")
         val res = RetrofitClient.chatbotApiService.stopChat(threadId)
 
         if (!res.isSuccessful) {

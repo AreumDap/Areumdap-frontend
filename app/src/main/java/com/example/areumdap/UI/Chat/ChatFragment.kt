@@ -165,8 +165,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
             override fun onConfirm() {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    vm.resetChatSession()
+                    android.util.Log.d("ChatExit", "confirm exit clicked")
                     vm.stopChatOnExit()
+                    vm.resetChatSession()
                     parentFragmentManager.popBackStack()
                 }
             }
