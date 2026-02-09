@@ -2,6 +2,7 @@
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -40,9 +41,12 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
         val api = RetrofitClient.create(ChatReportApiService::class.java)
         val repo: ChatReportRepository = ChatReportRepositoryImpl(api)
 
+        var reportId: Long? = null
+
         viewLifecycleOwner.lifecycleScope.launch {
             repo.getThreadHistories(threadId)
                 .onSuccess { data ->
+                    reportId = data.reportId
                     val messages = data.histories.map { it.toChatMessage() }
                     adapter.submitList(messages)
                     if (messages.isNotEmpty()) {
@@ -63,10 +67,15 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
         )
 
         binding.icReportIv.setOnClickListener {
+            val rid = reportId
+            if (rid == null || rid <= 0L) {
+                Toast.makeText(requireContext(), "레포트 정보를 찾을 수 없어요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, ReportFragment().apply{
                     arguments = Bundle().apply{
-                        putLong("threadId", threadId)
+                        putLong("reportId", rid)
                     }
                 })
                 .addToBackStack(null)

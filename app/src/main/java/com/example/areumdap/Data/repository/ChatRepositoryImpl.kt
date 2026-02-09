@@ -4,9 +4,12 @@ import android.util.Log
 import com.example.areumdap.Data.repository.ChatRepository
 import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.ChatSummaryRequest
+import com.example.areumdap.Data.api.ReportRequest
+import com.example.areumdap.Data.api.ReportResponse
 import com.example.areumdap.Data.api.SendChatMessageRequest
 import com.example.areumdap.Data.api.SendChatMessageResponse
 import com.example.areumdap.Network.RetrofitClient
+import com.example.areumdap.Network.TokenManager
 import com.example.areumdap.UI.Home.data.ApiResponse
 
 class ChatRepositoryImpl : ChatRepository {
@@ -71,6 +74,27 @@ class ChatRepositoryImpl : ChatRepository {
                 throw IllegalStateException("saveQuestion fail code=${wrapper.code} msg=${wrapper.message}")
             }
             wrapper
+        }
+    }
+
+    override suspend fun createReport(threadId: Long): Result<ReportResponse> {
+        return runCatching {
+            val token = TokenManager.getAccessToken().orEmpty()
+            if (token.isBlank()) {
+                throw IllegalStateException("createReport failed: accessToken missing")
+            }
+            val res = RetrofitClient.chatbotApiService.createReport(
+                req = ReportRequest(userChatThreadId = threadId)
+            )
+
+            if (!res.isSuccessful) {
+                val err = runCatching { res.errorBody()?.string() }.getOrNull()
+                Log.e("ChatReport", "createReport httpCode=${res.code()} message=${res.message()} err=$err")
+                throw IllegalStateException("createReport failed code=${res.code()} err=$err")
+            }
+
+            Log.d("ChatReport", "createReport success code=${res.code()} message=${res.message()}")
+            res.body() ?: throw IllegalStateException("createReport body=null")
         }
     }
 }
