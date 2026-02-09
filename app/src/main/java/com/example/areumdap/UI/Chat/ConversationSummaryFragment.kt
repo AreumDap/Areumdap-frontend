@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.areumdap.R
 import com.example.areumdap.UI.auth.Category
+import com.example.areumdap.UI.auth.LoadingDialogFragment
 import com.example.areumdap.databinding.FragmentCoversationSummaryBinding
 import kotlinx.coroutines.launch
 
@@ -53,10 +54,11 @@ class ConversationSummaryFragment : Fragment() {
                     when(state){
                         is SummaryUiState.Idle -> Unit
                         is SummaryUiState.Loading -> {
-                            // 로딩뷰 있으면 보여주기
-                            // binding.progressBar.visibility = View.VISIBLE
+                            val dialog = LoadingDialogFragment()
+                            dialog.show(parentFragmentManager, "LoadingDialog")
                         }
                         is SummaryUiState.Success ->{
+                            (parentFragmentManager.findFragmentByTag("LoadingDialog") as? LoadingDialogFragment)?.dismiss()
                             val data = state.data
                             val s = state.data.summaryContent
 

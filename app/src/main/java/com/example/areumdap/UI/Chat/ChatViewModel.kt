@@ -138,8 +138,8 @@ class ChatViewModel(
                 }
 
                 if (reply.isSessionEnd) {
-                    runCatching { repo.stopChat(currentThreadId) }
-                        .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
+                    // runCatching { repo.stopChat(currentThreadId) }
+                    //     .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
                     resetChatSession(currentThreadId)
                     _endEvent.tryEmit(Unit)
                 }
@@ -224,7 +224,7 @@ class ChatViewModel(
 
         _messages.value = listOf(base, q)
     }
-fun seedQuestionOnly(question: String) {
+    fun seedQuestionOnly(question: String) {
         if (_messages.value.isNotEmpty()) return
 
         val now = System.currentTimeMillis()
@@ -308,7 +308,3 @@ fun seedQuestionOnly(question: String) {
         }
     }
 }
-
-
-
-
