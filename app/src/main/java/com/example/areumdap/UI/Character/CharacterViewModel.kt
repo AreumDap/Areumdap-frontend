@@ -83,7 +83,28 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
                     val body = response.body()
                     Log.d("DEBUG_API", "fetchCharacterLevel Body: $body")
                     if (body?.data != null) {
-                        _characterLevel.value = body.data
+                        var newData = body.data
+
+                        // 이미지 URL이 null이면 이전 레벨 정보를 바탕으로 유추
+                        if (newData.imageUrl == null) {
+                            val oldUrl = _characterLevel.value?.imageUrl
+                            if (oldUrl != null) {
+                                try {
+                                    val regex = "(.*stage)(\\d+)(\\.png)".toRegex()
+                                    val match = regex.find(oldUrl)
+                                    if (match != null) {
+                                        val (prefix, numStr, suffix) = match.destructured
+                                        val nextNum = numStr.toInt() + 1
+                                        val newUrl = "$prefix$nextNum$suffix"
+                                        newData = newData.copy(imageUrl = newUrl)
+                                    }
+                                } catch (e: Exception) {
+                                    // Ignore inference errors
+                                }
+                            }
+                        }
+
+                        _characterLevel.value = newData
 
                         // 레벨업/정보 갱신 성공 시 히스토리 요약 업데이트 요청
                         try {
@@ -146,9 +167,9 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
 
         // 경험치 증가
         var newXp = currentXp + amount
-        if (maxXp > 0 && newXp > maxXp) {
-            newXp = maxXp
-        }
+        // if (maxXp > 0 && newXp > maxXp) {     <-- 이 부분 삭제
+        //    newXp = maxXp
+        // }
 
         val newData = currentData.copy(currentXp = newXp)
         _characterLevel.value = newData

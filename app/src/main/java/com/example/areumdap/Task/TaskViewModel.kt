@@ -242,7 +242,7 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
 
     // 질문 삭제 (API 호출)
     fun deleteSavedQuestion(targetId: Long) {
-        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. Target ID (QuestionID): $targetId")
+        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. Target ID (ThreadID): $targetId")
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -258,8 +258,8 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                         Log.d("TaskViewModel", "삭제 성공 (isSuccess=true)")
                         // 성공 시 로컬 리스트에서도 제거
                         val currentList = _savedQuestions.value?.toMutableList() ?: mutableListOf()
-                        // 로컬 리스트에서 userQuestionId가 일치하는 항목 찾기
-                        val itemToRemove = currentList.find { it.userQuestionId == targetId }
+                        // 로컬 리스트에서 userChatThreadId가 일치하는 항목 찾기
+                        val itemToRemove = currentList.find { it.userChatThreadId == targetId }
 
                         if (itemToRemove != null) {
                             Log.d("TaskViewModel", "로컬 리스트에서 항목 제거: ${itemToRemove.content}")
