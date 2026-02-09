@@ -137,6 +137,12 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                         Log.d("TaskViewModel", "Total Questions: ${data.totalCount}, Loaded: ${data.questions.size}")
 
                         _savedQuestions.value = data.questions
+
+                        // 로그 추가: 받아온 ID 확인
+                        data.questions.forEach {
+                            Log.d("TaskViewModel", "Fetched Item - Content: ${it.content}, ThreadID: ${it.userChatThreadId}, QuestionID: ${it.userQuestionId}")
+                        }
+
                         questionsNextCursorTime = data.nextCursorTime
                         questionsNextCursorId = data.nextCursorId
                         _questionsHasNext.value = data.hasNext
@@ -203,7 +209,7 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
             try {
                 val response = apiService.deleteCompletedMission(missionId)
                 Log.d("TaskViewModel", "Mission Delete Response Code: ${response.code()}")
-                
+
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     Log.d("TaskViewModel", "미션 삭제 성공")
                     // 성공 시 로컬 리스트에서도 제거
@@ -235,42 +241,52 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
     }
 
     // 질문 삭제 (API 호출)
-    fun deleteSavedQuestion(userQuestionId: Long) {
-        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. ID: $userQuestionId")
+    fun deleteSavedQuestion(targetId: Long) {
+        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. Target ID (QuestionID): $targetId")
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // userQuestionId를 파라미터로 전달
-                val response = apiService.deleteSavedQuestion(userQuestionId)
+                // targetId(QuestionID)를 userChatThreadId 파라미터로 전달 시도
+                val response = apiService.deleteSavedQuestion(targetId)
                 Log.d("TaskViewModel", "API Response Code: ${response.code()}")
-                
-                if (response.isSuccessful && response.body()?.isSuccess == true) {
+
+                if (response.isSuccessful) {
                     val body = response.body()
-                    Log.d("TaskViewModel", "삭제 성공. isSuccess: ${body?.isSuccess}")
-                    
-                    // 성공 시 로컬 리스트에서도 제거
-                    val currentList = _savedQuestions.value?.toMutableList() ?: return@launch
-                    val itemToRemove = currentList.find { it.userQuestionId == userQuestionId }
+                    Log.d("TaskViewModel", "삭제 API 요청 성공. Body: $body")
 
-                    if (itemToRemove != null) {
-                        currentList.remove(itemToRemove)
-                        _savedQuestions.value = currentList
+                    if (body?.isSuccess == true) {
+                        Log.d("TaskViewModel", "삭제 성공 (isSuccess=true)")
+                        // 성공 시 로컬 리스트에서도 제거
+                        val currentList = _savedQuestions.value?.toMutableList() ?: mutableListOf()
+                        // 로컬 리스트에서 userQuestionId가 일치하는 항목 찾기
+                        val itemToRemove = currentList.find { it.userQuestionId == targetId }
 
-                        // 토탈 개수 감소
-                        val currentCount = _questionTotalCount.value ?: 0
-                        if (currentCount > 0) {
-                            _questionTotalCount.value = currentCount - 1
+                        if (itemToRemove != null) {
+                            Log.d("TaskViewModel", "로컬 리스트에서 항목 제거: ${itemToRemove.content}")
+                            currentList.remove(itemToRemove)
+                            _savedQuestions.value = currentList
+
+                            // 토탈 개수 감소
+                            val currentCount = _questionTotalCount.value ?: 0
+                            if (currentCount > 0) {
+                                _questionTotalCount.value = currentCount - 1
+                            }
+                        } else {
+                            Log.e("TaskViewModel", "로컬 리스트에서 항목을 찾을 수 없음. ID: $targetId")
                         }
+                    } else {
+                        Log.e("TaskViewModel", "삭제 실패 (isSuccess=false). Message: ${body?.message}")
+                        _errorMessage.value = "삭제 실패: ${body?.message}"
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
-                   Log.e("TaskViewModel", "삭제 실패. Code: ${response.code()}, Message: ${response.message()}, ErrorBody: $errorBody")
-                    _errorMessage.value = "삭제 실패: ${response.message()}"
+                    Log.e("TaskViewModel", "삭제 실패. Code: ${response.code()}, ErrorBody: $errorBody")
+                    _errorMessage.value = "서버 에러: ${response.code()} $errorBody"
                 }
             } catch (e: Exception) {
                 Log.e("TaskViewModel", "삭제 중 예외 발생: ${e.message}")
                 e.printStackTrace()
-                _errorMessage.value = "네트워크 오류가 발생했습니다."
+                _errorMessage.value = "네트워크 오류: ${e.message}"
             } finally {
                 _isLoading.value = false
             }

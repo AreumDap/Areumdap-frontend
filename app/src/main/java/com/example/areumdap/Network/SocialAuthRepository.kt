@@ -2,6 +2,7 @@ package com.example.areumdap.Network
 
 import android.util.Log
 import com.example.areumdap.Network.model.KakaoLoginRequest
+import com.example.areumdap.Network.model.NaverLoginRequest
 import com.example.areumdap.Network.model.LoginResponse
 
 /**
@@ -114,11 +115,11 @@ object SocialAuthRepository {
     }
 
     /**
-     * 네이버 로그인 (인가 코드 + state로 JWT 발급)
+     * 네이버 로그인 (인가 코드 + state로 JWT 발급) - POST 방식
      */
     suspend fun loginWithNaverCode(code: String, state: String): Result<LoginResponse> {
         return try {
-            val response = authApi.naverLogin(code, state)
+            val response = authApi.naverLogin(NaverLoginRequest(code, state))
 
             if (response.isSuccessful && response.body() != null) {
                 val baseResponse = response.body()!!

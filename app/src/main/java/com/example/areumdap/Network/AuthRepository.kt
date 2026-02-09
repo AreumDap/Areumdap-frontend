@@ -43,20 +43,6 @@ object AuthRepository {
                         loginData.name ?: ""    // null이면 빈 문자열
                     )
 
-                    // 3. 프로필 정보(닉네임 등) 추가 조회 및 저장
-                    try {
-                        // UserRepository를 통해 프로필 조회
-                        val profileResult = UserRepository.getProfile()
-                        profileResult.onSuccess { profile ->
-                            profile.nickname?.let {
-                                TokenManager.saveNickname(it)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        // 프로필 조회 실패해도 로그인은 성공 처리
-                    }
-
                     Result.success(loginData)
                 } else {
                     Result.failure(Exception(baseResponse.message))
