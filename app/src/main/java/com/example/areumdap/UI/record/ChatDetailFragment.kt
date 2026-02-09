@@ -97,7 +97,8 @@ private fun HistoryDto.toChatMessage(): ChatMessage {
         id = id.toString(),
         sender = sender,
         text = content,
-        time = timeMillis
+        time = timeMillis,
+        chatHistoryId = id
     )
 }
 

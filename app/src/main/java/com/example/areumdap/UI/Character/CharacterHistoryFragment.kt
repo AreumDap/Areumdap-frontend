@@ -62,7 +62,7 @@ class CharacterHistoryFragment : Fragment() {
             response?.let{
                 binding.pastContentTv.text = it.pastDescription ?: ""
                 binding.presentContentTv.text = it.presentDescription ?: ""
-                
+
                 // 디버깅 로그 추가
                 Log.d("HistoryDebug", "History List Size: ${it.historyList?.size}")
                 it.historyList?.forEach { item ->

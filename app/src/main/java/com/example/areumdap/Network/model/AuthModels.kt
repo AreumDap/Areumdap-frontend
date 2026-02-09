@@ -46,6 +46,14 @@ data class KakaoLoginRequest(
 )
 
 /**
+ * 네이버 로그인 요청 (인가 코드 + state 전송)
+ */
+data class NaverLoginRequest(
+    @SerializedName("code") val code: String,
+    @SerializedName("state") val state: String
+)
+
+/**
  * 회원가입 요청
  */
 data class SignUpRequest(

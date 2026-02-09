@@ -6,10 +6,8 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
-import retrofit2.http.Query
 
 interface AuthApi {
-
 
     @POST("/api/auth/token/reissue")
     suspend fun reissueToken(
@@ -53,12 +51,11 @@ interface AuthApi {
     suspend fun getNaverLoginUri(): Response<BaseResponse<OAuthLoginUrlResponse>>
 
     /**
-     * 네이버 로그인 (인가 코드 + state 전송)
+     * 네이버 로그인 (인가 코드 + state 전송) - POST 방식
      */
-    @GET("/api/oauth/naver/login")
+    @POST("/api/oauth/naver/login")
     suspend fun naverLogin(
-        @Query("code") code: String,
-        @Query("state") state: String
+        @Body request: NaverLoginRequest
     ): Response<BaseResponse<LoginResponse>>
 
     // ========================================
