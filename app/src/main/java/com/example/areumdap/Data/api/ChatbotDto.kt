@@ -21,7 +21,8 @@ data class SendChatMessageRequest(
 data class SendChatMessageResponse(
     val content: String,
     val userChatThreadId: Long,
-    val isSessionEnd: Boolean
+    val isSessionEnd: Boolean,
+    val chatHistoryId: Long? = null
 )
 
 // 대화 요약하기 api

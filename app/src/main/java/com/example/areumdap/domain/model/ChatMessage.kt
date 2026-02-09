@@ -5,7 +5,8 @@ data class ChatMessage(
     val sender:Sender,
     val text:String,
     val time:Long,
-    val status:Status = Status.SENT
+    val status:Status = Status.SENT,
+    val chatHistoryId: Long? = null
 
 )
 

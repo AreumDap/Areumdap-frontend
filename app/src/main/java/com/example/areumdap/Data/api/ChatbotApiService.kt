@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ChatbotApiService {
@@ -17,6 +18,7 @@ interface ChatbotApiService {
     suspend fun startChat(
         @Body request: StartChatRequest
     ): Response<ApiResponse<StartChatResponse>>
+
 
     @POST("api/chatbot")
     suspend fun sendMessage(
@@ -32,4 +34,9 @@ interface ChatbotApiService {
     suspend fun getChatSummary(
         @Body body:ChatSummaryRequest
     ) : ApiResponse<ChatSummaryData>
+
+    @POST("api/questions/{chatHistoryId}")
+    suspend fun saveQuestion(
+        @Path("chatHistoryId") chatHistoryId:Long
+    ) : Response<ApiResponse<Unit>>
 }

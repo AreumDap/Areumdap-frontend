@@ -12,8 +12,9 @@ import com.example.areumdap.databinding.ItemChatMeBinding
 import com.example.areumdap.domain.model.ChatMessage
 import com.example.areumdap.domain.model.Sender
 
-class ChatMessageRVAdapter :
-    ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DIFF) {
+class ChatMessageRVAdapter(
+    private val onAiLongClick : (View, ChatMessage) ->Unit
+) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DIFF) {
 
     override fun getItemViewType(position: Int): Int {
         return if (getItem(position).sender == Sender.ME) TYPE_ME else TYPE_AI
@@ -27,7 +28,7 @@ class ChatMessageRVAdapter :
             MeVH(binding)
         } else {
             val binding = ItemChatAiBinding.inflate(inflater, parent, false)
-            AiVH(binding)
+            AiVH(binding, onAiLongClick)
         }
     }
 
@@ -49,12 +50,15 @@ class ChatMessageRVAdapter :
         }
     }
 
-    class AiVH(private val binding: ItemChatAiBinding) : RecyclerView.ViewHolder(binding.root) {
+    class AiVH(private val binding: ItemChatAiBinding, private val onLongClick: (View, ChatMessage) -> Unit) : RecyclerView.ViewHolder(binding.root) {
         fun bind(msg: ChatMessage, showProfile:Boolean) {
             binding.chatTv.text = msg.text
             binding.aiProfileIv.visibility = if(showProfile) View.VISIBLE else View.INVISIBLE
 
-
+            binding.chatTv.setOnLongClickListener {
+                onLongClick(it, msg)
+                true
+            }
         }
     }
 
