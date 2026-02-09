@@ -51,6 +51,7 @@ object SocialAuthRepository {
     /**
      * 카카오 로그인 (인가 코드로 JWT 발급)
      */
+
     suspend fun loginWithKakaoCode(code: String): Result<LoginResponse> {
         return try {
             val response = authApi.kakaoLogin(KakaoLoginRequest(code))
@@ -89,11 +90,11 @@ object SocialAuthRepository {
     }
 
     // ========================================
-    // 네이버 로그인
+    // 네이버 로그인.
     // ========================================
 
     /**
-     * 네이버 로그인 URL 조회
+     * 네이버 로그인 URL 조회....
      */
     suspend fun getNaverLoginUrl(): Result<String> {
         return try {
