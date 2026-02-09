@@ -21,6 +21,7 @@ object TokenManager {
     private lateinit var prefs: SharedPreferences
 
     fun init(context: Context) {
+        appContext = context.applicationContext
         prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
 
@@ -114,5 +115,15 @@ object TokenManager {
      */
     fun getFcmToken(): String? {
         return prefs.getString(KEY_FCM_TOKEN, null)
+    }
+
+    // 계절 테마 저장 (app_prefs)
+    private lateinit var appContext: Context
+    
+    fun saveSeason(season: String) {
+        if (::appContext.isInitialized) {
+            val appPrefs = appContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            appPrefs.edit().putString("SEASON", season).apply()
+        }
     }
 }

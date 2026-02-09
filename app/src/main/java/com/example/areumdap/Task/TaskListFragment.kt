@@ -88,6 +88,7 @@ class TaskListFragment: Fragment() {
             bundle.putString("tag", missionItem.tag)   // tag 전달
             bundle.putBoolean("showTip", true) // 팁 표시
             bundle.putBoolean("isCompleted", false) // 미완료 과제
+            bundle.putBoolean("isTransparent", true) // 캐릭터 페이지에서는 투명 배경 (다이얼로그)
             dataTaskFragment.arguments = bundle
             
             dataTaskFragment.show(childFragmentManager, "DataTaskDialog")

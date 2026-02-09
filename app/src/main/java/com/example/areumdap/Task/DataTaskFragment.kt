@@ -45,6 +45,12 @@ class DataTaskFragment: DialogFragment() {
         val tag = arguments?.getString("tag")
         val showTip = arguments?.getBoolean("showTip", true) ?: true
         val isCompleted = arguments?.getBoolean("isCompleted", false) ?: false
+        val isTransparent = arguments?.getBoolean("isTransparent", false) ?: false
+
+        // 배경색 설정 (투명 여부에 따라)
+        if (!isTransparent) {
+            binding.root.setBackgroundResource(R.color.background1)
+        }
 
         // 전달받은 데이터 즉시 표시
         if (currentReward > 0) {
