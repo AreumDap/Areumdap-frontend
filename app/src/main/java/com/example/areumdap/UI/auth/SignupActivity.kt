@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.data.repository.AuthRepository
 import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.R
-import com.example.areumdap.UI.Onboarding.OnboardingActivity
+import com.example.areumdap.UI.auth.EmailLoginActivity
 import com.example.areumdap.databinding.ActivitySignupBinding
 import com.example.areumdap.databinding.FragmentToastDialogBinding
 import kotlinx.coroutines.launch
@@ -226,11 +226,11 @@ class SignupActivity : AppCompatActivity() {
                 val result = AuthRepository.signUp(name, formattedBirth, email, password)
 
                 result.onSuccess {
-                    Log.d(tag, "✅ 회원가입 API 성공!")
+                    Log.d(tag, "✅ 회원가입 API 성공! 로그인 화면으로 이동")
                     showCustomToast("회원가입이 완료되었습니다!", isSuccess = true)
 
-                    // 회원가입 후 온보딩으로 이동
-                    navigateToOnboarding()
+                    // 회원가입 후 로그인 화면으로 이동
+                    navigateToLogin()
                 }.onFailure { error ->
                     Log.e(tag, "❌ 회원가입 API 실패")
                     Log.e(tag, "에러 메시지: ${error.message}")
@@ -416,9 +416,9 @@ class SignupActivity : AppCompatActivity() {
         return isValid
     }
 
-    private fun navigateToOnboarding() {
-        Log.d(tag, "온보딩 화면으로 이동")
-        val intent = Intent(this, OnboardingActivity::class.java)
+    private fun navigateToLogin() {
+        Log.d(tag, "로그인 화면으로 이동")
+        val intent = Intent(this, EmailLoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
