@@ -22,7 +22,6 @@ class ReportTaskRVAdapter(
             repTaskTitleTv.text = item.title
             repTaskContentTv.text = item.content
 
-
             root.setOnClickListener { onClick?.invoke(item) }
         }
     }

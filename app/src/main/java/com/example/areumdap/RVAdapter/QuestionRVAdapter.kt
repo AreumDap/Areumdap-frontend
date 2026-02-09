@@ -8,7 +8,7 @@ import com.example.areumdap.UI.PopUpDialogFragment
 import com.example.areumdap.databinding.ItemQuestionTaskBinding
 
 class QuestionRVAdapter (private val questionList: ArrayList<QuestionItem>):
-RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
+    RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
 
     var itemDeleteListener: ((Long) -> Unit)? = null
     var itemClickListener: ((QuestionItem) -> Unit)? = null
@@ -22,7 +22,7 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = questionList[position]
-        
+
         // 질문 내용 바인딩 (아래쪽 텍스트)
         holder.binding.itemQuestionContentTv.text = item.content
         holder.binding.taskCardView.translationX = 0f
@@ -115,10 +115,10 @@ RecyclerView.Adapter<QuestionRVAdapter.ViewHolder>(){
         // 텍스트 색상 적용
         val textColor = androidx.core.content.ContextCompat.getColor(context, textColorRes)
         binding.itemQuestionTaskTv.setTextColor(textColor)
-        
+
         // 아이콘 적용
         binding.itemQuestionTaskIv.setImageResource(iconRes)
-        
+
         // 태그 한글명 변환 및 적용
         val tagName = when (tag) {
             "CAREER" -> "진로"

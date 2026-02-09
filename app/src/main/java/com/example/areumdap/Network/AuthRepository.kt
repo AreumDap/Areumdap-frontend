@@ -48,8 +48,8 @@ object AuthRepository {
                         // UserRepository를 통해 프로필 조회
                         val profileResult = UserRepository.getProfile()
                         profileResult.onSuccess { profile ->
-                            profile.nickname?.let { 
-                                TokenManager.saveNickname(it) 
+                            profile.nickname?.let {
+                                TokenManager.saveNickname(it)
                             }
                         }
                     } catch (e: Exception) {

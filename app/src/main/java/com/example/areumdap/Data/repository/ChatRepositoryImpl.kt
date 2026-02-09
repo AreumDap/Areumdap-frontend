@@ -1,11 +1,13 @@
 package com.example.areumdap.Data.repository
 
+import android.util.Log
 import com.example.areumdap.Data.repository.ChatRepository
 import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.ChatSummaryRequest
 import com.example.areumdap.Data.api.SendChatMessageRequest
 import com.example.areumdap.Data.api.SendChatMessageResponse
 import com.example.areumdap.Network.RetrofitClient
+import com.example.areumdap.UI.Home.data.ApiResponse
 
 class ChatRepositoryImpl : ChatRepository {
     override suspend fun ask(content: String, threadId: Long): SendChatMessageResponse {
@@ -27,6 +29,7 @@ class ChatRepositoryImpl : ChatRepository {
     }
 
     override suspend fun stopChat(threadId: Long) {
+        Log.d("ChatExit", "stopChat request threadId=$threadId")
         val res = RetrofitClient.chatbotApiService.stopChat(threadId)
 
         if (!res.isSuccessful) {
@@ -48,6 +51,26 @@ class ChatRepositoryImpl : ChatRepository {
                 throw  IllegalStateException("chatbot summary fail code=${wrapper.code} msg=${wrapper.message}")
             }
             wrapper.data ?: throw IllegalStateException("chatbot summary data=null")
+        }
+    }
+
+    override suspend fun saveQuestion(
+        chatHistoryId: Long
+    ): Result<ApiResponse<Unit>> {
+        return runCatching {
+            val res = RetrofitClient.chatbotApiService.saveQuestion(
+                chatHistoryId = chatHistoryId,
+            )
+
+            if (!res.isSuccessful){
+                val err = runCatching { res.errorBody()?.string() }.getOrNull()
+                throw IllegalStateException("saveQuestion failed code=${res.code()} err=$err")
+            }
+            val wrapper = res.body() ?: throw java.lang.IllegalStateException("saveQuestion empty body")
+            if (!wrapper.isSuccess) {
+                throw IllegalStateException("saveQuestion fail code=${wrapper.code} msg=${wrapper.message}")
+            }
+            wrapper
         }
     }
 }

@@ -7,6 +7,7 @@ import com.example.areumdap.Data.repository.ChatRepository
 import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.StartChatRequest
 import com.example.areumdap.Data.repository.ChatRepositoryImpl
+import com.example.areumdap.Data.api.ChatReportApiService
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.Network.TokenManager
 import com.example.areumdap.domain.model.ChatMessage
@@ -120,15 +121,21 @@ class ChatViewModel(
 
                 val reply = repo.ask(trimmed, currentThreadId)
 
+                val aiMessageId = "ai_${System.currentTimeMillis()}"
                 _messages.value = _messages.value
                     .filterNot { it.id == typingId } +
                         ChatMessage(
-                            id = "ai_${System.currentTimeMillis()}",
+                            id = aiMessageId,
                             sender = Sender.AI,
                             text = reply.content,
                             time = System.currentTimeMillis(),
-                            status = Status.SENT
+                            status = Status.SENT,
+                            chatHistoryId = reply.chatHistoryId
                         )
+
+                if (reply.chatHistoryId == null) {
+                    attachChatHistoryId(currentThreadId, aiMessageId, reply.content)
+                }
 
                 if (reply.isSessionEnd) {
                     runCatching { repo.stopChat(currentThreadId) }
@@ -236,6 +243,7 @@ fun seedQuestionOnly(question: String) {
     // 대화 중 나가기 버튼 클릭 시
     fun stopChatOnExit(){
         val id = threadId?: return
+        Log.d("ChatExit", "stopChatOnExit threadId=$id")
         viewModelScope.launch {
             runCatching { repo.stopChat(id) }
                 .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
@@ -263,6 +271,40 @@ fun seedQuestionOnly(question: String) {
                 .onFailure { e ->
                     _summaryState.value = SummaryUiState.Error(e.message ?: "요약 불러오기 실패")
                 }
+        }
+    }
+
+    fun saveQuestion(chatHistoryId : Long){
+        viewModelScope.launch {
+            val token = TokenManager.getAccessToken()?.toString().orEmpty() // 너희 방식
+            if (token.isNullOrBlank()) return@launch
+
+            repo.saveQuestion(chatHistoryId)
+                .onSuccess { res ->
+                    Log.d("ChatViewModel", "saveQuestion success: ${res.message}") }
+                .onFailure {  e ->
+                    Log.e("ChatViewModel", "saveQuestion failed", e) }
+        }
+    }
+
+    private suspend fun attachChatHistoryId(threadId: Long, aiMessageId: String, content: String) {
+        runCatching {
+            val api = RetrofitClient.create(ChatReportApiService::class.java)
+            val res = api.getThreadHistories(threadId)
+            if (!res.isSuccessful) return@runCatching
+            val body = res.body() ?: return@runCatching
+            val data = body.data ?: return@runCatching
+
+            val match = data.histories
+                .asReversed()
+                .firstOrNull { it.senderType.equals("BOT", ignoreCase = true) && it.content == content }
+                ?: return@runCatching
+
+            _messages.value = _messages.value.map { msg ->
+                if (msg.id == aiMessageId) msg.copy(chatHistoryId = match.id) else msg
+            }
+        }.onFailure { e ->
+            Log.e("ChatViewModel", "attachChatHistoryId failed", e)
         }
     }
 }
