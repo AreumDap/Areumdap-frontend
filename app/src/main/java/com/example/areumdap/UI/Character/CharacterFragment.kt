@@ -19,7 +19,7 @@ class CharacterFragment : Fragment() {
     private var _binding: FragmentCharacterBinding? = null
     private val binding get() = _binding!!
 
-    // 뷰모델 초기화
+    // 뷰모델 초기화 (Activity Scope로 변경)
     private val viewModel: CharacterViewModel by activityViewModels {
         CharacterViewModelFactory(RetrofitClient.service)
     }
@@ -108,9 +108,9 @@ class CharacterFragment : Fragment() {
             levelData?.let {
                 updateCharacterUI(it)
                 
-                // 과제가 있는지 확인
+                // 과제가 있는지 확인 (서버 상태 + 로컬 블랙리스트)
                 val hasTask = it.missions?.any { mission -> 
-                    mission.status != "COMPLETED" && mission.isCompleted != true && !viewModel.isMissionCompleted(mission.missionId)
+                    mission.status != "COMPLETED" && !viewModel.isMissionCompleted(mission.missionId)
                 } ?: false
                 
                 // 과제가 있을 때만 필터 스피너 보이기

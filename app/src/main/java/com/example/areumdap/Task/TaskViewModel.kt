@@ -137,10 +137,10 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                         Log.d("TaskViewModel", "Total Questions: ${data.totalCount}, Loaded: ${data.questions.size}")
 
                         _savedQuestions.value = data.questions
-                        
+
                         // 로그 추가: 받아온 ID 확인
-                        data.questions.forEach { 
-                            Log.d("TaskViewModel", "Fetched Item - Content: ${it.content}, ThreadID: ${it.userChatThreadId}, QuestionID: ${it.userQuestionId}") 
+                        data.questions.forEach {
+                            Log.d("TaskViewModel", "Fetched Item - Content: ${it.content}, ThreadID: ${it.userChatThreadId}, QuestionID: ${it.userQuestionId}")
                         }
 
                         questionsNextCursorTime = data.nextCursorTime
@@ -209,7 +209,7 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
             try {
                 val response = apiService.deleteCompletedMission(missionId)
                 Log.d("TaskViewModel", "Mission Delete Response Code: ${response.code()}")
-                
+
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
                     Log.d("TaskViewModel", "미션 삭제 성공")
                     // 성공 시 로컬 리스트에서도 제거
@@ -249,11 +249,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                 // targetId(QuestionID)를 userChatThreadId 파라미터로 전달 시도
                 val response = apiService.deleteSavedQuestion(targetId)
                 Log.d("TaskViewModel", "API Response Code: ${response.code()}")
-                
+
                 if (response.isSuccessful) {
                     val body = response.body()
                     Log.d("TaskViewModel", "삭제 API 요청 성공. Body: $body")
-                    
+
                     if (body?.isSuccess == true) {
                         Log.d("TaskViewModel", "삭제 성공 (isSuccess=true)")
                         // 성공 시 로컬 리스트에서도 제거
@@ -272,11 +272,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                                 _questionTotalCount.value = currentCount - 1
                             }
                         } else {
-                             Log.e("TaskViewModel", "로컬 리스트에서 항목을 찾을 수 없음. ID: $targetId")
+                            Log.e("TaskViewModel", "로컬 리스트에서 항목을 찾을 수 없음. ID: $targetId")
                         }
                     } else {
-                         Log.e("TaskViewModel", "삭제 실패 (isSuccess=false). Message: ${body?.message}")
-                         _errorMessage.value = "삭제 실패: ${body?.message}"
+                        Log.e("TaskViewModel", "삭제 실패 (isSuccess=false). Message: ${body?.message}")
+                        _errorMessage.value = "삭제 실패: ${body?.message}"
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
