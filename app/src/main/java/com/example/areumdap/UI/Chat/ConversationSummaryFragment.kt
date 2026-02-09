@@ -12,10 +12,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.areumdap.R
-import com.example.areumdap.UI.Chat.data.ChatViewModel
-import com.example.areumdap.UI.Chat.data.SummaryUiState
-import com.example.areumdap.databinding.FragmentCoversationSummaryBinding
 import com.example.areumdap.UI.auth.Category
+import com.example.areumdap.databinding.FragmentCoversationSummaryBinding
 import kotlinx.coroutines.launch
 
 class ConversationSummaryFragment : Fragment() {

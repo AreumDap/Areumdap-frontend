@@ -1,6 +1,5 @@
 package com.example.areumdap.data.api
 
-import com.example.areumdap.data.api.ApiResponse
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.ChatSummaryRequest
 import com.example.areumdap.data.model.SendChatMessageRequest
@@ -8,6 +7,8 @@ import com.example.areumdap.data.model.SendChatMessageResponse
 import com.example.areumdap.data.model.StartChatRequest
 import com.example.areumdap.data.model.StartChatResponse
 import com.example.areumdap.data.model.GetChatbotRecommendsResponse
+import com.example.areumdap.data.model.ReportRequest
+import com.example.areumdap.data.model.ReportResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
