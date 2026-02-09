@@ -5,10 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.areumdap.UI.Character.Data.CharacterCreateRequest
-import com.example.areumdap.UI.Character.Data.CharacterHistoryResponse
-import com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse
-import com.example.areumdap.UI.Character.Data.ErrorResponse
+import com.example.areumdap.data.api.CharacterApiService
+import com.example.areumdap.data.model.CharacterCreateRequest
+import com.example.areumdap.data.model.CharacterHistoryResponse
+import com.example.areumdap.data.model.CharacterLevelUpResponse
+import com.example.areumdap.data.model.ErrorResponse
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

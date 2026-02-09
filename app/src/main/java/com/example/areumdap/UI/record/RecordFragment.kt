@@ -10,20 +10,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.areumdap.Data.api.ChatReportApiService
-import com.example.areumdap.Data.repository.ChatReportRepository
-import com.example.areumdap.Data.repository.ChatReportRepositoryImpl
-import com.example.areumdap.Network.RetrofitClient
-import com.example.areumdap.RVAdapter.RecordRVAdapter
+import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.repository.ChatReportRepository
+import com.example.areumdap.data.repository.ChatReportRepositoryImpl
+import com.example.areumdap.data.source.RetrofitClient
+import com.example.areumdap.adapter.RecordRVAdapter
 import com.example.areumdap.databinding.FragmentRecordBinding
-import com.example.areumdap.domain.model.Category
-import com.example.areumdap.domain.model.RecordItem
+import com.example.areumdap.UI.auth.Category
+import com.example.areumdap.data.model.RecordItem
 import com.example.areumdap.R
-import com.example.areumdap.UI.record.data.ChatThreadViewModel
-import com.example.areumdap.UI.record.data.UserChatThread
+import com.example.areumdap.data.model.UserChatThread
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class RecordFragment : Fragment() {
 
