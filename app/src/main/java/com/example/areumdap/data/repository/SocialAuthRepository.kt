@@ -34,7 +34,7 @@ object SocialAuthRepository {
                 val baseResponse = response.body()!!
 
                 if (baseResponse.isSuccess && baseResponse.data != null) {
-                    Log.d(TAG, "카카오 로그인 URL 조회 성공")
+                    Log.d(TAG, "카카오 로그인 URL 조회 성공: ${baseResponse.data.loginUrl}")
                     Result.success(baseResponse.data.loginUrl)
                 } else {
                     Result.failure(Exception(baseResponse.message))
@@ -103,7 +103,7 @@ object SocialAuthRepository {
                 val baseResponse = response.body()!!
 
                 if (baseResponse.isSuccess && baseResponse.data != null) {
-                    Log.d(TAG, "네이버 로그인 URL 조회 성공")
+                    Log.d(TAG, "네이버 로그인 URL 조회 성공: ${baseResponse.data.loginUrl}")
                     Result.success(baseResponse.data.loginUrl)
                 } else {
                     Result.failure(Exception(baseResponse.message))
