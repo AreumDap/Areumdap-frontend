@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".GlobalApplication"
+        android:name=".UI.auth.GlobalApplication"
         android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -18,7 +18,7 @@
         android:theme="@style/Theme.AreumDap">
 
         <activity
-            android:name=".UI.SplashActivity"
+            android:name=".UI.auth.SplashActivity"
             android:exported="true"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -50,11 +50,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name=".UI.MainActivity"
+            android:name=".UI.auth.MainActivity"
             android:exported="false" />
 
         <service
-            android:name=".Util.MyFirebaseMessagingService"
+            android:name=".UI.auth.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

@@ -1,7 +1,6 @@
 package com.example.areumdap.UI.Character
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import com.example.areumdap.R
 import android.widget.TextView
@@ -10,10 +9,12 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.areumdap.Network.RetrofitClient
-import com.example.areumdap.VPAdapter.TaskPageVPAdapter
+import com.example.areumdap.data.source.RetrofitClient
+import com.example.areumdap.adapter.TaskPageVPAdapter
 import com.example.areumdap.databinding.FragmentCharacterBinding
 import com.bumptech.glide.Glide
+import com.example.areumdap.data.model.CharacterLevelUpResponse
+import com.example.areumdap.data.repository.CharacterViewModelFactory
 
 class CharacterFragment : Fragment() {
     private var _binding: FragmentCharacterBinding? = null
@@ -127,7 +128,7 @@ class CharacterFragment : Fragment() {
         }
     }
 
-    private fun updateCharacterUI(levelData: com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse){
+    private fun updateCharacterUI(levelData: CharacterLevelUpResponse){
         // 레벨 업데이트
         val displayLevel = levelData.level ?: levelData.previousLevel ?: 0
         binding.characterLevelTv.text = "$displayLevel"

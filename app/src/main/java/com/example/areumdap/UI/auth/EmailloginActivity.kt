@@ -8,11 +8,10 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.areumdap.Network.AuthRepository
-import com.example.areumdap.Network.TokenManager
-import com.example.areumdap.Network.UserRepository
+import com.example.areumdap.data.repository.AuthRepository
+import com.example.areumdap.data.source.TokenManager
+import com.example.areumdap.data.repository.UserRepository
 import com.example.areumdap.R
-import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivityEmailLoginBinding
 import com.example.areumdap.databinding.FragmentToastDialogBinding

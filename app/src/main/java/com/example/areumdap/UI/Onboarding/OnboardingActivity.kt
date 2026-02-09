@@ -2,7 +2,6 @@
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -10,8 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.areumdap.R
-import com.example.areumdap.UI.MainActivity
-import com.example.areumdap.UI.Onboarding.fragment.*
+import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.databinding.ActivityOnboardingBinding
 
 class OnboardingActivity : AppCompatActivity() {
