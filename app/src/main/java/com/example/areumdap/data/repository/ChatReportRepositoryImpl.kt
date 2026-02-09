@@ -1,10 +1,9 @@
-package com.example.areumdap.Data.repository
+package com.example.areumdap.data.repository
 
 import com.example.areumdap.data.api.ChatReportApiService
 import com.example.areumdap.data.model.ChatReportDataDto
 import com.example.areumdap.data.model.ChatThreadsData
 import com.example.areumdap.data.model.ChatThreadHistoriesDto
-import com.example.areumdap.data.repository.ChatReportRepository
 
 class ChatReportRepositoryImpl(
     private val api: ChatReportApiService

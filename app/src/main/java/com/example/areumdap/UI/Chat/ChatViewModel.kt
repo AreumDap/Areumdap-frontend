@@ -1,4 +1,4 @@
-﻿package com.example.areumdap.UI.Chat.data
+﻿package com.example.areumdap.UI.Chat
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -27,7 +27,7 @@ sealed interface SummaryUiState{
 }
 
 class ChatViewModel(
-    private val repo: ChatRepository = ChatRepositoryImpl()
+    private val repo: ChatRepository = ChatRepositoryImpl(RetrofitClient.chatbotApiService)
 ) : ViewModel() {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
