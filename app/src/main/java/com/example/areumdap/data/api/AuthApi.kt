@@ -16,7 +16,7 @@ interface AuthApi {
     ): Response<BaseResponse<TokenResponse>>
 
     /**
-     * 이메일 로그인
+     * 이메일 로그인....
      */
     @POST("/api/auth/login")
     suspend fun login(
