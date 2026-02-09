@@ -200,21 +200,24 @@ class OnboardingInfoFragment: Fragment() {
                 Log.d("CharacterAPI", "응답 코드: ${response.code()}")
                 Log.d("CharacterAPI", "응답 성공 여부: ${response.isSuccessful}")
 
-                if (response.isSuccessful) {
-                    saveCharacterInfo(characterId, imageUrl)
-                    characterViewModel.resetUiState()
-                    viewModel.infoTextStep.value = -1
-                    hideLoading()
-                    (activity as? OnboardingActivity)?.navigateToMain()
-                } else {
-                    hideLoading()
-                    showError("온보딩 저장에 실패했습니다.")
-                    characterViewModel.resetUiState()
+                if (!response.isSuccessful) {
+                    Log.e("CharacterAPI", "온보딩 저장 응답 실패 (코드: ${response.code()}), 메인으로 이동 계속 진행")
                 }
-            } catch (e: Exception) {
-                hideLoading()
-                Log.e("CharacterAPI", "예외 발생", e)
+
+                // 캐릭터는 이미 생성 완료되었으므로 온보딩 저장 성공/실패 무관하게 메인으로 이동
+                saveCharacterInfo(characterId, imageUrl)
                 characterViewModel.resetUiState()
+                viewModel.infoTextStep.value = -1
+                hideLoading()
+                (activity as? OnboardingActivity)?.navigateToMain()
+            } catch (e: Exception) {
+                Log.e("CharacterAPI", "예외 발생", e)
+                // 예외 발생해도 캐릭터는 이미 생성되었으므로 메인으로 이동
+                saveCharacterInfo(characterId, imageUrl)
+                characterViewModel.resetUiState()
+                viewModel.infoTextStep.value = -1
+                hideLoading()
+                (activity as? OnboardingActivity)?.navigateToMain()
             }
         }
     }

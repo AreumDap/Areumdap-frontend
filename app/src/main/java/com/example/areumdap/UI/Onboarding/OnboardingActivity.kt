@@ -288,10 +288,12 @@ class OnboardingActivity : AppCompatActivity() {
      */
     private fun calculateDisplayStep(step: OnboardingStep): Int {
         return when (step) {
-            OnboardingStep.INFO, OnboardingStep.FINAL -> {
+            OnboardingStep.INFO -> {
                 val infoTextStep = InfoTextStep.fromValue(viewModel.infoTextStep.value ?: 0)
                 infoTextStep.displayProgress
             }
+
+            OnboardingStep.FINAL -> OnboardingStep.FINAL.displayProgress
 
             else -> step.displayProgress
         }
