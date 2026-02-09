@@ -167,12 +167,29 @@ object AuthRepository {
     /**
      * 내 캐릭터 조회
      */
-    suspend fun getMyCharacter(): Result<Any?> {
+    suspend fun getMyCharacter(): Result<com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse?> {
         return try {
             val response = authApi.getMyCharacterInfo()
 
             if (response.isSuccessful) {
-                Result.success(response.body())
+                val body = response.body()
+                val data = body?.data
+                
+                // 계절 정보 추출 및 저장
+                data?.imageUrl?.let { url ->
+                    val season = when {
+                        url.contains("spring") -> "SPRING"
+                        url.contains("summer") -> "SUMMER"
+                        url.contains("fall") -> "FALL"
+                        url.contains("winter") -> "WINTER"
+                        else -> null
+                    }
+                    if (season != null) {
+                        TokenManager.saveSeason(season)
+                    }
+                }
+
+                Result.success(data)
             } else {
                 Result.failure(HttpException(response))
             }

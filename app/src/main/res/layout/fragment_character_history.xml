@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:layout_marginTop="61dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toBottomOf="@id/character_history_iv"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -35,7 +35,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/character_history_iv"
-            android:layout_marginTop="61dp">
+            >
 
             <TextView
                 android:text="성장 히스토리"

@@ -102,5 +102,5 @@ interface AuthApi {
      * 내 캐릭터 조회
      */
     @GET("/api/characters/me")
-    suspend fun getMyCharacterInfo(): Response<Any>
+    suspend fun getMyCharacterInfo(): Response<BaseResponse<com.example.areumdap.UI.Character.Data.CharacterLevelUpResponse>>
 }
