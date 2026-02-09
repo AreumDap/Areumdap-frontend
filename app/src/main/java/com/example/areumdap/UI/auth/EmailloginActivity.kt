@@ -10,11 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.Network.AuthRepository
 import com.example.areumdap.Network.TokenManager
+import com.example.areumdap.Network.UserRepository
 import com.example.areumdap.R
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivityEmailLoginBinding
 import com.example.areumdap.databinding.FragmentToastDialogBinding
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -114,8 +116,8 @@ class EmailLoginActivity : AppCompatActivity() {
                         saveLoginState()
                     }
 
-                    // 로그인 성공 후 캐릭터 확인 로직 실행
-                    checkCharacterAndNavigate()
+                    // [수정됨] 로그인 성공 시 FCM 토큰 등록 후 이동
+                    registerFcmTokenAndNavigate()
 
                 }.onFailure { error ->
                     Log.e(tag, "로그인 실패: ${error.message}")
@@ -126,6 +128,38 @@ class EmailLoginActivity : AppCompatActivity() {
                 Log.e(tag, "로그인 중 예외 발생: ${e.message}")
                 showCustomToast("오류가 발생했습니다.", isSuccess = false)
                 binding.btnLogin.isEnabled = true
+            }
+        }
+    }
+
+    /**
+     * FCM 토큰 가져와서 서버에 등록 후 화면 이동
+     */
+    private fun registerFcmTokenAndNavigate() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.e(tag, "FCM 토큰 가져오기 실패", task.exception)
+                // 토큰 실패해도 앱 진입은 시켜야 함
+                checkCharacterAndNavigate()
+                return@addOnCompleteListener
+            }
+
+            // 토큰 가져오기 성공
+            val token = task.result
+            Log.d(tag, "로그인 직후 FCM 토큰 획득: $token")
+
+            // 서버에 전송 (비동기)
+            lifecycleScope.launch {
+                try {
+                    // UserRepository를 통해 서버에 기기 등록 요청
+                    UserRepository.updateFcmToken(token)
+                    Log.d(tag, "FCM 토큰 서버 등록 완료")
+                } catch (e: Exception) {
+                    Log.e(tag, "FCM 토큰 서버 등록 실패: ${e.message}")
+                } finally {
+                    // 성공하든 실패하든 메인/온보딩으로 이동
+                    checkCharacterAndNavigate()
+                }
             }
         }
     }

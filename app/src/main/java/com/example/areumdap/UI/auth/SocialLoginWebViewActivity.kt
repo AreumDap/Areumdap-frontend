@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
@@ -12,9 +13,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.Network.AuthRepository
 import com.example.areumdap.Network.SocialAuthRepository
+import com.example.areumdap.Network.UserRepository
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivitySocialLoginWebviewBinding
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -53,19 +56,71 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
     }
 
     private fun setupWebView(loginUrl: String) {
-        binding.webView.settings.javaScriptEnabled = true
-        binding.webView.settings.domStorageEnabled = true
-        binding.webView.settings.setSupportMultipleWindows(true)
+        binding.webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            javaScriptCanOpenWindowsAutomatically = true // 팝업 허용
+            setSupportMultipleWindows(true) // 멀티 윈도우 허용
+        }
 
         binding.webView.webViewClient = object : WebViewClient() {
 
+            // ★★★ 핵심 수정: Intent 및 외부 앱 실행 처리 ★★★
+            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+                val url = request?.url?.toString() ?: return false
+                Log.d(tag, "URL 로딩 감지: $url")
+
+                // 1. 인가 코드/에러 감지 (로그인 성공/실패 처리)
+                if (checkAndHandleCallback(url)) {
+                    return true // 우리가 처리했으므로 WebView 로딩 중단
+                }
+
+                // 2. intent:// 스킴 처리 (네이버 앱 실행 등)
+                if (url.startsWith("intent://")) {
+                    try {
+                        val intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME)
+                        val existPackage = packageManager.getLaunchIntentForPackage(intent.`package` ?: "")
+
+                        if (existPackage != null) {
+                            // 앱이 설치되어 있으면 실행
+                            startActivity(intent)
+                        } else {
+                            // 앱이 없으면 마켓으로 이동하거나 Fallback URL로 이동
+                            val fallbackUrl = intent.getStringExtra("browser_fallback_url")
+                            if (fallbackUrl != null) {
+                                view?.loadUrl(fallbackUrl)
+                            } else {
+                                // 마켓으로 이동
+                                val marketIntent = Intent(Intent.ACTION_VIEW)
+                                marketIntent.data = Uri.parse("market://details?id=" + intent.`package`)
+                                startActivity(marketIntent)
+                            }
+                        }
+                        return true
+                    } catch (e: Exception) {
+                        Log.e(tag, "Intent 처리 실패: ${e.message}")
+                    }
+                }
+                // 3. 마켓 링크 처리
+                else if (url.startsWith("market://")) {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        startActivity(intent)
+                        return true
+                    } catch (e: Exception) {
+                        Log.e(tag, "Market 처리 실패: ${e.message}")
+                    }
+                }
+
+                // 그 외(http, https)는 WebView가 로드하도록 false 반환
+                return false
+            }
+
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
-                if (url != null) {
-                    Log.d(tag, "페이지 시작: $url")
-                    if (checkAndHandleCallback(url)) {
-                        view?.stopLoading()
-                    }
+                // 페이지 시작 시점에도 콜백 URL 체크 (보조)
+                if (url != null && checkAndHandleCallback(url)) {
+                    view?.stopLoading()
                 }
             }
 
@@ -97,6 +152,7 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 }
             }
             TYPE_NAVER -> {
+                // 네이버는 state도 체크하는 것이 안전함
                 if (url.contains("code=") && url.contains("state=")) {
                     val code = extractQueryParam(url, "code")
                     val state = extractQueryParam(url, "state")
@@ -146,7 +202,9 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 ).show()
 
                 saveLoginState()
-                checkCharacterAndNavigate()
+
+                // [수정] 토큰 등록 후 이동
+                registerFcmTokenAndNavigate()
 
             }.onFailure { error ->
                 Log.e(tag, "카카오 로그인 실패: ${error.message}")
@@ -173,7 +231,9 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 ).show()
 
                 saveLoginState()
-                checkCharacterAndNavigate()
+
+                // [수정] 토큰 등록 후 이동
+                registerFcmTokenAndNavigate()
 
             }.onFailure { error ->
                 Log.e(tag, "네이버 로그인 실패: ${error.message}")
@@ -183,6 +243,36 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 finish()
+            }
+        }
+    }
+
+    /**
+     * [추가] FCM 토큰 가져와서 서버에 등록 후 화면 이동
+     */
+    private fun registerFcmTokenAndNavigate() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.e(tag, "FCM 토큰 가져오기 실패", task.exception)
+                // 토큰 실패해도 앱 진입은 시켜야 함
+                checkCharacterAndNavigate()
+                return@addOnCompleteListener
+            }
+
+            // 토큰 가져오기 성공
+            val token = task.result
+
+            // 서버에 전송 (비동기)
+            lifecycleScope.launch {
+                try {
+                    UserRepository.updateFcmToken(token)
+                    Log.d(tag, "소셜 로그인 직후 FCM 토큰 서버 등록 완료")
+                } catch (e: Exception) {
+                    Log.e(tag, "FCM 토큰 서버 등록 실패: ${e.message}")
+                } finally {
+                    // 성공하든 실패하든 메인/온보딩으로 이동
+                    checkCharacterAndNavigate()
+                }
             }
         }
     }

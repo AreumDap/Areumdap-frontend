@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    기획서 요구사항: 캘린더 형태의 DatePicker
-    MaterialDatePicker를 사용하므로 별도 XML 불필요
-    이 파일은 커스텀이 필요한 경우를 위해 남겨둠
--->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,48 +6,58 @@
     android:orientation="vertical"
     android:padding="24dp">
 
-    <!-- 캘린더 DatePicker -->
-    <DatePicker
-        android:id="@+id/date_picker"
-        android:layout_width="wrap_content"
+    <!-- 제목 -->
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:calendarViewShown="true"
-        android:spinnersShown="false"
-        android:datePickerMode="calendar" />
+        android:gravity="center"
+        android:text="언제로 변경하시겠어요?"
+        android:textColor="#1A1A1A"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-    <!-- 버튼 영역 -->
+    <!-- 날짜 선택기 영역 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
-        <!-- Cancel 버튼 -->
-        <Button
-            android:id="@+id/btn_cancel"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_button_outline"
-            android:text="Cancel"
-            android:textColor="#888888"
-            android:textSize="15sp" />
+        <!-- 년도 선택 -->
+        <NumberPicker
+            android:id="@+id/picker_year"
+            android:layout_width="100dp"
+            android:layout_height="150dp"
+            android:theme="@style/NumberPickerTheme" />
 
-        <!-- Done 버튼 -->
-        <Button
-            android:id="@+id/btn_confirm"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/bg_button_pink"
-            android:text="Done"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+        <!-- 월 선택 -->
+        <NumberPicker
+            android:id="@+id/picker_month"
+            android:layout_width="80dp"
+            android:layout_height="150dp"
+            android:layout_marginHorizontal="16dp"
+            android:theme="@style/NumberPickerTheme" />
+
+        <!-- 일 선택 -->
+        <NumberPicker
+            android:id="@+id/picker_day"
+            android:layout_width="80dp"
+            android:layout_height="150dp"
+            android:theme="@style/NumberPickerTheme" />
 
     </LinearLayout>
+
+    <!-- 확인 버튼 -->
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_button_pink"
+        android:text="확인"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
 </LinearLayout>
