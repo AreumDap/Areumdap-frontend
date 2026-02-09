@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.areumdap.Network.RetrofitClient
-import com.example.areumdap.RVAdapter.CharacterHistoryRVAdapter
-import com.example.areumdap.UI.MainActivity
+import com.example.areumdap.data.source.RetrofitClient
+import com.example.areumdap.adapter.CharacterHistoryRVAdapter
+import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.databinding.FragmentCharacterHistoryBinding
 import com.bumptech.glide.Glide
 import com.example.areumdap.R
+import com.example.areumdap.data.model.HistoryItem
+import com.example.areumdap.data.repository.CharacterViewModelFactory
 
 
 class CharacterHistoryFragment : Fragment() {
@@ -85,7 +87,7 @@ class CharacterHistoryFragment : Fragment() {
         val currentLevelData = viewModel.characterLevel.value
 
         // 레벨별로 아이템을 저장할 맵
-        val levelMap = mutableMapOf<Int, com.example.areumdap.UI.Character.Data.HistoryItem>()
+        val levelMap = mutableMapOf<Int, HistoryItem>()
         //  히스토리 데이터
         historyItems.forEach { item ->
             levelMap[item.level] = item
@@ -105,15 +107,15 @@ class CharacterHistoryFragment : Fragment() {
         currentLevelData?.let { current ->
             val level = current.level ?: current.currentLevel ?: 0
             if (level > 0 || current.imageUrl != null) {
-                levelMap[level] = com.example.areumdap.UI.Character.Data.HistoryItem(
+                levelMap[level] = HistoryItem(
                     level = level,
-                    achievedDate = "", 
+                    achievedDate = "",
                     imageUrl = current.imageUrl
                 )
             }
         }
 
-        val combinedList = mutableListOf<com.example.areumdap.UI.Character.Data.HistoryItem>()
+        val combinedList = mutableListOf<HistoryItem>()
         val maxLevelInData = levelMap.keys.maxOrNull() ?: 1
         val maxLevelToShow = maxOf(5, maxLevelInData)
 
@@ -128,13 +130,13 @@ class CharacterHistoryFragment : Fragment() {
                 && level <= currentLevel) {
                 
                 val inferredUrl = "${templateBaseUrl}${level}.png"
-                item = com.example.areumdap.UI.Character.Data.HistoryItem(
+                item = HistoryItem(
                     level = level,
                     achievedDate = item?.achievedDate ?: "",
                     imageUrl = inferredUrl
                 )
             } else if (item == null) {
-                item = com.example.areumdap.UI.Character.Data.HistoryItem(
+                item = HistoryItem(
                     level = level,
                     achievedDate = "",
                     imageUrl = null

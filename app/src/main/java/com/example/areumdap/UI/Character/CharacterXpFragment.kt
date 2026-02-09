@@ -8,9 +8,10 @@ import com.example.areumdap.R
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.example.areumdap.Network.RetrofitClient
+import com.example.areumdap.data.source.RetrofitClient
 import com.bumptech.glide.Glide
-import com.example.areumdap.UI.MainActivity
+import com.example.areumdap.UI.auth.MainActivity
+import com.example.areumdap.data.repository.CharacterViewModelFactory
 import com.example.areumdap.databinding.FragmentCharacterXpBinding
 import kotlin.getValue
 

@@ -11,17 +11,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.areumdap.Data.api.ChatReportApiService
-import com.example.areumdap.Data.repository.ChatReportRepositoryImpl
-import com.example.areumdap.Network.RetrofitClient
-import com.example.areumdap.RVAdapter.DiscoveryRVAdapter
-import com.example.areumdap.RVAdapter.ReportTaskRVAdapter
-import com.example.areumdap.RVAdapter.TaskRVAdapter
-import com.example.areumdap.UI.Chat.data.ChatViewModel
-import com.example.areumdap.UI.record.data.ChatThreadViewModel
-import com.example.areumdap.UI.record.data.ChatThreadViewModelFactory
-import com.example.areumdap.UI.record.data.ReportUiState
-import com.example.areumdap.databinding.FragmentRecordBinding
+import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.repository.ChatReportRepositoryImpl
+import com.example.areumdap.data.source.RetrofitClient
+import com.example.areumdap.adapter.DiscoveryRVAdapter
+import com.example.areumdap.adapter.ReportTaskRVAdapter
 import com.example.areumdap.databinding.FragmentReportBinding
 import kotlinx.coroutines.launch
 

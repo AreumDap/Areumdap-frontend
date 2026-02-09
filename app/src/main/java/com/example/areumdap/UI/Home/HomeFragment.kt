@@ -10,19 +10,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.areumdap.Data.api.ChatbotApiService
-import com.example.areumdap.Data.repository.ChatbotRepository
-import com.example.areumdap.Network.RetrofitClient
+import com.example.areumdap.data.api.ChatbotApiService
+import com.example.areumdap.data.repository.ChatbotRepository
+import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.R
-import com.example.areumdap.RVAdapter.RecommendQuestionRVAdapter
+import com.example.areumdap.adapter.RecommendQuestionRVAdapter
 import com.example.areumdap.UI.Character.CharacterViewModel
-import com.example.areumdap.UI.Character.CharacterViewModelFactory
+import com.example.areumdap.data.repository.CharacterViewModelFactory
 import com.example.areumdap.UI.Chat.ChatFragment
-import com.example.areumdap.UI.Chat.data.ChatViewModel
-import com.example.areumdap.UI.Home.data.RecommendQuestionViewModel
+import com.example.areumdap.UI.Chat.ChatViewModel
+import com.example.areumdap.UI.Chat.RecommendQuestionViewModel
 import com.example.areumdap.databinding.FragmentHomeBinding
-import com.example.areumdap.domain.model.Category
-import com.example.areumdap.domain.model.RecommendQuestion
+import com.example.areumdap.UI.auth.Category
+import com.example.areumdap.data.model.RecommendQuestion
 
 class HomeFragment : Fragment() {
 

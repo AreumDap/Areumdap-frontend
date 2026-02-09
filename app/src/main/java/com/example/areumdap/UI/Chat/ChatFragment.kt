@@ -13,15 +13,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.RecyclerView
 import com.example.areumdap.R
-import com.example.areumdap.RVAdapter.ChatMessageRVAdapter
-import com.example.areumdap.UI.Chat.data.ChatViewModel
-import com.example.areumdap.UI.MainActivity
-import com.example.areumdap.UI.PopUpDialogFragment
+import com.example.areumdap.adapter.ChatMessageRVAdapter
+import com.example.areumdap.UI.auth.MainActivity
+import com.example.areumdap.UI.auth.PopUpDialogFragment
 import com.example.areumdap.databinding.FragmentChatBinding
 import com.example.areumdap.databinding.ItemChatMenuBinding
-import com.example.areumdap.domain.model.ChatMessage
+import com.example.areumdap.data.model.ChatMessage
 import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {

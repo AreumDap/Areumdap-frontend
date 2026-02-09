@@ -8,18 +8,12 @@ import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.areumdap.Data.api.MissionApiService
-import com.example.areumdap.Data.repository.MissionRepository
-import com.example.areumdap.Network.RetrofitClient
+import com.example.areumdap.data.repository.MissionRepository
+import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.R
 import com.example.areumdap.UI.Character.CharacterFragment
-import com.example.areumdap.UI.Chat.data.Mission
-import com.example.areumdap.UI.Chat.data.MissionViewModel
 import com.example.areumdap.UI.Home.HomeFragment
-import com.example.areumdap.UI.Home.data.MissionViewModelFactory
-import com.example.areumdap.UI.LoadingDialogFragment
-import com.example.areumdap.VPAdapter.TaskGuideVPAdapter
-import com.example.areumdap.VPAdapter.TaskPageVPAdapter
+import com.example.areumdap.adapter.TaskGuideVPAdapter
 import com.example.areumdap.databinding.FragmentTaskGuideBinding
 
 
@@ -66,17 +60,7 @@ class TaskGuideFragment: Fragment() {
             binding.taskTipLl.visibility = if (hasMissions) View.VISIBLE else View.GONE
             binding.tipTv.text = missions.firstOrNull()?.tip.orEmpty()
         }
-        missionViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            val loadingDialog = childFragmentManager.findFragmentByTag("LoadingDialog") as? LoadingDialogFragment
-
-            if (isLoading) {
-                if (loadingDialog == null) {
-                    LoadingDialogFragment().show(childFragmentManager, "LoadingDialog")
-                }
-            } else {
-                loadingDialog?.dismiss()
-            }
-        }
+        missionViewModel.loading.observe(viewLifecycleOwner) { /* 로딩 처리 */ }
         missionViewModel.error.observe(viewLifecycleOwner) { msg ->
             if (msg != null) Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
         }

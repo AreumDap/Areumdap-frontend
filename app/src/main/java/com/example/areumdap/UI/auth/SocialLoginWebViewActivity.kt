@@ -11,10 +11,9 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.areumdap.Network.AuthRepository
-import com.example.areumdap.Network.SocialAuthRepository
-import com.example.areumdap.Network.UserRepository
-import com.example.areumdap.UI.MainActivity
+import com.example.areumdap.data.repository.AuthRepository
+import com.example.areumdap.data.repository.SocialAuthRepository
+import com.example.areumdap.data.repository.UserRepository
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivitySocialLoginWebviewBinding
 import com.google.firebase.messaging.FirebaseMessaging
