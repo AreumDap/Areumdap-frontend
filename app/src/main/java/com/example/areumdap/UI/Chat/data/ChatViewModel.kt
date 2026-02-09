@@ -8,6 +8,7 @@ import com.example.areumdap.Data.api.ChatSummaryData
 import com.example.areumdap.Data.api.StartChatRequest
 import com.example.areumdap.Data.repository.ChatRepositoryImpl
 import com.example.areumdap.Data.api.ChatReportApiService
+import com.example.areumdap.Data.api.ReportResponse
 import com.example.areumdap.Network.RetrofitClient
 import com.example.areumdap.Network.TokenManager
 import com.example.areumdap.domain.model.ChatMessage
@@ -24,6 +25,13 @@ sealed interface SummaryUiState{
     data object Loading : SummaryUiState
     data class Success(val data : ChatSummaryData) : SummaryUiState
     data class Error(val message:String) : SummaryUiState
+}
+
+sealed interface ReportUiState {
+    data object Idle : ReportUiState
+    data object Loading : ReportUiState
+    data class Success(val data: ReportResponse) : ReportUiState
+    data class Error(val message: String) : ReportUiState
 }
 
 class ChatViewModel(
@@ -43,6 +51,9 @@ class ChatViewModel(
     private val _summaryState = MutableStateFlow<SummaryUiState>(SummaryUiState.Idle)
     val summaryState: StateFlow<SummaryUiState> = _summaryState
 
+    private val _reportState = MutableStateFlow<ReportUiState>(ReportUiState.Idle)
+    val reportState : StateFlow<ReportUiState> = _reportState
+
     fun getThreadId(): Long? = threadId
     fun getLastEndedThreadId(): Long? = lastEndedThreadId
     fun getLastRecommendTag(): String? = lastRecommendTag
@@ -57,7 +68,9 @@ class ChatViewModel(
         threadId = null
         _messages.value = emptyList()
         _summaryState.value = SummaryUiState.Idle
+        _reportState.value = ReportUiState.Idle
         lastRecommendTag = null
+
     }
 
 
@@ -138,8 +151,6 @@ class ChatViewModel(
                 }
 
                 if (reply.isSessionEnd) {
-                    runCatching { repo.stopChat(currentThreadId) }
-                        .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
                     resetChatSession(currentThreadId)
                     _endEvent.tryEmit(Unit)
                 }
@@ -305,6 +316,27 @@ fun seedQuestionOnly(question: String) {
             }
         }.onFailure { e ->
             Log.e("ChatViewModel", "attachChatHistoryId failed", e)
+        }
+    }
+
+    fun createReportForSummaryScreen(){
+        val id = lastEndedThreadId ?: threadId ?: run{
+            Log.w("ChatViewModel", "createReportForSummaryScreen: no threadId (lastEndedThreadId=null, threadId=null)")
+            return
+        }
+
+        viewModelScope.launch {
+            _reportState.value = ReportUiState.Loading
+
+            repo.createReport(id)
+                .onSuccess { data ->
+                    Log.d("ChatViewModel", "createReport success reportId=${data.reportId}")
+                    _reportState.value = ReportUiState.Success(data)
+                }
+                .onFailure { e ->
+                    Log.e("ChatViewModel", "createReport failed", e)
+                    _reportState.value = ReportUiState.Error(e.message ?: "레포트 생성 실패")
+                }
         }
     }
 }
