@@ -1,75 +1,61 @@
 package com.example.areumdap.data.repository
 
-import android.util.Log
-import com.example.areumdap.data.model.ChatSummaryData
-import com.example.areumdap.data.model.ChatSummaryRequest
-import com.example.areumdap.data.model.SendChatMessageRequest
-import com.example.areumdap.data.model.SendChatMessageResponse
-import com.example.areumdap.data.source.RetrofitClient
-import com.example.areumdap.data.api.ApiResponse
+import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.model.ChatReportDataDto
+import com.example.areumdap.data.model.ChatThreadHistoriesDto
+import com.example.areumdap.data.model.ChatThreadsData
 
-class ChatRepositoryImpl : ChatRepository {
-    override suspend fun ask(content: String, threadId: Long): SendChatMessageResponse {
-        val res = RetrofitClient.chatbotApiService.sendMessage(
-            SendChatMessageRequest(
-                content = content,
-                userChatThreadId = threadId
-            )
-        )
-
-        if (!res.isSuccessful) {
-            val err = runCatching { res.errorBody()?.string() }.getOrNull()
-            throw IllegalStateException("chatbot send failed code=${res.code()} err=$err")
-        }
-
-        val wrapper = res.body() ?: throw IllegalStateException("chatbot send empty body")
-        val data = wrapper.data ?: throw IllegalStateException("chatbot send data=null")
-        return data
-    }
-
-    override suspend fun stopChat(threadId: Long) {
-        Log.d("ChatExit", "stopChat request threadId=$threadId")
-        val res = RetrofitClient.chatbotApiService.stopChat(threadId)
-
-        if (!res.isSuccessful) {
-            val err = runCatching { res.errorBody()?.string() }.getOrNull()
-            throw IllegalStateException("chatbot stop failed code=${res.code()} err=$err")
-        }
-
-        val wrapper = res.body() ?: throw IllegalStateException("chatbot stop empty body")
-        if (!wrapper.isSuccess) throw IllegalStateException("chatbot stop fail msg=${wrapper.message}")
-    }
-
-    override suspend fun fetchSummary(accessToken: String, threadId: Long):Result<ChatSummaryData> {
-        return runCatching {
-            val wrapper = RetrofitClient.chatbotApiService.getChatSummary(
-                ChatSummaryRequest(userChatThreadId  = threadId)
+class ChatReportRepositoryImpl(
+    private val api: ChatReportApiService
+) : ChatReportRepository {
+    override suspend fun getChatThreads(favorite: Boolean, size: Int): Result<ChatThreadsData> =
+        runCatching {
+            val res = api.getChatThreads(
+                favorite = favorite,
+                size = size
             )
 
-            if(!wrapper.isSuccess){
-                throw  IllegalStateException("chatbot summary fail code=${wrapper.code} msg=${wrapper.message}")
+//            HTTP 레벨 성공 체크
+            if (!res.isSuccessful) {
+                error("HTTP ${res.code()} ${res.message()}")
             }
-            wrapper.data ?: throw IllegalStateException("chatbot summary data=null")
-        }
-    }
 
-    override suspend fun saveQuestion(
-        chatHistoryId: Long
-    ): Result<ApiResponse<Unit>> {
-        return runCatching {
-            val res = RetrofitClient.chatbotApiService.saveQuestion(
-                chatHistoryId = chatHistoryId,
-            )
+            val body = res.body() ?: error("응답 body가 비어있음")
 
-            if (!res.isSuccessful){
-                val err = runCatching { res.errorBody()?.string() }.getOrNull()
-                throw IllegalStateException("saveQuestion failed code=${res.code()} err=$err")
+            if (!body.isSuccess || body.data == null) {
+                error("API 실패: isSuccess=${body.isSuccess}, data=${body.data}")
             }
-            val wrapper = res.body() ?: throw java.lang.IllegalStateException("saveQuestion empty body")
-            if (!wrapper.isSuccess) {
-                throw IllegalStateException("saveQuestion fail code=${wrapper.code} msg=${wrapper.message}")
-            }
-            wrapper
+            body.data
         }
-    }
+
+    override suspend fun getThreadHistories(threadId: Long): Result<ChatThreadHistoriesDto> =
+        runCatching {
+            val res = api.getThreadHistories(threadId)
+
+            if (!res.isSuccessful) {
+                error("HTTP ${res.code()} ${res.message()}")
+            }
+
+            val body = res.body() ?: error("응답 body가 비어있음")
+            if (!body.isSuccess || body.data == null) {
+                error("API 실패: isSuccess=${body.isSuccess}, data=${body.data}")
+            }
+            body.data
+        }
+
+    override suspend fun fetchReport(reportId: Long): Result<ChatReportDataDto> =
+        runCatching {
+            val res = api.getChatReport(reportId)
+
+            if (!res.isSuccessful) {
+                error("HTTP ${res.code()} ${res.message()}")
+            }
+
+            val body = res.body() ?: error("응답 body가 비어있음")
+            if (!body.isSuccess || body.data == null) {
+                error("API 실패: isSuccess=${body.isSuccess}, data=${body.data}")
+            }
+            body.data
+        }
+
 }

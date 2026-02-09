@@ -9,4 +9,5 @@ interface ChatReportRepository {
     suspend fun getThreadHistories(threadId: Long): Result<ChatThreadHistoriesDto>
 
     suspend fun fetchReport(reportId : Long) : Result<ChatReportDataDto>
+
 }

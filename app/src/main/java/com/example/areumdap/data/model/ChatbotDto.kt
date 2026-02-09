@@ -49,4 +49,29 @@ data class SummaryContent(
     val discoveries : List<String>
 )
 
+data class ReportRequest(
+    val userChatThreadId: Long
+)
+
+data class ReportResponse(
+    val reportId: Long,
+    val title: String,
+    val messageCount: Int,
+    val depth: String,
+    val durationMinutes: Int,
+    val summaryContent: String,
+    val reportTags: List<ReportTag>,
+    val insightContents: List<InsightContent>,
+    val createdAt: String // "2026-02-09" 같은 포맷
+)
+
+data class ReportTag(
+    val tag: String
+)
+
+data class InsightContent(
+    val insightId: Long,
+    val content: String
+)
+
 

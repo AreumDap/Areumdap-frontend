@@ -1,18 +1,18 @@
-﻿package com.example.areumdap.UI.Chat
+﻿package com.example.areumdap.UI.Chat.data
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.areumdap.data.repository.ChatRepository
-import com.example.areumdap.data.model.ChatSummaryData
-import com.example.areumdap.data.model.StartChatRequest
-import com.example.areumdap.data.repository.ChatRepositoryImpl
 import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.model.ChatMessage
+import com.example.areumdap.data.model.ChatSummaryData
+import com.example.areumdap.data.model.Sender
+import com.example.areumdap.data.model.StartChatRequest
+import com.example.areumdap.data.model.Status
+import com.example.areumdap.data.repository.ChatRepository
+import com.example.areumdap.data.repository.ChatRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.source.TokenManager
-import com.example.areumdap.data.model.ChatMessage
-import com.example.areumdap.data.model.Sender
-import com.example.areumdap.data.model.Status
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

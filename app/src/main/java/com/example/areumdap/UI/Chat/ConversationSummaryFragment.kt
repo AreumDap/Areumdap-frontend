@@ -5,13 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.core.content.ContextCompat
 import com.example.areumdap.R
+import com.example.areumdap.UI.Chat.data.ChatViewModel
+import com.example.areumdap.UI.Chat.data.SummaryUiState
 import com.example.areumdap.databinding.FragmentCoversationSummaryBinding
 import com.example.areumdap.UI.auth.Category
 import kotlinx.coroutines.launch

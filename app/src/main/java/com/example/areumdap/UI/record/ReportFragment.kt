@@ -70,7 +70,7 @@ class ReportFragment: Fragment() {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = reportTaskRVAdapter
 
-            val reportId = requireArguments().getLong("threadId", -1L)
+            val reportId = requireArguments().getLong("reportId", -1L)
             if (reportId == -1L) return
 
             viewModel.loadReport(reportId)

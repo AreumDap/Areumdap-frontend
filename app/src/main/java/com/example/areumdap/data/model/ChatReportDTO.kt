@@ -19,6 +19,7 @@ data class UserChatThread(
 
 data class ChatThreadHistoriesDto(
     val threadId: Long,
+    val reportId : Long,
     val histories: List<HistoryDto>
 )
 

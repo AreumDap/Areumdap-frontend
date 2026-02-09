@@ -13,7 +13,6 @@ import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.R
 import com.example.areumdap.UI.Character.CharacterFragment
 import com.example.areumdap.UI.Home.HomeFragment
-import com.example.areumdap.UI.Chat.MissionViewModelFactory
 import com.example.areumdap.adapter.TaskGuideVPAdapter
 import com.example.areumdap.databinding.FragmentTaskGuideBinding
 

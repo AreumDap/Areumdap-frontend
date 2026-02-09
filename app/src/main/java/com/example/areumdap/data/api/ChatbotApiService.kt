@@ -12,6 +12,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -40,6 +41,11 @@ interface ChatbotApiService {
     suspend fun getChatSummary(
         @Body body: ChatSummaryRequest
     ) : ApiResponse<ChatSummaryData>
+
+    @POST("api/chatbot/report")
+    suspend fun createReport(
+        @Body req: ReportRequest
+    ) : Response<ReportResponse>
 
     @POST("api/questions/{chatHistoryId}")
     suspend fun saveQuestion(
