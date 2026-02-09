@@ -1,10 +1,12 @@
 ﻿package com.example.areumdap.UI.Chat
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
-import android.widget.ImageView
-import android.util.Log
+import android.view.ViewGroup
+import android.widget.PopupWindow
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,51 +19,57 @@ import com.example.areumdap.RVAdapter.ChatMessageRVAdapter
 import com.example.areumdap.UI.Chat.data.ChatViewModel
 import com.example.areumdap.UI.MainActivity
 import com.example.areumdap.UI.PopUpDialogFragment
+import com.example.areumdap.databinding.FragmentChatBinding
+import com.example.areumdap.databinding.ItemChatMenuBinding
+import com.example.areumdap.domain.model.ChatMessage
 import kotlinx.coroutines.launch
 
-
 class ChatFragment : Fragment(R.layout.fragment_chat) {
+
     private val vm: ChatViewModel by activityViewModels()
     private lateinit var adapter: ChatMessageRVAdapter
 
+    private var _binding: FragmentChatBinding? = null
+    private val binding get() = _binding!!
+
+    private var menuPopup: PopupWindow? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = ChatMessageRVAdapter()
+        _binding = FragmentChatBinding.bind(view)
+
+        adapter = ChatMessageRVAdapter { anchor, msg ->
+            showChatMenu(anchor, msg)
+        }
+
+        // prefill 처리 (네 코드 그대로)
         val prefill = arguments?.getString("prefill_question")
         val prefillQuestionId = arguments?.getLong("prefill_question_id", -1L) ?: -1L
         val prefillTag = arguments?.getString("prefill_tag")
-        if (!prefillTag.isNullOrBlank()) {
-            vm.setRecommendTag(prefillTag)
-        }
+
+        if (!prefillTag.isNullOrBlank()) vm.setRecommendTag(prefillTag)
+
         if (!prefill.isNullOrBlank()) {
-            if (prefillQuestionId != -1L) {
-                vm.seedPrefillQuestion(prefill)
-            } else {
-                vm.seedQuestionOnly(prefill)
-            }
+            if (prefillQuestionId != -1L) vm.seedPrefillQuestion(prefill)
+            else vm.seedQuestionOnly(prefill)
             arguments?.remove("prefill_question")
         }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             showExitDialog()
         }
 
-
-
-        if (!prefill.isNullOrBlank() && prefillQuestionId != -1L){
+        if (!prefill.isNullOrBlank() && prefillQuestionId != -1L) {
             vm.startChat(prefill, prefillQuestionId)
         }
 
-        val rv = view.findViewById<RecyclerView>(R.id.chat_rv)
-        rv.adapter = adapter
-        rv.itemAnimator = null
+        // ✅ 바인딩으로 연결
+        binding.chatRv.adapter = adapter
+        binding.chatRv.itemAnimator = null
 
-        val et = view.findViewById<EditText>(R.id.et_chat_input)
-        val btn = view.findViewById<ImageView>(R.id.send_btn)
-
-        btn.setOnClickListener {
-            vm.send(et.text.toString())
-            et.setText("")
+        binding.sendBtn.setOnClickListener {
+            vm.send(binding.etChatInput.text.toString())
+            binding.etChatInput.setText("")
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -69,11 +77,12 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                 launch {
                     vm.message.collect { list ->
                         adapter.submitList(list) {
-                            if (adapter.itemCount > 0) rv.scrollToPosition(adapter.itemCount - 1)
+                            if (adapter.itemCount > 0) {
+                                binding.chatRv.scrollToPosition(adapter.itemCount - 1)
+                            }
                         }
                     }
                 }
-
                 launch {
                     vm.endEvent.collect {
                         showChatEndDialog()
@@ -82,24 +91,70 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             }
         }
 
-
         (activity as? MainActivity)?.setToolbar(
             visible = true,
             title = "대화",
             showBackButton = true,
             subText = "질문 길게 눌러 저장",
-            onBackClick = { showExitDialog()}
+            onBackClick = { showExitDialog() }
         )
-
-
     }
 
     override fun onDestroyView() {
+        menuPopup?.dismiss()
+        menuPopup = null
+        _binding = null
         (activity as? MainActivity)?.setToolbar(false)
         super.onDestroyView()
     }
 
-    private fun showExitDialog(){
+    // ✅ 커스텀 메뉴: ItemChatMenuBinding으로 연결
+    private fun showChatMenu(anchor: View, msg: ChatMessage) {
+        menuPopup?.dismiss()
+
+        val menuBinding = ItemChatMenuBinding.inflate(layoutInflater)
+
+        val popup = PopupWindow(
+            menuBinding.root,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            isOutsideTouchable = true
+            elevation = 20f
+            setOnDismissListener { menuPopup = null }
+        }
+
+        menuBinding.menuSave.setOnClickListener {
+            popup.dismiss()
+            val id = msg.chatHistoryId
+            if (id == null) {
+                android.util.Log.w("ChatFragment", "saveQuestion skipped: chatHistoryId is null")
+                android.widget.Toast
+                    .makeText(requireContext(), "저장할 수 없는 메시지예요.", android.widget.Toast.LENGTH_SHORT)
+                    .show()
+                return@setOnClickListener
+            }
+            vm.saveQuestion(id)
+        }
+
+        menuBinding.menuCopy.setOnClickListener {
+            popup.dismiss()
+            copyToClipboard(msg.text)
+        }
+
+        // 말풍선 위에 뜨게 (원하면 위치 튜닝 가능)
+        popup.showAsDropDown(anchor, 0, -anchor.height * 2)
+
+        menuPopup = popup
+    }
+
+    private fun copyToClipboard(text: String) {
+        val cm = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        cm.setPrimaryClip(ClipData.newPlainText("chat", text))
+    }
+
+    private fun showExitDialog() {
         val dialog = PopUpDialogFragment.newInstance(
             title = "대화를 종료하시겠어요?\n지금 나가면 과제를 받을 수 없어요.",
             subtitle = "",
@@ -107,17 +162,18 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             rightBtn = "나가기"
         )
 
-        dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback{
+        dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
             override fun onConfirm() {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    vm.resetChatSession()
+                    android.util.Log.d("ChatExit", "confirm exit clicked")
                     vm.stopChatOnExit()
+                    vm.resetChatSession()
                     parentFragmentManager.popBackStack()
                 }
             }
         })
 
-        dialog.show(parentFragmentManager,"exit_chat_dialog")
+        dialog.show(parentFragmentManager, "exit_chat_dialog")
     }
 
     private fun showChatEndDialog() {
@@ -147,7 +203,4 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
         dialog.show(parentFragmentManager, "chat_end_dialog")
     }
-
-
-
 }

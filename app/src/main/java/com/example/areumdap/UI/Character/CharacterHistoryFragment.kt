@@ -107,7 +107,7 @@ class CharacterHistoryFragment : Fragment() {
             if (level > 0 || current.imageUrl != null) {
                 levelMap[level] = com.example.areumdap.UI.Character.Data.HistoryItem(
                     level = level,
-                    achievedDate = "",
+                    achievedDate = "", 
                     imageUrl = current.imageUrl
                 )
             }
@@ -123,10 +123,10 @@ class CharacterHistoryFragment : Fragment() {
         for (level in 1..maxLevelToShow) {
             var item = levelMap[level]
 
-            if ((item == null || item.imageUrl.isNullOrEmpty())
-                && templateBaseUrl != null
+            if ((item == null || item.imageUrl.isNullOrEmpty()) 
+                && templateBaseUrl != null 
                 && level <= currentLevel) {
-
+                
                 val inferredUrl = "${templateBaseUrl}${level}.png"
                 item = com.example.areumdap.UI.Character.Data.HistoryItem(
                     level = level,
@@ -140,7 +140,7 @@ class CharacterHistoryFragment : Fragment() {
                     imageUrl = null
                 )
             }
-
+            
             combinedList.add(item!!)
         }
 

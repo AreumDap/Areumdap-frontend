@@ -3,9 +3,11 @@ package com.example.areumdap.Task
 import com.example.areumdap.Task.CompletedMissionsRequest
 import com.example.areumdap.Task.CompletedMissionsResponse
 import com.example.areumdap.Network.model.BaseResponse
+import com.example.areumdap.UI.Home.data.ApiResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface TaskApiService {
@@ -34,6 +36,8 @@ interface TaskApiService {
         @Query("cursorId") cursorId: Int?,
         @Query("size") size: Int?
     ): Response<BaseResponse<SavedQuestionsResponse>>
+
+
 
     @retrofit2.http.DELETE("api/missions/{missionId}")
     suspend fun deleteCompletedMission(
