@@ -15,6 +15,7 @@ import com.example.areumdap.UI.Character.CharacterFragment
 import com.example.areumdap.UI.Home.HomeFragment
 import com.example.areumdap.adapter.TaskGuideVPAdapter
 import com.example.areumdap.databinding.FragmentTaskGuideBinding
+import com.example.areumdap.UI.auth.LoadingDialogFragment
 
 
 class TaskGuideFragment: Fragment() {
@@ -60,7 +61,14 @@ class TaskGuideFragment: Fragment() {
             binding.taskTipLl.visibility = if (hasMissions) View.VISIBLE else View.GONE
             binding.tipTv.text = missions.firstOrNull()?.tip.orEmpty()
         }
-        missionViewModel.loading.observe(viewLifecycleOwner) { /* 로딩 처리 */ }
+        missionViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                val dialog = LoadingDialogFragment()
+                dialog.show(parentFragmentManager, "LoadingDialog_TaskGuide")
+            } else {
+                (parentFragmentManager.findFragmentByTag("LoadingDialog_TaskGuide") as? LoadingDialogFragment)?.dismiss()
+            }
+        }
         missionViewModel.error.observe(viewLifecycleOwner) { msg ->
             if (msg != null) Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
         }
