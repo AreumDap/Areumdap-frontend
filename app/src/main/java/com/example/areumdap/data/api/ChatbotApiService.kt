@@ -4,6 +4,8 @@ import com.example.areumdap.data.api.ApiResponse
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.ChatSummaryRequest
 import com.example.areumdap.data.model.GetChatbotRecommendsResponse
+import com.example.areumdap.data.model.ReportRequest
+import com.example.areumdap.data.model.ReportResponse
 import com.example.areumdap.data.model.SendChatMessageRequest
 import com.example.areumdap.data.model.SendChatMessageResponse
 import com.example.areumdap.data.model.StartChatRequest
@@ -13,6 +15,7 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ChatbotApiService {
@@ -31,7 +34,7 @@ interface ChatbotApiService {
 
     @DELETE("api/chat")
     suspend fun stopChat(
-        @Query("UserChatThreadId") threadId: Long
+        @Query("userChatThreadId") threadId: Long
     ) : Response<ApiResponse<Unit>>
 
     @POST("api/chatbot/summary")
@@ -39,7 +42,7 @@ interface ChatbotApiService {
         @Body body: ChatSummaryRequest
     ) : ApiResponse<ChatSummaryData>
 
-    @POST("api/chat/report")
+    @POST("api/chatbot/report")
     suspend fun createReport(
         @Body req: ReportRequest
     ) : Response<ReportResponse>
@@ -48,6 +51,4 @@ interface ChatbotApiService {
     suspend fun saveQuestion(
         @Path("chatHistoryId") chatHistoryId:Long
     ) : Response<ApiResponse<Unit>>
-
 }
-

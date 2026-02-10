@@ -10,7 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
-import com.example.areumdap.data.api.ChatbotApiService
+import com.example.areumdap.Data.api.ChatbotApiService
 import com.example.areumdap.data.repository.ChatbotRepository
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.R

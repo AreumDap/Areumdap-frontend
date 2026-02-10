@@ -3,7 +3,7 @@
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.Data.api.ChatReportApiService
 import com.example.areumdap.data.model.ChatMessage
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.Sender
@@ -12,6 +12,7 @@ import com.example.areumdap.data.model.Status
 import com.example.areumdap.data.repository.ChatRepository
 import com.example.areumdap.data.repository.ChatRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient
+import com.example.areumdap.data.source.RetrofitClient.chatbotApiService
 import com.example.areumdap.data.source.TokenManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -160,7 +161,7 @@ class ChatViewModel(
         return try {
             Log.d("ChatViewModel", "startChatInternal request: content='$content', userQuestionId=$userQuestionId")
 
-            val res = RetrofitClient.chatbotApiService.startChat(
+            val res = chatbotApiService.startChat(
                 StartChatRequest(content = content, userQuestionId = userQuestionId)
             )
 
