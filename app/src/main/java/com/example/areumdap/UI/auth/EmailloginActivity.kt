@@ -80,20 +80,23 @@ class EmailLoginActivity : AppCompatActivity() {
 
         // 입력값 검증
         if (email.isEmpty()) {
-            showCustomToast("이메일을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etId.requestFocus()
             return
         }
 
         if (password.isEmpty()) {
-            showCustomToast("비밀번호를 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etPassword.requestFocus()
             return
         }
 
         // 이메일 형식 검증
         if (!isValidEmail(email)) {
-            showCustomToast("올바른 이메일 형식을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etId.requestFocus()
             return
         }
@@ -115,17 +118,35 @@ class EmailLoginActivity : AppCompatActivity() {
                         saveLoginState()
                     }
 
-                    // [수정됨] 로그인 성공 시 FCM 토큰 등록 후 이동
+                    // 로그인 성공 시 FCM 토큰 등록 후 이동
                     registerFcmTokenAndNavigate()
 
                 }.onFailure { error ->
                     Log.e(tag, "로그인 실패: ${error.message}")
-                    showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+
+                    // HTTP 에러 코드에 따라 분기
+                    if (error is HttpException) {
+                        when (error.code()) {
+                            401, 403 -> {
+                                // A. 입력 문제 (인증 실패) - Error
+                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+                            }
+                            else -> {
+                                // B. 시스템/네트워크 문제 - Failure
+                                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                            }
+                        }
+                    } else {
+                        // B. 시스템/네트워크 문제 - Failure
+                        showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                    }
+
                     binding.btnLogin.isEnabled = true
                 }
             } catch (e: Exception) {
                 Log.e(tag, "로그인 중 예외 발생: ${e.message}")
-                showCustomToast("오류가 발생했습니다.", isSuccess = false)
+                // C. 원인 불명 - 최소 기준
+                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
                 binding.btnLogin.isEnabled = true
             }
         }

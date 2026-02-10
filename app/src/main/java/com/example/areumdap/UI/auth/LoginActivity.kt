@@ -95,7 +95,8 @@ class LoginActivity : AppCompatActivity() {
 
             }.onFailure { error ->
                 Log.e(tag, "카카오 로그인 URL 조회 실패: ${error.message}")
-                showCustomToast("카카오 로그인을 시작할 수 없습니다.", isSuccess = false)
+                // B. 시스템/네트워크 문제 - Failure
+                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
                 binding.btnKakaoLogin.isEnabled = true
             }
         }
@@ -121,7 +122,8 @@ class LoginActivity : AppCompatActivity() {
 
             }.onFailure { error ->
                 Log.e(tag, "네이버 로그인 URL 조회 실패: ${error.message}")
-                showCustomToast("네이버 로그인을 시작할 수 없습니다.", isSuccess = false)
+                // B. 시스템/네트워크 문제 - Failure
+                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
                 binding.btnNaverLogin.isEnabled = true
             }
         }
