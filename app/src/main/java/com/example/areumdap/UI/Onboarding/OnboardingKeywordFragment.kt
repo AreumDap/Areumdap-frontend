@@ -24,7 +24,7 @@ class OnboardingKeywordFragment : Fragment(){
         "SPRING" to listOf("부드러운", "다정한", "낙천적인", "밝은", "순수한", "수줍은", "상냥한", "여린", "투명한"),
         "SUMMER" to listOf("뜨거운", "선명한", "솔직한", "강렬한", "대담한", "적극적인", "추진력 있는", "분명한", "활발한"),
         "FALL" to listOf("담담한", "고요한", "느긋한", "깊이 있는", "성숙한", "섬세한", "안정된", "이상적인", "침착한"),
-        "WINTER" to listOf("고요한", "절제된", "부드러운", "냉정한", "흔들림 없는", "무게 있는", "성숙한", "담담한", "현실적인")
+        "WINTER" to listOf("냉정한", "흔들림 없는", "고요한", "절제된", "부드러운", "무게 있는", "성숙한", "담담한", "현실적인")
     )
 
     // 영어 → 한글 변환 맵
@@ -88,13 +88,13 @@ class OnboardingKeywordFragment : Fragment(){
             // FlexboxLayout.LayoutParams 설정 (간격 적용)
             val params = FlexboxLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                50.dpToPx()
             ).apply {
                 setMargins(
-                    5.dpToPx(),  // left
-                    5.dpToPx(),  // top
+                    5.dpToPx(),  // left (간격 10dp / 2)
+                    6.dpToPx(),  // top
                     5.dpToPx(),  // right
-                    5.dpToPx()   // bottom
+                    6.dpToPx()   // bottom
                 )
             }
             chip.layoutParams = params
@@ -111,6 +111,14 @@ class OnboardingKeywordFragment : Fragment(){
 
             isCheckable = true
             isCheckedIconVisible = false
+
+            // 패딩 및 모양 설정
+            chipCornerRadius = 100.dpToPx().toFloat()
+            chipStartPadding = 20.dpToPx().toFloat()
+            chipEndPadding = 20.dpToPx().toFloat()
+            textStartPadding = 0f
+            textEndPadding = 0f
+            setEnsureMinTouchTargetSize(false)
 
             // 초기 상태: 미선택 (흰색 배경 + 테두리)
             applyUnselectedStyle()

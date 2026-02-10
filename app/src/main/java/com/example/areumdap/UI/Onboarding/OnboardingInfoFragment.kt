@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.areumdap.data.api.OnboardingRequest
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.api.UserApi
+import com.bumptech.glide.Glide
 import com.example.areumdap.R
 import com.example.areumdap.UI.Character.CharacterUiState
 import com.example.areumdap.databinding.FragmentOnboardingInfoBinding
@@ -34,6 +35,10 @@ class OnboardingInfoFragment: Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: OnboardingViewModel by activityViewModels()
+
+    // 캐릭터 생성 결과 저장
+    private var createdCharacterId: Int? = null
+    private var createdImageUrl: String? = null
 
     // 캐릭터 생성 ViewModel
     private val characterViewModel: CharacterViewModel by viewModels {
@@ -71,7 +76,7 @@ class OnboardingInfoFragment: Fragment() {
                 1 -> showText2() // "서로를 알아가기 위해..."
                 2 -> showText3() // "좋아요! 앞으로 ..."
                 3 -> showText4() // "아름이는 oo님이..."
-                4 -> createCharacter() // 캐릭터 생성
+                4 -> saveOnboardingAndNavigate(createdCharacterId, createdImageUrl) // 온보딩 저장 + 메인 이동
             }
         }
     }
@@ -81,6 +86,8 @@ class OnboardingInfoFragment: Fragment() {
             "앞선 당신의 이야기를 통해<br>당신을 닮은 <b>아름이</b>가 태어났어요!",
             Html.FROM_HTML_MODE_LEGACY
         )
+        // 계절별 알 이미지를 위해 캐릭터 생성 API 호출
+        createCharacter()
     }
 
     private fun showText2() {
@@ -110,7 +117,6 @@ class OnboardingInfoFragment: Fragment() {
     private fun createCharacter() {
         val season = viewModel.selectedSeason.value
         val keywords = viewModel.selectedKeywords.value ?: mutableListOf()
-        val nickname = viewModel.nickname.value
 
         Log.d("CharacterAPI", "계절: $season")
         Log.d("CharacterAPI", "키워드: $keywords")
@@ -118,11 +124,6 @@ class OnboardingInfoFragment: Fragment() {
         if (season.isNullOrEmpty()) {
             Log.e("CharacterAPI", "계절 정보 없음!")
             showError("계절 정보가 없습니다.")
-            return
-        }
-
-        if (nickname.isNullOrEmpty()) {
-            showError("닉네임을 입력해주세요.")
             return
         }
 
@@ -158,7 +159,18 @@ class OnboardingInfoFragment: Fragment() {
                         }
                         is CharacterUiState.Success -> {
                             Log.d("CharacterAPI", "성공! ID: ${state.characterId}, URL: ${state.imageUrl}")
-                            saveOnboardingAndNavigate(state.characterId, state.imageUrl)
+                            createdCharacterId = state.characterId
+                            createdImageUrl = state.imageUrl
+                            // 계절별 알 이미지 로드
+                            state.imageUrl?.let { url ->
+                                Glide.with(this@OnboardingInfoFragment)
+                                    .load(url)
+                                    .error(R.drawable.img_character_egg)
+                                    .into(binding.ivCharacter)
+                                binding.ivCharacter.visibility = View.VISIBLE
+                            }
+                            hideLoading()
+                            characterViewModel.resetUiState()
                         }
                         is CharacterUiState.Error -> {
                             Log.e("CharacterAPI", "에러: ${state.message}")
@@ -185,7 +197,12 @@ class OnboardingInfoFragment: Fragment() {
     }
 
     // 온보딩 저장
-    private fun saveOnboardingAndNavigate(characterId: Int, imageUrl: String?) {
+    private fun saveOnboardingAndNavigate(characterId: Int?, imageUrl: String?) {
+        if (characterId == null) {
+            showError("캐릭터 생성이 완료되지 않았습니다.")
+            return
+        }
+
         val nickname = viewModel.nickname.value ?: ""
 
         Log.d("CharacterAPI", "=== 온보딩 저장 시작 ===")
