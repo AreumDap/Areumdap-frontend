@@ -1,6 +1,5 @@
 package com.example.areumdap.UI.auth
 
-import android.R
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -20,8 +19,9 @@ class ToastDialogFragment(private val message: String, private val iconResId: In
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
-        binding = FragmentToastDialogBinding.inflate(inflater,container,false)
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentToastDialogBinding.inflate(inflater, container, false)
 
         binding.toastTv.text = message
         binding.toastIv.setImageResource(iconResId)
@@ -29,7 +29,7 @@ class ToastDialogFragment(private val message: String, private val iconResId: In
         return binding.root
     }
 
-    override fun onStart(){
+    override fun onStart() {
         super.onStart()
 
         //배경 투명화 및 위치 조절
@@ -42,18 +42,20 @@ class ToastDialogFragment(private val message: String, private val iconResId: In
             // 왼쪽으로 쏠림현상을 해결함
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             //화면 위에 띄게
-            setGravity(Gravity.TOP)
+            setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL)
             //위 마진 조절
             val params = attributes
-            params.y = 40
-            params.windowAnimations = R.style.Animation_Toast
+            val yOffset = (50 * resources.displayMetrics.density).toInt()
+            params.y = yOffset
+            params.windowAnimations = android.R.style.Animation_Toast
             attributes = params
         }
 
         Handler(Looper.getMainLooper()).postDelayed({
-            if(isAdded) dismiss()
+            if (isAdded) dismiss()
         }, 3000)
     }
+
     override fun onResume() {
         super.onResume()
         dialog?.window?.let { window ->
