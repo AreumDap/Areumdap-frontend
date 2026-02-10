@@ -3,6 +3,7 @@ package com.example.areumdap.UI.auth
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -19,13 +20,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.NumberPicker
-import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.example.areumdap.data.repository.AuthRepository
-import com.example.areumdap.data.source.TokenManager
-import com.example.areumdap.data.repository.UserRepository
 import com.example.areumdap.R
+import com.example.areumdap.data.repository.AuthRepository
+import com.example.areumdap.data.repository.UserRepository
+import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.databinding.FragmentSettingBinding
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -53,7 +54,13 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 1. 로컬 데이터 먼저 로드
+        loadLocalData()
+
+        // 2. 리스너 설정
         setupClickListeners()
+
+        // 3. 서버 데이터 로드
         loadUserData()
     }
 
@@ -62,28 +69,31 @@ class SettingFragment : Fragment() {
         _binding = null
     }
 
+    // ============ 커스텀 토스트 함수 (수정됨) ============
     /**
-     * 다이얼로그를 화면 하단(Bottom Sheet) 스타일로 설정하는 공통 함수
+     * ToastDialogFragment를 액티비티 위에 띄우는 헬퍼 함수
+     * DataTaskFragment와 동일하게 requireActivity().supportFragmentManager 사용
      */
+    private fun showCustomToast(message: String, iconRes: Int = R.drawable.ic_success) {
+        // 프래그먼트가 붙어있지 않으면 실행 중단
+        if (!isAdded || activity == null) return
+
+        val toast = ToastDialogFragment(message, iconRes)
+        // parentFragmentManager 대신 액티비티의 매니저를 사용하여 최상단에 표시
+        toast.show(requireActivity().supportFragmentManager, "CustomToast")
+    }
+
+    // ============ 초기화 및 설정 ============
+
     private fun configureBottomDialog(dialog: Dialog) {
         dialog.window?.apply {
-            // 배경 투명하게 (XML 배경의 둥근 모서리 적용을 위해)
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
-            // 너비는 꽉 채우고, 높이는 내용물에 맞춤
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-
-            // 위치를 화면 하단으로 고정
             setGravity(Gravity.BOTTOM)
-
-            // 다이얼로그 주변 기본 여백 제거 (꽉 채우기 위해 중요)
             decorView.setPadding(0, 0, 0, 0)
         }
     }
 
-    /**
-     * 서버에서 사용자 데이터 불러오기
-     */
     private fun loadUserData() {
         viewLifecycleOwner.lifecycleScope.launch {
             val result = UserRepository.getProfile()
@@ -100,16 +110,13 @@ class SettingFragment : Fragment() {
                 saveSettingsLocally()
             }.onFailure { error ->
                 if (!isAdded) return@onFailure
-
                 loadLocalData()
-                Toast.makeText(requireContext(), "프로필을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+                // 필요 시 에러 토스트 활성화 (아이콘은 ic_error 등으로 변경 필요)
+                // showCustomToast("프로필 로드 실패", R.drawable.ic_error)
             }
         }
     }
 
-    /**
-     * 로컬에서 데이터 불러오기
-     */
     private fun loadLocalData() {
         if (!isAdded) return
 
@@ -123,9 +130,6 @@ class SettingFragment : Fragment() {
         updateUI()
     }
 
-    /**
-     * 설정 값 로컬에 저장
-     */
     private fun saveSettingsLocally() {
         if (!isAdded) return
 
@@ -137,101 +141,24 @@ class SettingFragment : Fragment() {
             .apply()
     }
 
-    private fun setupClickListeners() {
-        // 알림 스위치
+    // ============ UI 업데이트 ============
+
+    private fun updateUI() {
+        if (_binding == null) return
+
+        binding.switchNotification.setOnCheckedChangeListener(null)
+
+        binding.switchNotification.isChecked = isNotificationEnabled
+        binding.tvNotificationTime.text = notificationTime
+        binding.tvName.text = userNickname
+        binding.tvBirthday.text = userBirthday
+
+        updateNotificationTimeState()
+
         binding.switchNotification.setOnCheckedChangeListener { _, isChecked ->
             isNotificationEnabled = isChecked
             updateNotificationTimeState()
             updateNotificationToServer()
-        }
-
-        // 푸시 알림 시간 (휠 다이얼로그)
-        binding.layoutNotificationTime.setOnClickListener {
-            if (isNotificationEnabled) {
-                showTimePickerDialog()
-            }
-        }
-
-        // 이름 변경 (다이얼로그)
-        binding.layoutName.setOnClickListener {
-            showNicknameDialog()
-        }
-
-        // 생년월일 변경 (휠 다이얼로그)
-        binding.layoutBirthday.setOnClickListener {
-            showDatePickerDialog()
-        }
-
-        // 서비스 소개
-        binding.layoutServiceIntro.setOnClickListener {
-            // TODO: 서비스 소개 화면으로 이동
-        }
-
-        // 개인정보 처리방침
-        binding.layoutPrivacyPolicy.setOnClickListener {
-            // TODO: 개인정보 처리방침 화면으로 이동
-        }
-
-        // 이용약관
-        binding.layoutTerms.setOnClickListener {
-            // TODO: 이용약관 화면으로 이동
-        }
-
-        // 로그아웃
-        binding.layoutLogout.setOnClickListener {
-            showLogoutConfirmDialog()
-        }
-
-        // 계정탈퇴
-        binding.layoutDeleteAccount.setOnClickListener {
-            showDeleteAccountConfirmDialog()
-        }
-    }
-
-    // ============ 서버 연동 ============
-
-    private fun updateNotificationToServer() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val result = UserRepository.updateNotification(isNotificationEnabled, notificationTime)
-
-            result.onSuccess {
-                saveSettingsLocally()
-            }.onFailure { error ->
-                if (isAdded) {
-                    Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-    }
-
-    private fun updateNicknameToServer(newNickname: String) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val result = UserRepository.updateNickname(newNickname)
-
-            result.onSuccess {
-                userNickname = newNickname
-                binding.tvName.text = userNickname
-                Toast.makeText(requireContext(), "닉네임이 변경되었습니다.", Toast.LENGTH_SHORT).show()
-            }.onFailure { error ->
-                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun updateBirthToServer(birth: String) {
-        val apiFormatBirth = birth.replace(".", "-")
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            val result = UserRepository.updateBirth(apiFormatBirth)
-
-            result.onSuccess {
-                userBirthday = birth
-                binding.tvBirthday.text = userBirthday
-                saveSettingsLocally()
-                Toast.makeText(requireContext(), "생년월일이 변경되었습니다.", Toast.LENGTH_SHORT).show()
-            }.onFailure { error ->
-                Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
-            }
         }
     }
 
@@ -241,26 +168,75 @@ class SettingFragment : Fragment() {
         binding.layoutNotificationTime.isClickable = isNotificationEnabled
     }
 
-    private fun updateUI() {
-        binding.switchNotification.isChecked = isNotificationEnabled
-        binding.tvNotificationTime.text = notificationTime
-        binding.tvName.text = userNickname
-        binding.tvBirthday.text = userBirthday
+    // ============ 클릭 리스너 설정 ============
 
-        updateNotificationTimeState()
+    private fun setupClickListeners() {
+        binding.layoutNotificationTime.setOnClickListener {
+            if (isNotificationEnabled) showTimePickerDialog()
+        }
+
+        binding.layoutName.setOnClickListener { showNicknameDialog() }
+        binding.layoutBirthday.setOnClickListener { showDatePickerDialog() }
+
+        binding.layoutServiceIntro.setOnClickListener { /* TODO */ }
+        binding.layoutPrivacyPolicy.setOnClickListener { /* TODO */ }
+        binding.layoutTerms.setOnClickListener { /* TODO */ }
+
+        binding.layoutLogout.setOnClickListener { showLogoutConfirmDialog() }
+        binding.layoutDeleteAccount.setOnClickListener { showDeleteAccountConfirmDialog() }
     }
 
-    // ============ 닉네임 다이얼로그 ============
+    // ============ 서버 연동 함수들 ============
+
+    private fun updateNotificationToServer() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = UserRepository.updateNotification(isNotificationEnabled, notificationTime)
+            result.onSuccess {
+                saveSettingsLocally()
+            }.onFailure { error ->
+                if (isAdded) {
+                    showCustomToast(error.message ?: "알림 설정 저장 실패", R.drawable.ic_error) // ic_error 확인 필요
+                }
+            }
+        }
+    }
+
+    private fun updateNicknameToServer(newNickname: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = UserRepository.updateNickname(newNickname)
+            result.onSuccess {
+                userNickname = newNickname
+                binding.tvName.text = userNickname
+                showCustomToast("닉네임이 변경되었습니다.")
+            }.onFailure { error ->
+                showCustomToast(error.message ?: "닉네임 변경 실패", R.drawable.ic_error)
+            }
+        }
+    }
+
+    private fun updateBirthToServer(birth: String) {
+        val apiFormatBirth = birth.replace(".", "-")
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = UserRepository.updateBirth(apiFormatBirth)
+            result.onSuccess {
+                userBirthday = birth
+                binding.tvBirthday.text = userBirthday
+                saveSettingsLocally()
+                showCustomToast("생년월일이 변경되었습니다.")
+            }.onFailure { error ->
+                showCustomToast(error.message ?: "생년월일 변경 실패", R.drawable.ic_error)
+            }
+        }
+    }
+
+    // ============ 다이얼로그들 (닉네임, 날짜, 시간) ============
 
     private fun showNicknameDialog() {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_nickname)
 
-        // 하단 고정 및 스타일 적용
         configureBottomDialog(dialog)
-
-        // 키보드 올라올 때 다이얼로그도 같이 올라오게 설정
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
         val etNickname = dialog.findViewById<EditText>(R.id.et_nickname)
@@ -270,7 +246,24 @@ class SettingFragment : Fragment() {
         etNickname.setText(userNickname)
         etNickname.setSelection(etNickname.text.length)
 
-        // X 버튼 표시/숨김
+        val (colorActive, colorInactive) = getCurrentSeasonColors()
+
+        fun updateButtonState() {
+            val input = etNickname.text.toString().trim()
+            val isChanged = input.isNotEmpty() && input != userNickname
+
+            if (isChanged) {
+                btnConfirm.backgroundTintList = ColorStateList.valueOf(colorActive)
+                btnConfirm.isEnabled = true
+                btnConfirm.setTextColor(Color.WHITE)
+            } else {
+                btnConfirm.backgroundTintList = ColorStateList.valueOf(colorInactive)
+                btnConfirm.isEnabled = false
+                btnConfirm.setTextColor(Color.WHITE)
+            }
+        }
+
+        updateButtonState()
         btnClear.visibility = if (etNickname.text.isNotEmpty()) View.VISIBLE else View.GONE
 
         etNickname.addTextChangedListener(object : TextWatcher {
@@ -278,36 +271,38 @@ class SettingFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 btnClear.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+                updateButtonState()
             }
         })
 
-        btnClear.setOnClickListener {
-            etNickname.text.clear()
-        }
-
+        btnClear.setOnClickListener { etNickname.text.clear() }
         btnConfirm.setOnClickListener {
             val newNickname = etNickname.text.toString().trim()
-            if (newNickname.isNotEmpty()) {
-                if (newNickname != userNickname) {
-                    updateNicknameToServer(newNickname)
-                }
+            if (newNickname.isNotEmpty() && newNickname != userNickname) {
+                updateNicknameToServer(newNickname)
                 dialog.dismiss()
-            } else {
-                Toast.makeText(requireContext(), "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
             }
         }
-
         dialog.show()
     }
 
-    // ============ 생년월일 다이얼로그 (휠 형식) ============
+    private fun getCurrentSeasonColors(): Pair<Int, Int> {
+        val prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val season = prefs.getString("SEASON", "SPRING")?.uppercase() ?: "SPRING"
+        val (resId1, resId2) = when (season) {
+            "SPRING" -> Pair(R.color.pink2, R.color.pink1)
+            "SUMMER" -> Pair(R.color.green2, R.color.green1)
+            "FALL" -> Pair(R.color.yellow2, R.color.yellow1)
+            "WINTER" -> Pair(R.color.blue2, R.color.blue1)
+            else -> Pair(R.color.pink2, R.color.pink1)
+        }
+        return Pair(ContextCompat.getColor(requireContext(), resId1), ContextCompat.getColor(requireContext(), resId2))
+    }
 
     private fun showDatePickerDialog() {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_date_picker)
-
-        // 하단 고정 및 스타일 적용
         configureBottomDialog(dialog)
 
         val pickerYear = dialog.findViewById<NumberPicker>(R.id.picker_year)
@@ -316,23 +311,14 @@ class SettingFragment : Fragment() {
         val btnConfirm = dialog.findViewById<Button>(R.id.btn_confirm)
 
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-
-        // 년도 설정
         pickerYear.minValue = 1900
         pickerYear.maxValue = currentYear
         pickerYear.wrapSelectorWheel = false
-
-        // 월 설정
         pickerMonth.minValue = 1
         pickerMonth.maxValue = 12
-        pickerMonth.displayedValues = (1..12).map { String.format("%02d", it) }.toTypedArray()
-
-        // 일 설정
         pickerDay.minValue = 1
         pickerDay.maxValue = 31
-        pickerDay.displayedValues = (1..31).map { String.format("%02d", it) }.toTypedArray()
 
-        // 현재 값 설정
         val parts = userBirthday.split(".")
         if (parts.size == 3) {
             pickerYear.value = parts[0].toIntOrNull() ?: 2000
@@ -341,64 +327,41 @@ class SettingFragment : Fragment() {
         }
 
         btnConfirm.setOnClickListener {
-            val year = pickerYear.value
-            val month = pickerMonth.value
-            val day = pickerDay.value
-            val newBirthday = String.format("%04d.%02d.%02d", year, month, day)
-
+            val newBirthday = String.format("%04d.%02d.%02d", pickerYear.value, pickerMonth.value, pickerDay.value)
             updateBirthToServer(newBirthday)
             dialog.dismiss()
         }
-
         dialog.show()
     }
-
-    // ============ 시간 다이얼로그 (시:분만, 24시간제) ============
 
     private fun showTimePickerDialog() {
         val dialog = Dialog(requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_time_picker)
-
-        // 하단 고정 및 스타일 적용
         configureBottomDialog(dialog)
 
         val pickerHour = dialog.findViewById<NumberPicker>(R.id.picker_hour)
         val pickerMinute = dialog.findViewById<NumberPicker>(R.id.picker_minute)
         val btnConfirm = dialog.findViewById<Button>(R.id.btn_confirm)
 
-        // 시간 파싱
         val timeParts = notificationTime.split(":")
-        val hour = timeParts.getOrNull(0)?.toIntOrNull() ?: 22
-        val minute = timeParts.getOrNull(1)?.toIntOrNull() ?: 0
-
-        // 시 설정 (0-23)
         pickerHour.minValue = 0
         pickerHour.maxValue = 23
-        pickerHour.value = hour
-        pickerHour.displayedValues = (0..23).map { String.format("%02d", it) }.toTypedArray()
-
-        // 분 설정 (0-59)
+        pickerHour.value = timeParts.getOrNull(0)?.toIntOrNull() ?: 22
         pickerMinute.minValue = 0
         pickerMinute.maxValue = 59
-        pickerMinute.value = minute
-        pickerMinute.displayedValues = (0..59).map { String.format("%02d", it) }.toTypedArray()
+        pickerMinute.value = timeParts.getOrNull(1)?.toIntOrNull() ?: 0
 
         btnConfirm.setOnClickListener {
-            val selectedHour = pickerHour.value
-            val selectedMinute = pickerMinute.value
-
-            notificationTime = String.format("%02d:%02d", selectedHour, selectedMinute)
+            notificationTime = String.format("%02d:%02d", pickerHour.value, pickerMinute.value)
             binding.tvNotificationTime.text = notificationTime
-
             updateNotificationToServer()
             dialog.dismiss()
         }
-
         dialog.show()
     }
 
-    // ============ 로그아웃 다이얼로그 (PopUpDialogFragment 사용) ============
+    // ============ 로그아웃 / 탈퇴 다이얼로그 ============
 
     private fun showLogoutConfirmDialog() {
         val dialog = PopUpDialogFragment.newInstance(
@@ -407,41 +370,18 @@ class SettingFragment : Fragment() {
             leftBtn = "뒤로 가기",
             rightBtn = "종료하기"
         )
-
         dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
-            override fun onConfirm() {
-                performLogout()
-            }
+            override fun onConfirm() { performLogout() }
         })
-
         dialog.show(parentFragmentManager, "LogoutDialog")
     }
 
     private fun performLogout() {
         viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                AuthRepository.logout()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
-            prefs.edit().clear().apply()
-
-            TokenManager.clearAll()
-
-            val cookieManager = CookieManager.getInstance()
-            cookieManager.removeAllCookies(null)
-            cookieManager.flush()
-
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            requireActivity().finish()
+            try { AuthRepository.logout() } catch (e: Exception) { e.printStackTrace() }
+            clearLocalDataAndGoToLogin()
         }
     }
-
-    // ============ 계정탈퇴 다이얼로그 (PopUpDialogFragment 사용) ============
 
     private fun showDeleteAccountConfirmDialog() {
         val dialog = PopUpDialogFragment.newInstance(
@@ -450,13 +390,9 @@ class SettingFragment : Fragment() {
             leftBtn = "뒤로 가기",
             rightBtn = "종료하기"
         )
-
         dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
-            override fun onConfirm() {
-                performDeleteAccount()
-            }
+            override fun onConfirm() { performDeleteAccount() }
         })
-
         dialog.show(parentFragmentManager, "DeleteAccountDialog")
     }
 
@@ -465,26 +401,31 @@ class SettingFragment : Fragment() {
             try {
                 val result = AuthRepository.withdraw()
                 result.onSuccess {
-                    Toast.makeText(requireContext(), "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-
-                    val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
-                    prefs.edit().clear().apply()
-                    TokenManager.clearAll()
-
-                    val cookieManager = CookieManager.getInstance()
-                    cookieManager.removeAllCookies(null)
-                    cookieManager.flush()
-
-                    val intent = Intent(requireContext(), LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                    requireActivity().finish()
+                    showCustomToast("회원탈퇴가 완료되었습니다.")
+                    // 약간의 딜레이 후 이동하면 토스트가 더 잘 보일 수 있음
+                    // handler.postDelayed({ clearLocalDataAndGoToLogin() }, 1000)
+                    clearLocalDataAndGoToLogin()
                 }.onFailure { error ->
-                    Toast.makeText(requireContext(), error.message ?: "탈퇴 실패", Toast.LENGTH_SHORT).show()
+                    showCustomToast(error.message ?: "탈퇴 실패", R.drawable.ic_error)
                 }
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), "오류 발생: ${e.message}", Toast.LENGTH_SHORT).show()
+                showCustomToast("오류 발생: ${e.message}", R.drawable.ic_error)
             }
         }
+    }
+
+    private fun clearLocalDataAndGoToLogin() {
+        val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+        TokenManager.clearAll()
+
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.removeAllCookies(null)
+        cookieManager.flush()
+
+        val intent = Intent(requireContext(), LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        requireActivity().finish()
     }
 }

@@ -1,25 +1,42 @@
 package com.example.areumdap.UI.auth
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.InputType
+import android.text.TextWatcher
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.widget.Toast
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.areumdap.R
 import com.example.areumdap.data.repository.AuthRepository
 import com.example.areumdap.data.source.TokenManager
-import com.example.areumdap.R
 import com.example.areumdap.databinding.ActivitySignupBinding
-import com.example.areumdap.databinding.FragmentToastDialogBinding
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
     private var isEmailVerified = false
+    private var verifiedEmail = ""
     private val tag = "SignupActivity"
+
+    // 비밀번호 보이기/숨기기 상태
+    private var isPwVisible = false
+    private var isPwConfirmVisible = false
+
+    // 색상 정의
+    private val colorError = Color.parseColor("#EB7383")
+    private val colorSuccess = Color.parseColor("#4CAF50")
+
+    // 비밀번호 검증 딜레이를 위한 Handler
+    private val handler = Handler(Looper.getMainLooper())
+    private var passwordValidationRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,454 +49,419 @@ class SignupActivity : AppCompatActivity() {
         TokenManager.init(this)
 
         initClickListeners()
+        initTextWatchers()
+        initPasswordToggle()
+        updateSignUpButtonState()
     }
 
     private fun initClickListeners() {
         Log.d(tag, "클릭 리스너 초기화")
 
-        // 뒤로가기 버튼
-        binding.btnBack.setOnClickListener {
-            Log.d(tag, "뒤로가기 버튼 클릭")
-            finish()
+        binding.btnBack.setOnClickListener { finish() }
+
+        binding.btnEmailCheck.setOnClickListener { requestEmailVerification() }
+
+        binding.btnAuthConfirm.setOnClickListener { verifyAuthCode() }
+
+        binding.btnSignUp.setOnClickListener { performSignup() }
+    }
+
+    /**
+     * 비밀번호 보이기/숨기기 토글 설정
+     */
+    private fun initPasswordToggle() {
+        binding.btnPwToggle.setOnClickListener {
+            isPwVisible = !isPwVisible
+            togglePasswordVisibility(binding.etPw, binding.btnPwToggle, isPwVisible)
         }
 
-        // 이메일 인증 요청 버튼
-        binding.btnEmailCheck.setOnClickListener {
-            Log.d(tag, "이메일 인증 요청 버튼 클릭")
-            requestEmailVerification()
-        }
-
-        // 인증번호 확인 버튼
-        binding.btnAuthConfirm.setOnClickListener {
-            Log.d(tag, "인증번호 확인 버튼 클릭")
-            verifyAuthCode()
-        }
-
-        // 회원가입 버튼
-        binding.btnSignUp.setOnClickListener {
-            Log.d(tag, "=== 회원가입 버튼 클릭됨! ===")
-            performSignup()
+        binding.btnPwConfirmToggle.setOnClickListener {
+            isPwConfirmVisible = !isPwConfirmVisible
+            togglePasswordVisibility(binding.etPwConfirm, binding.btnPwConfirmToggle, isPwConfirmVisible)
         }
     }
 
-    // 커스텀 토스트 표시 함수
-    private fun showCustomToast(message: String, isSuccess: Boolean = true) {
-        val inflater = LayoutInflater.from(this)
-        val toastBinding = FragmentToastDialogBinding.inflate(inflater)
-
-        // 토스트 메시지 설정
-        toastBinding.toastTv.text = message
-
-        // 성공/실패에 따라 아이콘 변경
-        if (isSuccess) {
-            toastBinding.toastIv.setImageResource(R.drawable.ic_success)
+    private fun togglePasswordVisibility(
+        editText: android.widget.EditText,
+        toggleButton: android.widget.ImageButton,
+        isVisible: Boolean
+    ) {
+        if (isVisible) {
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            toggleButton.setImageResource(R.drawable.ic_visibility)
         } else {
-            toastBinding.toastIv.setImageResource(R.drawable.ic_failure)
+            editText.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            toggleButton.setImageResource(R.drawable.ic_visibility_off)
+        }
+        editText.setSelection(editText.text.length)
+    }
+
+    /**
+     * 실시간 유효성 검사를 위한 TextWatcher 설정
+     */
+    private fun initTextWatchers() {
+        binding.etEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val email = s.toString().trim()
+
+                if (verifiedEmail.isNotEmpty() && email != verifiedEmail) {
+                    isEmailVerified = false
+                    verifiedEmail = ""
+                    binding.btnAuthConfirm.text = "확인"
+                    binding.btnAuthConfirm.isEnabled = true
+                    binding.etAuthCode.isEnabled = true
+                    binding.etAuthCode.text?.clear()
+                    hideMessage(binding.tvAuthMessage)
+                }
+
+                if (email.isNotEmpty()) {
+                    if (!isValidEmail(email)) {
+                        showMessage(binding.tvEmailMessage, "이메일 형식과 일치하지 않습니다.", false)
+                    } else {
+                        hideMessage(binding.tvEmailMessage)
+                    }
+                } else {
+                    hideMessage(binding.tvEmailMessage)
+                }
+                updateSignUpButtonState()
+            }
+        })
+
+        binding.etPw.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                passwordValidationRunnable?.let { handler.removeCallbacks(it) }
+                passwordValidationRunnable = Runnable { validatePasswordField() }
+                handler.postDelayed(passwordValidationRunnable!!, 1000)
+
+                validatePasswordConfirmField()
+                updateSignUpButtonState()
+            }
+        })
+
+        binding.etPwConfirm.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                validatePasswordConfirmField()
+                updateSignUpButtonState()
+            }
+        })
+
+        binding.etName.addTextChangedListener(simpleTextWatcher { updateSignUpButtonState() })
+        binding.etBirth.addTextChangedListener(simpleTextWatcher { updateSignUpButtonState() })
+    }
+
+    private fun simpleTextWatcher(afterChanged: () -> Unit): TextWatcher {
+        return object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) { afterChanged() }
+        }
+    }
+
+    private fun validatePasswordField() {
+        val password = binding.etPw.text.toString()
+        if (password.isNotEmpty()) {
+            if (!isValidPassword(password)) {
+                showMessage(binding.tvPwMessage, "비밀번호 형식이 올바르지 않습니다.", false)
+            } else {
+                hideMessage(binding.tvPwMessage)
+            }
+        } else {
+            hideMessage(binding.tvPwMessage)
+        }
+    }
+
+    private fun validatePasswordConfirmField() {
+        val password = binding.etPw.text.toString()
+        val passwordConfirm = binding.etPwConfirm.text.toString()
+
+        if (passwordConfirm.isNotEmpty()) {
+            if (password != passwordConfirm) {
+                showMessage(binding.tvPwConfirmMessage, "비밀번호가 일치하지 않습니다.", false)
+            } else {
+                hideMessage(binding.tvPwConfirmMessage)
+            }
+        } else {
+            hideMessage(binding.tvPwConfirmMessage)
+        }
+    }
+
+    private fun showMessage(textView: TextView, message: String, isSuccess: Boolean) {
+        textView.text = message
+        textView.setTextColor(if (isSuccess) colorSuccess else colorError)
+        textView.visibility = View.VISIBLE
+    }
+
+    private fun hideMessage(textView: TextView) {
+        textView.visibility = View.GONE
+    }
+
+    private fun updateSignUpButtonState() {
+        val name = binding.etName.text.toString().trim()
+        val birth = binding.etBirth.text.toString().trim()
+        val email = binding.etEmail.text.toString().trim()
+        val password = binding.etPw.text.toString()
+        val passwordConfirm = binding.etPwConfirm.text.toString()
+
+        val isNameValid = name.isNotEmpty()
+        val isBirthValid = birth.length == 8 && isValidBirth(birth)
+        val isEmailValid = isValidEmail(email)
+        val isPasswordValid = isValidPassword(password)
+        val isPasswordMatch = password == passwordConfirm && passwordConfirm.isNotEmpty()
+
+        val canSignUp = isNameValid && isBirthValid && isEmailValid &&
+                isEmailVerified && isPasswordValid && isPasswordMatch
+
+        binding.btnSignUp.isEnabled = canSignUp
+        binding.btnSignUp.alpha = if (canSignUp) 1.0f else 0.5f
+    }
+
+    // ============ [수정됨] 커스텀 토스트 표시 함수 ============
+    private fun showCustomToast(message: String, isSuccess: Boolean = true) {
+        // 액티비티가 종료된 상태라면 토스트를 띄우지 않음
+        if (isFinishing || isDestroyed) return
+
+        // 성공 여부에 따라 아이콘 선택
+        // (프로젝트의 실제 아이콘 리소스 이름과 맞춰주세요. 예: ic_error 또는 ic_failure)
+        val iconRes = if (isSuccess) {
+            R.drawable.ic_success
+        } else {
+            // 기존 코드에 ic_failure라고 되어 있어서 유지했습니다.
+            // 만약 ic_error로 통일했다면 R.drawable.ic_error 로 변경하세요.
+            R.drawable.ic_failure
         }
 
-        Toast(this).apply {
-            duration = Toast.LENGTH_SHORT
-            view = toastBinding.root
-            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 100)
-            show()
-        }
+        val toast = ToastDialogFragment(message, iconRes)
+        // AppCompatActivity이므로 supportFragmentManager 사용
+        toast.show(supportFragmentManager, "CustomToast")
     }
 
     private fun requestEmailVerification() {
-        Log.d(tag, "requestEmailVerification() 시작")
-
         val email = binding.etEmail.text.toString().trim()
 
-        Log.d(tag, "이메일 인증 요청: $email")
-
         if (email.isEmpty()) {
-            Log.w(tag, "이메일이 비어있음")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showMessage(binding.tvEmailMessage, "이메일을 입력해주세요.", false)
             return
         }
 
         if (!isValidEmail(email)) {
-            Log.w(tag, "이메일 형식이 잘못됨: $email")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showMessage(binding.tvEmailMessage, "이메일 형식과 일치하지 않습니다.", false)
             return
         }
 
-        // 버튼 비활성화 (중복 클릭 방지)
         binding.btnEmailCheck.isEnabled = false
+        hideMessage(binding.tvEmailMessage)
 
-        // 실제 API 호출
         lifecycleScope.launch {
-            Log.d(tag, "=== 이메일 인증 API 호출 시작 ===")
-            Log.d(tag, "요청 이메일: $email")
-
             try {
                 val result = AuthRepository.sendEmailVerificationCode(email)
-
                 result.onSuccess {
-                    Log.d(tag, "✅ 이메일 인증 요청 성공")
-                    showCustomToast("인증번호가 발송되었습니다. 이메일을 확인해주세요.", isSuccess = true)
-
-                    // 버튼 텍스트 변경
+                    showMessage(binding.tvEmailMessage, "입력하신 이메일로 인증번호를 발송했습니다.", true)
                     binding.btnEmailCheck.text = "재요청"
                     binding.btnEmailCheck.isEnabled = true
                 }.onFailure { error ->
-                    Log.e(tag, "❌ 이메일 인증 요청 실패")
-                    Log.e(tag, "에러 메시지: ${error.message}")
-                    Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
-
                     if (error is HttpException) {
                         when (error.code()) {
-                            400, 401, 403, 404 -> {
-                                // A. 입력 문제 - Error
-                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
-                            }
-                            else -> {
-                                // B. 시스템/네트워크 문제 - Failure
-                                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
-                            }
+                            400, 401, 403, 404 -> showMessage(binding.tvEmailMessage, "이메일 인증 요청에 실패했습니다.", false)
+                            else -> showCustomToast("잠시 후 다시 시도해 주세요", isSuccess = false)
                         }
                     } else {
-                        // B. 시스템/네트워크 문제 - Failure
-                        showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                        showCustomToast("잠시 후 다시 시도해 주세요", isSuccess = false)
                     }
-
                     binding.btnEmailCheck.isEnabled = true
                 }
             } catch (e: Exception) {
-                Log.e(tag, "이메일 인증 요청 중 예외 발생: ${e.message}", e)
-                // C. 원인 불명 - 최소 기준
-                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
+                showCustomToast("다시 시도해 주세요", isSuccess = false)
                 binding.btnEmailCheck.isEnabled = true
             }
         }
     }
 
     private fun verifyAuthCode() {
-        Log.d(tag, "verifyAuthCode() 시작")
-
         val email = binding.etEmail.text.toString().trim()
         val authCode = binding.etAuthCode.text.toString().trim()
 
-        Log.d(tag, "인증 시도: 이메일=$email, 인증번호=$authCode")
-
         if (authCode.isEmpty()) {
-            Log.w(tag, "인증번호가 비어있음")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showMessage(binding.tvAuthMessage, "인증번호를 입력해주세요.", false)
+            return
+        }
+        if (authCode.length != 6) {
+            showMessage(binding.tvAuthMessage, "인증번호 6자리를 입력해주세요.", false)
             return
         }
 
-        // 버튼 비활성화
         binding.btnAuthConfirm.isEnabled = false
+        hideMessage(binding.tvAuthMessage)
 
-        // 실제 API 호출
         lifecycleScope.launch {
-            Log.d(tag, "=== 인증번호 확인 API 호출 시작 ===")
-            Log.d(tag, "요청 데이터: email=$email, code=$authCode")
-
             try {
                 val result = AuthRepository.confirmEmailVerificationCode(email, authCode)
-
                 result.onSuccess {
-                    Log.d(tag, "✅ 이메일 인증 확인 성공!")
                     isEmailVerified = true
-                    showCustomToast("이메일 인증이 완료되었습니다.", isSuccess = true)
-
+                    verifiedEmail = email
+                    showMessage(binding.tvAuthMessage, "인증이 완료되었습니다.", true)
                     binding.btnAuthConfirm.text = "인증완료"
                     binding.etAuthCode.isEnabled = false
-
-                    Log.d(tag, "✅ isEmailVerified 변경됨: $isEmailVerified")
+                    updateSignUpButtonState()
                 }.onFailure { error ->
-                    Log.e(tag, "❌ 이메일 인증 확인 실패")
-                    Log.e(tag, "에러 메시지: ${error.message}")
-                    Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
-
                     if (error is HttpException) {
                         when (error.code()) {
-                            400, 401, 403, 404 -> {
-                                // A. 입력 문제 - Error
-                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
-                            }
-                            else -> {
-                                // B. 시스템/네트워크 문제 - Failure
-                                showCustomToast("일시적인 문제로 로그인을 완료하지 못했어요", isSuccess = false)
-                            }
+                            400, 401, 403, 404 -> showMessage(binding.tvAuthMessage, "인증번호가 일치하지 않습니다.", false)
+                            else -> showCustomToast("잠시 후 다시 시도해 주세요", isSuccess = false)
                         }
                     } else {
-                        // B. 시스템/네트워크 문제 - Failure
-                        showCustomToast("일시적인 문제로 로그인을 완료하지 못했어요", isSuccess = false)
+                        showMessage(binding.tvAuthMessage, "인증번호가 일치하지 않습니다.", false)
                     }
-
                     binding.btnAuthConfirm.isEnabled = true
                 }
             } catch (e: Exception) {
-                Log.e(tag, "인증번호 확인 중 예외 발생: ${e.message}", e)
-                // C. 원인 불명 - 최소 기준
-                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
+                showCustomToast("다시 시도해 주세요", isSuccess = false)
                 binding.btnAuthConfirm.isEnabled = true
             }
         }
     }
 
     private fun performSignup() {
-        Log.d(tag, "=== performSignup() 호출됨 ===")
-
-        // 입력값 검증
-        if (!validateInputs()) {
-            Log.w(tag, "❌ 입력값 검증 실패")
-            return
-        }
-
-        Log.d(tag, "✅ 입력값 검증 통과 - API 호출 준비")
+        if (!validateInputs()) return
 
         val name = binding.etName.text.toString().trim()
         val birth = binding.etBirth.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPw.text.toString().trim()
-
-        // 생년월일 형식 변환: 20030213 → 2003-02-13
         val formattedBirth = formatBirth(birth)
 
-        Log.d(tag, "📝 회원가입 요청 데이터:")
-        Log.d(tag, "   - 이름: $name")
-        Log.d(tag, "   - 원래 생년월일: $birth")
-        Log.d(tag, "   - 변환된 생년월일: $formattedBirth")
-        Log.d(tag, "   - 이메일: $email")
-        Log.d(tag, "   - 비밀번호: ${"*".repeat(password.length)}")
-
-        // 버튼 비활성화
         binding.btnSignUp.isEnabled = false
+        binding.btnSignUp.alpha = 0.5f
 
-        // 실제 API 호출
         lifecycleScope.launch {
-            Log.d(tag, "=== 🚀 회원가입 API 호출 시작 ===")
-
             try {
                 val result = AuthRepository.signUp(name, formattedBirth, email, password)
-
                 result.onSuccess {
-                    Log.d(tag, "✅ 회원가입 API 성공! 로그인 화면으로 이동")
                     showCustomToast("회원가입이 완료되었습니다!", isSuccess = true)
-
-                    // 회원가입 후 로그인 화면으로 이동
                     navigateToLogin()
                 }.onFailure { error ->
-                    Log.e(tag, "❌ 회원가입 API 실패")
-                    Log.e(tag, "에러 메시지: ${error.message}")
-                    Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
-
                     if (error is HttpException) {
                         when (error.code()) {
-                            400, 409 -> {
-                                // A. 입력 문제 (중복, 잘못된 입력) - Error
-                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
-                            }
-                            else -> {
-                                // B. 시스템/네트워크 문제 - Failure
-                                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
-                            }
+                            409 -> showMessage(binding.tvEmailMessage, "이미 가입된 이메일입니다.", false)
+                            400 -> showCustomToast("입력 정보를 다시 확인해주세요", isSuccess = false)
+                            else -> showCustomToast("회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요", isSuccess = false)
                         }
                     } else {
-                        // B. 시스템/네트워크 문제 - Failure
-                        showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                        showCustomToast("회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요", isSuccess = false)
                     }
-
                     binding.btnSignUp.isEnabled = true
+                    binding.btnSignUp.alpha = 1.0f
                 }
             } catch (e: Exception) {
-                Log.e(tag, "❌ 회원가입 중 예외 발생")
-                Log.e(tag, "예외 메시지: ${e.message}")
-                Log.e(tag, "예외 타입: ${e.javaClass.simpleName}")
-
-                // C. 원인 불명 - 최소 기준
-                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
+                showCustomToast("회원가입에 실패했습니다. 다시 시도해 주세요", isSuccess = false)
                 binding.btnSignUp.isEnabled = true
+                binding.btnSignUp.alpha = 1.0f
             }
         }
     }
 
-    /**
-     * 생년월일 형식 변환 함수
-     * 20030213 → 2003-02-13
-     */
     private fun formatBirth(birth: String): String {
-        Log.d(tag, "formatBirth() 호출: 입력값 = $birth")
-
-        if (birth.length == 8) {
-            val year = birth.take(4)           // 2003
-            val month = birth.drop(4).take(2)  // 02
-            val day = birth.drop(6).take(2)    // 13
-            val formatted = "$year-$month-$day" // 2003-02-13
-
-            Log.d(tag, "생년월일 변환: $birth → $formatted")
-            return formatted
+        return if (birth.length == 8) {
+            val year = birth.take(4)
+            val month = birth.drop(4).take(2)
+            val day = birth.drop(6).take(2)
+            "$year-$month-$day"
         } else {
-            Log.w(tag, "생년월일 형식이 잘못됨: $birth (길이: ${birth.length})")
-            return birth
+            birth
         }
     }
 
     private fun validateInputs(): Boolean {
-        Log.d(tag, "🔍 validateInputs() 검증 시작")
-
         val name = binding.etName.text.toString().trim()
         val birth = binding.etBirth.text.toString().trim()
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPw.text.toString().trim()
         val passwordConfirm = binding.etPwConfirm.text.toString().trim()
 
-        Log.d(tag, "📋 검증할 데이터:")
-        Log.d(tag, "   - 이름: '$name' (${if(name.isEmpty()) "비어있음" else "OK"})")
-        Log.d(tag, "   - 생년월일: '$birth' (길이: ${birth.length})")
-        Log.d(tag, "   - 이메일: '$email'")
-        Log.d(tag, "   - 이메일 인증 상태: $isEmailVerified")
-        Log.d(tag, "   - 비밀번호 길이: ${password.length}")
-        Log.d(tag, "   - 비밀번호 확인 일치: ${password == passwordConfirm}")
-
         if (name.isEmpty()) {
-            Log.w(tag, "❌ 이름 빈값 에러")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showCustomToast("이름을 입력해주세요.", isSuccess = false)
             binding.etName.requestFocus()
             return false
         }
-
-        if (birth.isEmpty()) {
-            Log.w(tag, "❌ 생년월일 빈값 에러")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+        if (birth.isEmpty() || birth.length != 8) {
+            showCustomToast("생년월일을 8자리로 입력해주세요.", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
-
-        if (birth.length != 8) {
-            Log.w(tag, "❌ 생년월일 길이 에러: ${birth.length}자리 (8자리 필요)")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
-            binding.etBirth.requestFocus()
-            return false
-        }
-
         if (!isValidBirth(birth)) {
-            Log.w(tag, "❌ 생년월일 날짜 유효성 에러: $birth")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showCustomToast("올바른 생년월일을 입력해주세요.", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
-
-        if (email.isEmpty()) {
-            Log.w(tag, "❌ 이메일 빈값 에러")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+        if (email.isEmpty() || !isValidEmail(email)) {
+            showMessage(binding.tvEmailMessage, "이메일 형식과 일치하지 않습니다.", false)
             binding.etEmail.requestFocus()
             return false
         }
-
-        if (!isValidEmail(email)) {
-            Log.w(tag, "❌ 이메일 형식 에러: $email")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
-            binding.etEmail.requestFocus()
-            return false
-        }
-
         if (!isEmailVerified) {
-            Log.w(tag, "❌ 이메일 미인증 에러 - isEmailVerified = $isEmailVerified")
-            Log.w(tag, "이메일 인증을 먼저 완료해야 합니다!")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showMessage(binding.tvEmailMessage, "이메일 인증을 완료해주세요.", false)
             return false
         }
-
-        if (password.isEmpty()) {
-            Log.w(tag, "❌ 비밀번호 빈값 에러")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+        if (!isValidPassword(password)) {
+            showMessage(binding.tvPwMessage, "비밀번호 형식이 올바르지 않습니다.", false)
             binding.etPw.requestFocus()
             return false
         }
-
-        if (password.length < 6) {
-            Log.w(tag, "❌ 비밀번호 길이 에러: ${password.length}자리 (최소 6자리)")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
-            binding.etPw.requestFocus()
-            return false
-        }
-
         if (password != passwordConfirm) {
-            Log.w(tag, "❌ 비밀번호 확인 불일치 에러")
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showMessage(binding.tvPwConfirmMessage, "비밀번호가 일치하지 않습니다.", false)
             binding.etPwConfirm.requestFocus()
             return false
         }
-
-        Log.d(tag, "✅ 모든 입력값 검증 통과!")
         return true
     }
 
-    /**
-     * 생년월일 날짜 유효성 검증
-     */
     private fun isValidBirth(birth: String): Boolean {
         if (birth.length != 8) return false
-
         try {
             val year = birth.take(4).toInt()
             val month = birth.drop(4).take(2).toInt()
             val day = birth.drop(6).take(2).toInt()
-
-            Log.d(tag, "생년월일 파싱: ${year}년 ${month}월 ${day}일")
-
-            // 기본적인 날짜 유효성 검증
-            if (year !in 1900..2024) {
-                Log.w(tag, "연도 범위 초과: $year")
-                return false
-            }
-            if (month !in 1..12) {
-                Log.w(tag, "월 범위 초과: $month")
-                return false
-            }
-            if (day !in 1..31) {
-                Log.w(tag, "일 범위 초과: $day")
-                return false
-            }
-
-            // 월별 일수 검증 (간단한 버전)
+            if (year !in 1900..2024) return false
+            if (month !in 1..12) return false
+            if (day !in 1..31) return false
             val maxDayInMonth = when (month) {
-                2 -> 29 // 윤년 고려 안함 (간단화)
+                2 -> 29 // 간단히 29로 처리 (윤년 체크 필요 시 추가)
                 4, 6, 9, 11 -> 30
                 else -> 31
             }
-
-            if (day > maxDayInMonth) {
-                Log.w(tag, "${month}월 일수 초과: $day (최대: $maxDayInMonth)")
-                return false
-            }
-
-            Log.d(tag, "생년월일 유효성 검증 통과")
+            if (day > maxDayInMonth) return false
             return true
         } catch (e: Exception) {
-            Log.e(tag, "생년월일 파싱 실패: ${e.message}")
             return false
         }
     }
 
     private fun isValidEmail(email: String): Boolean {
-        val isValid = android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        Log.d(tag, "이메일 형식 검증: $email -> $isValid")
-        return isValid
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun isValidPassword(password: String): Boolean {
+        if (password.length < 8) return false
+        val hasLetter = password.any { it.isLetter() }
+        val hasDigit = password.any { it.isDigit() }
+        val hasSpecial = password.any { "!@#\$%^&*()_+=-".contains(it) }
+        return hasLetter && hasDigit && hasSpecial
     }
 
     private fun navigateToLogin() {
-        Log.d(tag, "로그인 화면으로 이동")
         val intent = Intent(this, EmailLoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        passwordValidationRunnable?.let { handler.removeCallbacks(it) }
     }
 }

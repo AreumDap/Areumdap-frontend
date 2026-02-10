@@ -17,6 +17,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.areumdap.data.api.OnboardingRequest
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.api.UserApi
+import com.bumptech.glide.Glide
 import com.example.areumdap.R
 import com.example.areumdap.UI.Character.CharacterUiState
 import com.example.areumdap.databinding.FragmentOnboardingInfoBinding
@@ -34,6 +35,10 @@ class OnboardingInfoFragment: Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: OnboardingViewModel by activityViewModels()
+
+    // 캐릭터 생성 결과 저장
+    private var createdCharacterId: Int? = null
+    private var createdImageUrl: String? = null
 
     // 캐릭터 생성 ViewModel
     private val characterViewModel: CharacterViewModel by viewModels {
@@ -60,6 +65,13 @@ class OnboardingInfoFragment: Fragment() {
         // 시작 화면 진입 시 하단 버튼을 즉시 활성화(pink1) 상태로
         viewModel.isKeywordSelected.value = true
 
+        // ViewModel에 저장된 캐릭터 정보 복원 (Fragment 재생성 대응)
+        createdCharacterId = viewModel.createdCharacterId
+        createdImageUrl = viewModel.createdImageUrl
+
+        // 이미 캐릭터가 생성된 상태라면 이미지 복원
+        restoreCharacterImage()
+
         // 캐릭터 생성 상태 관찰
         observeCharacterCreation()
 
@@ -71,8 +83,21 @@ class OnboardingInfoFragment: Fragment() {
                 1 -> showText2() // "서로를 알아가기 위해..."
                 2 -> showText3() // "좋아요! 앞으로 ..."
                 3 -> showText4() // "아름이는 oo님이..."
-                4 -> createCharacter() // 캐릭터 생성
+                4 -> saveOnboardingAndNavigate(createdCharacterId, createdImageUrl) // 온보딩 저장 + 메인 이동
             }
+        }
+    }
+
+    // Fragment 재생성 시 이미 생성된 캐릭터 이미지를 복원
+    private fun restoreCharacterImage() {
+        val imageUrl = viewModel.createdImageUrl
+        if (!imageUrl.isNullOrEmpty()) {
+            Log.d("CharacterAPI", "이미지 복원: $imageUrl")
+            Glide.with(this)
+                .load(imageUrl)
+                .error(R.drawable.img_character_egg)
+                .into(binding.ivCharacter)
+            binding.ivCharacter.visibility = View.VISIBLE
         }
     }
 
@@ -81,6 +106,8 @@ class OnboardingInfoFragment: Fragment() {
             "앞선 당신의 이야기를 통해<br>당신을 닮은 <b>아름이</b>가 태어났어요!",
             Html.FROM_HTML_MODE_LEGACY
         )
+        // 계절별 알 이미지를 위해 캐릭터 생성 API 호출
+        createCharacter()
     }
 
     private fun showText2() {
@@ -110,7 +137,6 @@ class OnboardingInfoFragment: Fragment() {
     private fun createCharacter() {
         val season = viewModel.selectedSeason.value
         val keywords = viewModel.selectedKeywords.value ?: mutableListOf()
-        val nickname = viewModel.nickname.value
 
         Log.d("CharacterAPI", "계절: $season")
         Log.d("CharacterAPI", "키워드: $keywords")
@@ -118,11 +144,6 @@ class OnboardingInfoFragment: Fragment() {
         if (season.isNullOrEmpty()) {
             Log.e("CharacterAPI", "계절 정보 없음!")
             showError("계절 정보가 없습니다.")
-            return
-        }
-
-        if (nickname.isNullOrEmpty()) {
-            showError("닉네임을 입력해주세요.")
             return
         }
 
@@ -158,7 +179,26 @@ class OnboardingInfoFragment: Fragment() {
                         }
                         is CharacterUiState.Success -> {
                             Log.d("CharacterAPI", "성공! ID: ${state.characterId}, URL: ${state.imageUrl}")
-                            saveOnboardingAndNavigate(state.characterId, state.imageUrl)
+                            Log.d("CharacterAPI", "imageUrl isNullOrEmpty: ${state.imageUrl.isNullOrEmpty()}")
+                            createdCharacterId = state.characterId
+                            createdImageUrl = state.imageUrl
+                            // ViewModel에도 저장 (Fragment 재생성 시 복원용)
+                            viewModel.createdCharacterId = state.characterId
+                            viewModel.createdImageUrl = state.imageUrl
+                            // 계절별 알 이미지 로드
+                            if (!state.imageUrl.isNullOrEmpty()) {
+                                Log.d("CharacterAPI", "Glide로 이미지 로드 시도: ${state.imageUrl}")
+                                Glide.with(this@OnboardingInfoFragment)
+                                    .load(state.imageUrl)
+                                    .error(R.drawable.img_character_egg)
+                                    .into(binding.ivCharacter)
+                                binding.ivCharacter.visibility = View.VISIBLE
+                            } else {
+                                Log.d("CharacterAPI", "imageUrl이 null/empty -> fallback 이미지 미표시 상태")
+                                // imageUrl이 null이면 이미지가 표시되지 않음
+                            }
+                            hideLoading()
+                            characterViewModel.resetUiState()
                         }
                         is CharacterUiState.Error -> {
                             Log.e("CharacterAPI", "에러: ${state.message}")
@@ -185,7 +225,12 @@ class OnboardingInfoFragment: Fragment() {
     }
 
     // 온보딩 저장
-    private fun saveOnboardingAndNavigate(characterId: Int, imageUrl: String?) {
+    private fun saveOnboardingAndNavigate(characterId: Int?, imageUrl: String?) {
+        if (characterId == null) {
+            showError("캐릭터 생성이 완료되지 않았습니다.")
+            return
+        }
+
         val nickname = viewModel.nickname.value ?: ""
 
         Log.d("CharacterAPI", "=== 온보딩 저장 시작 ===")

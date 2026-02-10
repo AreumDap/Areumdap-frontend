@@ -3,16 +3,12 @@ package com.example.areumdap.UI.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.areumdap.R
 import com.example.areumdap.data.repository.SocialAuthRepository
 import com.example.areumdap.data.source.TokenManager
-import com.example.areumdap.R
 import com.example.areumdap.databinding.ActivityLoginBinding
-import com.example.areumdap.databinding.FragmentToastDialogBinding
 import kotlinx.coroutines.launch
 
 class LoginActivity : AppCompatActivity() {
@@ -53,27 +49,22 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    // 커스텀 토스트 표시 함수
+    // [수정됨] 커스텀 토스트 표시 함수 (ToastDialogFragment 사용)
     private fun showCustomToast(message: String, isSuccess: Boolean = true) {
-        val inflater = LayoutInflater.from(this)
-        val toastBinding = FragmentToastDialogBinding.inflate(inflater)
-
-        // 토스트 메시지 설정
-        toastBinding.toastTv.text = message
+        // 액티비티가 종료된 상태라면 실행하지 않음
+        if (isFinishing || isDestroyed) return
 
         // 성공/실패에 따라 아이콘 변경
-        if (isSuccess) {
-            toastBinding.toastIv.setImageResource(R.drawable.ic_success)
+        // (기존 코드에 있던 ic_failure 리소스를 그대로 사용했습니다)
+        val iconRes = if (isSuccess) {
+            R.drawable.ic_success
         } else {
-            toastBinding.toastIv.setImageResource(R.drawable.ic_failure)
+            R.drawable.ic_failure // 혹은 ic_error
         }
 
-        Toast(this).apply {
-            duration = Toast.LENGTH_SHORT
-            view = toastBinding.root
-            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 100)
-            show()
-        }
+        val toast = ToastDialogFragment(message, iconRes)
+        // Activity에서는 supportFragmentManager를 사용
+        toast.show(supportFragmentManager, "CustomToast")
     }
 
     private fun performKakaoLogin() {
@@ -95,7 +86,7 @@ class LoginActivity : AppCompatActivity() {
 
             }.onFailure { error ->
                 Log.e(tag, "카카오 로그인 URL 조회 실패: ${error.message}")
-                // B. 시스템/네트워크 문제 - Failure
+                // 실패 시 커스텀 토스트 호출
                 showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
                 binding.btnKakaoLogin.isEnabled = true
             }
@@ -122,7 +113,7 @@ class LoginActivity : AppCompatActivity() {
 
             }.onFailure { error ->
                 Log.e(tag, "네이버 로그인 URL 조회 실패: ${error.message}")
-                // B. 시스템/네트워크 문제 - Failure
+                // 실패 시 커스텀 토스트 호출
                 showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
                 binding.btnNaverLogin.isEnabled = true
             }

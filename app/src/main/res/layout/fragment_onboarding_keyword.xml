@@ -45,7 +45,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide">
-        <!-- Chip들이 여기에 동적으로 추가됩니다 -->
     </com.google.android.flexbox.FlexboxLayout>
 
     <TextView

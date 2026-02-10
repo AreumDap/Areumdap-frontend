@@ -3,18 +3,14 @@ package com.example.areumdap.UI.auth
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.example.areumdap.data.repository.AuthRepository
-import com.example.areumdap.data.source.TokenManager
-import com.example.areumdap.data.repository.UserRepository
 import com.example.areumdap.R
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivityEmailLoginBinding
-import com.example.areumdap.databinding.FragmentToastDialogBinding
+import com.example.areumdap.data.repository.AuthRepository
+import com.example.areumdap.data.repository.UserRepository
+import com.example.areumdap.data.source.TokenManager
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -44,59 +40,45 @@ class EmailLoginActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener {
             performLogin()
         }
-
-        // 비밀번호 찾기
-        binding.tvForgotPw.setOnClickListener {
-            showCustomToast("비밀번호 찾기 기능은 추후 구현 예정입니다.", isSuccess = false)
-        }
     }
 
-    // 커스텀 토스트 표시 함수
+    // [수정됨] ToastDialogFragment를 사용하여 커스텀 토스트 띄우기
     private fun showCustomToast(message: String, isSuccess: Boolean = true) {
-        val inflater = LayoutInflater.from(this)
-        val toastBinding = FragmentToastDialogBinding.inflate(inflater)
+        // 액티비티가 종료된 상태라면 실행하지 않음
+        if (isFinishing || isDestroyed) return
 
-        // 토스트 메시지 설정
-        toastBinding.toastTv.text = message
-
-        // 성공/실패에 따라 아이콘 변경
-        if (isSuccess) {
-            toastBinding.toastIv.setImageResource(R.drawable.ic_success)
+        // 성공/실패에 따른 아이콘 선택
+        // (프로젝트에 있는 실제 아이콘 이름으로 확인해주세요. 예: ic_error 또는 ic_failure)
+        val iconRes = if (isSuccess) {
+            R.drawable.ic_success
         } else {
-            toastBinding.toastIv.setImageResource(R.drawable.ic_failure)
+            R.drawable.ic_error
         }
 
-        Toast(this).apply {
-            duration = Toast.LENGTH_SHORT
-            view = toastBinding.root
-            setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL, 0, 100)
-            show()
-        }
+        val toast = ToastDialogFragment(message, iconRes)
+        // Activity에서는 supportFragmentManager를 사용합니다.
+        toast.show(supportFragmentManager, "CustomToast")
     }
 
     private fun performLogin() {
         val email = binding.etId.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
 
-        // 입력값 검증
+        // --- 입력값 검증 ---
         if (email.isEmpty()) {
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showCustomToast("아이디(이메일)를 입력해주세요.", isSuccess = false)
             binding.etId.requestFocus()
             return
         }
 
         if (password.isEmpty()) {
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showCustomToast("비밀번호를 입력해주세요.", isSuccess = false)
             binding.etPassword.requestFocus()
             return
         }
 
-        // 이메일 형식 검증
         if (!isValidEmail(email)) {
-            // A. 입력 문제 - Error
-            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+            showCustomToast("이메일 형식이 올바르지 않아요.", isSuccess = false)
             binding.etId.requestFocus()
             return
         }
@@ -104,80 +86,80 @@ class EmailLoginActivity : AppCompatActivity() {
         // 버튼 비활성화 (중복 클릭 방지)
         binding.btnLogin.isEnabled = false
 
-        // API 호출
+        // --- API 호출 ---
         lifecycleScope.launch {
             try {
+                // AuthRepository.login 호출
                 val result = AuthRepository.login(email, password)
 
                 result.onSuccess { loginResponse ->
+                    // 로그인 성공
                     showCustomToast("${loginResponse.name}님 환영합니다!", isSuccess = true)
 
-                    // 로그인 상태 저장
-                    val keepLogin = binding.cbKeepLogin.isChecked
-                    if (keepLogin) {
+                    // 로그인 유지 설정 확인
+                    if (binding.cbKeepLogin.isChecked) {
                         saveLoginState()
                     }
 
-                    // 로그인 성공 시 FCM 토큰 등록 후 이동
+                    // FCM 토큰 등록 후 화면 이동
                     registerFcmTokenAndNavigate()
 
                 }.onFailure { error ->
-                    Log.e(tag, "로그인 실패: ${error.message}")
+                    Log.e(tag, "로그인 에러 발생: ${error.message} / 타입: ${error.javaClass.name}")
 
-                    // HTTP 에러 코드에 따라 분기
-                    if (error is HttpException) {
-                        when (error.code()) {
-                            401, 403 -> {
-                                // A. 입력 문제 (인증 실패) - Error
-                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
-                            }
-                            else -> {
-                                // B. 시스템/네트워크 문제 - Failure
-                                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                    val errorMessage = error.message.toString()
+
+                    when {
+                        // 1. Retrofit HttpException인 경우
+                        error is HttpException -> {
+                            when (error.code()) {
+                                400 -> showCustomToast("입력 정보를 다시 확인해주세요.", false)
+                                401 -> showCustomToast("비밀번호가 일치하지 않습니다.", false)
+                                403 -> showCustomToast("이미 탈퇴한 계정입니다.", false)
+                                404 -> showCustomToast("존재하지 않는 이메일입니다.", false)
+                                else -> showCustomToast("서버 오류가 발생했습니다. (코드: ${error.code()})", false)
                             }
                         }
-                    } else {
-                        // B. 시스템/네트워크 문제 - Failure
-                        showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+
+                        // 2. 에러 메시지에 코드가 포함된 경우
+                        errorMessage.contains("401") -> showCustomToast("비밀번호가 일치하지 않습니다.", false)
+                        errorMessage.contains("404") -> showCustomToast("존재하지 않는 이메일입니다.", false)
+                        errorMessage.contains("403") -> showCustomToast("사용할 수 없는 계정입니다.", false)
+                        errorMessage.contains("400") -> showCustomToast("입력 형식이 잘못되었습니다.", false)
+
+                        // 3. 그 외
+                        else -> showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", false)
                     }
 
+                    // 실패 시 버튼 다시 활성화
                     binding.btnLogin.isEnabled = true
                 }
             } catch (e: Exception) {
                 Log.e(tag, "로그인 중 예외 발생: ${e.message}")
-                // C. 원인 불명 - 최소 기준
-                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
+                showCustomToast("네트워크 오류가 발생했습니다.", isSuccess = false)
                 binding.btnLogin.isEnabled = true
             }
         }
     }
 
-    /**
-     * FCM 토큰 가져와서 서버에 등록 후 화면 이동
-     */
     private fun registerFcmTokenAndNavigate() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.e(tag, "FCM 토큰 가져오기 실패", task.exception)
-                // 토큰 실패해도 앱 진입은 시켜야 함
                 checkCharacterAndNavigate()
                 return@addOnCompleteListener
             }
 
-            // 토큰 가져오기 성공
             val token = task.result
-            Log.d(tag, "로그인 직후 FCM 토큰 획득: $token")
+            Log.d(tag, "FCM 토큰: $token")
 
-            // 서버에 전송 (비동기)
             lifecycleScope.launch {
                 try {
-                    // UserRepository를 통해 서버에 기기 등록 요청
                     UserRepository.updateFcmToken(token)
                     Log.d(tag, "FCM 토큰 서버 등록 완료")
                 } catch (e: Exception) {
                     Log.e(tag, "FCM 토큰 서버 등록 실패: ${e.message}")
                 } finally {
-                    // 성공하든 실패하든 메인/온보딩으로 이동
                     checkCharacterAndNavigate()
                 }
             }
@@ -187,28 +169,22 @@ class EmailLoginActivity : AppCompatActivity() {
     private fun checkCharacterAndNavigate() {
         lifecycleScope.launch {
             try {
-                // 캐릭터 정보 조회 API 호출
                 val result = AuthRepository.getMyCharacter()
-
                 result.onSuccess {
-                    // 성공 (200 OK) -> 캐릭터 있음 -> 메인으로
-                    Log.d(tag, "캐릭터 확인됨: 메인으로 이동")
+                    Log.d(tag, "캐릭터 있음 -> 메인으로")
                     navigateToMain(forceMain = true)
                 }.onFailure { e ->
-                    // 실패 -> 에러 코드 확인
-                    if (e is HttpException && e.code() == 404) {
-                        // 404 Not Found -> 캐릭터 없음 -> 온보딩으로
-                        Log.d(tag, "캐릭터 없음(404): 온보딩으로 이동")
+                    // 404면 캐릭터 없음 -> 온보딩, 그 외엔 에러라도 메인으로
+                    if ((e is HttpException && e.code() == 404) || e.message?.contains("404") == true) {
+                        Log.d(tag, "캐릭터 없음 -> 온보딩으로")
                         navigateToOnboarding()
                     } else {
-                        // 그 외 에러 -> 안전하게 메인으로 이동 (또는 에러 표시)
-                        Log.e(tag, "캐릭터 조회 실패: ${e.message}")
+                        Log.e(tag, "캐릭터 조회 에러: ${e.message}")
                         navigateToMain(forceMain = true)
                     }
                 }
             } catch (e: Exception) {
                 Log.e(tag, "알 수 없는 오류: ${e.message}")
-                // 예외 발생 시 안전하게 메인으로 이동
                 navigateToMain(forceMain = true)
             }
         }
@@ -225,11 +201,8 @@ class EmailLoginActivity : AppCompatActivity() {
             .apply()
     }
 
-    // forceMain이 true면 무조건 메인으로 이동
     private fun navigateToMain(forceMain: Boolean = false) {
         val pref = getSharedPreferences("auth", MODE_PRIVATE)
-
-        // API 결과로 forceMain=true가 오면 SharedPreferences 무시하고 메인으로
         val isOnboardingDone = if (forceMain) true else pref.getBoolean("onboarding_done", false)
 
         val intent = if (isOnboardingDone) {
@@ -237,14 +210,12 @@ class EmailLoginActivity : AppCompatActivity() {
         } else {
             Intent(this, OnboardingActivity::class.java)
         }
-
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
 
     private fun navigateToOnboarding() {
-        // 온보딩으로 이동 시 로컬 완료 기록 초기화
         getSharedPreferences("auth", MODE_PRIVATE)
             .edit()
             .putBoolean("onboarding_done", false)
