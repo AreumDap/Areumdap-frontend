@@ -2,10 +2,10 @@ package com.example.areumdap.UI.record
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.areumdap.Data.repository.ChatReportRepository
 import com.example.areumdap.data.model.ChatReportDataDto
 import com.example.areumdap.data.model.ChatThreadHistoriesDto
 import com.example.areumdap.data.model.UserChatThread
-import com.example.areumdap.data.repository.ChatReportRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

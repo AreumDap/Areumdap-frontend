@@ -11,6 +11,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.areumdap.Data.api.ChatReportApiService
+import com.example.areumdap.Data.repository.ChatReportRepositoryImpl
 import com.example.areumdap.data.api.ChatReportApiService
 import com.example.areumdap.data.repository.ChatReportRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient

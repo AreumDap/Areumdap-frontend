@@ -139,6 +139,24 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
         }
     }
 
+    // 히스토리 요약 생성 요청 (명시적 호출용)
+    fun requestHistorySummary() {
+        viewModelScope.launch {
+            try {
+                val response = apiService.postCharacterHistorySummary()
+                if (response.isSuccessful) {
+                    Log.d("DEBUG_API", "History Summary Generated Successfully")
+                    // 생성 후 다시 조회
+                    fetchCharacterHistory()
+                } else {
+                    Log.e("DEBUG_API", "History Summary Generation Failed: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("DEBUG_API", "History Summary Generation Exception", e)
+            }
+        }
+    }
+
     fun fetchMyCharacter() {
         viewModelScope.launch {
             _isLoading.value = true

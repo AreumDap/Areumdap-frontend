@@ -14,12 +14,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.areumdap.R
-import com.example.areumdap.adapter.ChatMessageRVAdapter
 import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.UI.auth.PopUpDialogFragment
+import com.example.areumdap.adapter.ChatMessageRVAdapter
+import com.example.areumdap.data.model.ChatMessage
 import com.example.areumdap.databinding.FragmentChatBinding
 import com.example.areumdap.databinding.ItemChatMenuBinding
-import com.example.areumdap.data.model.ChatMessage
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
@@ -36,11 +37,13 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentChatBinding.bind(view)
 
+        setBottomNavVisible(false)
+
         adapter = ChatMessageRVAdapter { anchor, msg ->
             showChatMenu(anchor, msg)
         }
 
-        // prefill 처리 (네 코드 그대로)
+        // prefill 처리
         val prefill = arguments?.getString("prefill_question")
         val prefillQuestionId = arguments?.getLong("prefill_question_id", -1L) ?: -1L
         val prefillTag = arguments?.getString("prefill_tag")
@@ -61,7 +64,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             vm.startChat(prefill, prefillQuestionId)
         }
 
-        // ✅ 바인딩으로 연결
+
         binding.chatRv.adapter = adapter
         binding.chatRv.itemAnimator = null
 
@@ -99,6 +102,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     }
 
     override fun onDestroyView() {
+        setBottomNavVisible(true)
         menuPopup?.dismiss()
         menuPopup = null
         _binding = null
@@ -106,7 +110,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         super.onDestroyView()
     }
 
-    // ✅ 커스텀 메뉴: ItemChatMenuBinding으로 연결
     private fun showChatMenu(anchor: View, msg: ChatMessage) {
         menuPopup?.dismiss()
 
@@ -201,4 +204,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
 
         dialog.show(parentFragmentManager, "chat_end_dialog")
     }
+
+    private fun setBottomNavVisible(visible:Boolean){
+        val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.main_bnv)
+        bottomNav.visibility = if (visible) View.VISIBLE else View.GONE
+    }
+
+
 }
