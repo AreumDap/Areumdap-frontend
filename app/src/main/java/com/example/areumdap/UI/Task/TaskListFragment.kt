@@ -142,7 +142,8 @@ class TaskListFragment: Fragment() {
 
         //  활성 과제만 필터링 (서버 상태 + 뷰모델 블랙리스트)
         var filteredMissions = levelData.missions?.filter { mission ->
-            mission.status != "COMPLETED" && (mission.dDay ?: 0) >= 0 && !viewModel.isMissionCompleted(mission.missionId)
+            val status = mission.status?.uppercase() ?: ""
+            status != "COMPLETED" && status != "DONE" && mission.isCompleted != true && (mission.dDay ?: 0) >= 0 && !viewModel.isMissionCompleted(mission.missionId)
         } ?: emptyList()
 
         // 태그 필터링

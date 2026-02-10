@@ -247,13 +247,13 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
     }
 
     // 질문 삭제 (API 호출)
-    fun deleteSavedQuestion(targetId: Long) {
-        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. Target ID (ThreadID): $targetId")
+    fun deleteSavedQuestion(userQuestionId: Long) {
+        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. Target ID (QuestionID): $userQuestionId")
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // targetId(QuestionID)를 userChatThreadId 파라미터로 전달 시도
-                val response = apiService.deleteSavedQuestion(targetId)
+                // userQuestionId 파라미터로 전달
+                val response = apiService.deleteSavedQuestion(userQuestionId)
                 Log.d("TaskViewModel", "API Response Code: ${response.code()}")
 
                 if (response.isSuccessful) {
@@ -264,8 +264,8 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                         Log.d("TaskViewModel", "삭제 성공 (isSuccess=true)")
                         // 성공 시 로컬 리스트에서도 제거
                         val currentList = _savedQuestions.value?.toMutableList() ?: mutableListOf()
-                        // 로컬 리스트에서 userChatThreadId가 일치하는 항목 찾기
-                        val itemToRemove = currentList.find { it.userChatThreadId == targetId }
+                        // 로컬 리스트에서 userQuestionId가 일치하는 항목 찾기
+                        val itemToRemove = currentList.find { it.userQuestionId == userQuestionId }
 
                         if (itemToRemove != null) {
                             Log.d("TaskViewModel", "로컬 리스트에서 항목 제거: ${itemToRemove.content}")
@@ -278,7 +278,7 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                                 _questionTotalCount.value = currentCount - 1
                             }
                         } else {
-                            Log.e("TaskViewModel", "로컬 리스트에서 항목을 찾을 수 없음. ID: $targetId")
+                            Log.e("TaskViewModel", "로컬 리스트에서 항목을 찾을 수 없음. ID: $userQuestionId")
                         }
                     } else {
                         Log.e("TaskViewModel", "삭제 실패 (isSuccess=false). Message: ${body?.message}")

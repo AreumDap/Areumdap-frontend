@@ -54,8 +54,8 @@ class QuestionRVAdapter (private val questionList: ArrayList<QuestionItem>):
                     val position = holder.adapterPosition
                     if (position != RecyclerView.NO_POSITION) {
 
-                        android.util.Log.d("QuestionRVAdapter", "삭제 아이콘 클릭. ThreadID: ${item.userChatThreadId}")
-                        itemDeleteListener?.invoke(item.userChatThreadId)
+                        android.util.Log.d("QuestionRVAdapter", "삭제 아이콘 클릭. QuestionID: ${item.userQuestionId}")
+                        itemDeleteListener?.invoke(item.userQuestionId)
                     }
                 }
             })

@@ -109,9 +109,9 @@ class CharacterFragment : Fragment() {
             levelData?.let {
                 updateCharacterUI(it)
                 
-                // 과제가 있는지 확인 (서버 상태 + 로컬 블랙리스트)
                 val hasTask = it.missions?.any { mission -> 
-                    mission.status != "COMPLETED" && !viewModel.isMissionCompleted(mission.missionId)
+                    val status = mission.status?.uppercase() ?: ""
+                    status != "COMPLETED" && status != "DONE" && mission.isCompleted != true && (mission.dDay ?: 0) >= 0 && !viewModel.isMissionCompleted(mission.missionId)
                 } ?: false
                 
                 // 과제가 있을 때만 필터 스피너 보이기

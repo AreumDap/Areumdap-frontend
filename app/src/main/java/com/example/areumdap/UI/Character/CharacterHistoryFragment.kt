@@ -24,6 +24,7 @@ class CharacterHistoryFragment : Fragment() {
 
     private lateinit var viewModel: CharacterViewModel
     private lateinit var historyAdapter: CharacterHistoryRVAdapter
+    private var attemptedGeneration = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +67,7 @@ class CharacterHistoryFragment : Fragment() {
                 binding.presentContentTv.text = it.presentDescription ?: ""
 
                 // 디버깅 로그 추가
+                Log.d("HistoryDebug", "Past: ${it.pastDescription}, Present: ${it.presentDescription}")
                 Log.d("HistoryDebug", "History List Size: ${it.historyList?.size}")
                 it.historyList?.forEach { item ->
                     Log.d("HistoryDebug", "Level: ${item.level}, ImageUrl: ${item.imageUrl}")
@@ -77,6 +79,14 @@ class CharacterHistoryFragment : Fragment() {
                         Glide.with(this).load(url).preload()
                     }
                 }
+                
+                // 만약 내용이 비어있다면 자동 생성 요청 (최초 1회만)
+                if (it.pastDescription.isNullOrEmpty() && it.presentDescription.isNullOrEmpty() && !attemptedGeneration) {
+                    Log.d("HistoryDebug", "Descriptions empty, attempting generation...")
+                    attemptedGeneration = true
+                    viewModel.requestHistorySummary()
+                }
+
                 updateCombinedHistory()
             }
         }
