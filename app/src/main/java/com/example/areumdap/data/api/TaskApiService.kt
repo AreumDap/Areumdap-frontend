@@ -43,8 +43,8 @@ interface TaskApiService {
         @Path("missionId") missionId: Int
     ): Response<BaseResponse<Unit>>
 
-    @DELETE("api/chatbot")
+    @DELETE("api/questions/{userQuestionId}")
     suspend fun deleteSavedQuestion(
-        @Query("userChatThreadId") questionId: Long
+        @Path("userQuestionId") userQuestionId: Long
     ): Response<BaseResponse<Unit>>
 }
