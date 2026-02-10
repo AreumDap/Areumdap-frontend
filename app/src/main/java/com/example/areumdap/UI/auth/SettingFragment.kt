@@ -20,7 +20,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.NumberPicker
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.data.repository.AuthRepository
@@ -236,11 +235,10 @@ class SettingFragment : Fragment() {
         }
     }
 
-    // ============ UI 업데이트 ============
-
     private fun updateNotificationTimeState() {
-        binding.layoutNotificationTime.isEnabled = isNotificationEnabled
-        binding.layoutNotificationTime.alpha = if (isNotificationEnabled) 1.0f else 0.5f
+        val alpha = if (isNotificationEnabled) 1.0f else 0.5f
+        binding.layoutNotificationTime.alpha = alpha
+        binding.layoutNotificationTime.isClickable = isNotificationEnabled
     }
 
     private fun updateUI() {
@@ -400,23 +398,77 @@ class SettingFragment : Fragment() {
         dialog.show()
     }
 
-    // ============ 로그아웃 다이얼로그 (기본 알럿은 중앙 유지) ============
+    // ============ 로그아웃 다이얼로그 (PopUpDialogFragment 사용) ============
 
     private fun showLogoutConfirmDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("로그아웃")
-            .setMessage("정말 로그아웃 하시겠어요?")
-            .setPositiveButton("로그아웃") { _, _ ->
-                viewLifecycleOwner.lifecycleScope.launch {
-                    try {
-                        AuthRepository.logout()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+        val dialog = PopUpDialogFragment.newInstance(
+            title = "서비스를 로그아웃하시겠어요?",
+            subtitle = "지금까지의 기록은 모두 저장 돼요.",
+            leftBtn = "뒤로 가기",
+            rightBtn = "종료하기"
+        )
+
+        dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
+            override fun onConfirm() {
+                performLogout()
+            }
+        })
+
+        dialog.show(parentFragmentManager, "LogoutDialog")
+    }
+
+    private fun performLogout() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                AuthRepository.logout()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
+            prefs.edit().clear().apply()
+
+            TokenManager.clearAll()
+
+            val cookieManager = CookieManager.getInstance()
+            cookieManager.removeAllCookies(null)
+            cookieManager.flush()
+
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            requireActivity().finish()
+        }
+    }
+
+    // ============ 계정탈퇴 다이얼로그 (PopUpDialogFragment 사용) ============
+
+    private fun showDeleteAccountConfirmDialog() {
+        val dialog = PopUpDialogFragment.newInstance(
+            title = "서비스를 정말로 탈퇴하시겠어요?",
+            subtitle = "탈퇴한 계정은 다시 복구할 수 없어요.",
+            leftBtn = "뒤로 가기",
+            rightBtn = "종료하기"
+        )
+
+        dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
+            override fun onConfirm() {
+                performDeleteAccount()
+            }
+        })
+
+        dialog.show(parentFragmentManager, "DeleteAccountDialog")
+    }
+
+    private fun performDeleteAccount() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val result = AuthRepository.withdraw()
+                result.onSuccess {
+                    Toast.makeText(requireContext(), "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
 
                     val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
                     prefs.edit().clear().apply()
-
                     TokenManager.clearAll()
 
                     val cookieManager = CookieManager.getInstance()
@@ -427,46 +479,12 @@ class SettingFragment : Fragment() {
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
                     requireActivity().finish()
+                }.onFailure { error ->
+                    Toast.makeText(requireContext(), error.message ?: "탈퇴 실패", Toast.LENGTH_SHORT).show()
                 }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "오류 발생: ${e.message}", Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("취소", null)
-            .show()
-    }
-
-    // ============ 계정탈퇴 다이얼로그 (기본 알럿은 중앙 유지) ============
-
-    private fun showDeleteAccountConfirmDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle("계정탈퇴")
-            .setMessage("정말 탈퇴하시겠어요?\n모든 데이터가 삭제되며 복구할 수 없습니다.")
-            .setPositiveButton("탈퇴") { _, _ ->
-                viewLifecycleOwner.lifecycleScope.launch {
-                    try {
-                        val result = AuthRepository.withdraw()
-                        result.onSuccess {
-                            Toast.makeText(requireContext(), "회원탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-
-                            val prefs = requireContext().getSharedPreferences("auth", Context.MODE_PRIVATE)
-                            prefs.edit().clear().apply()
-                            TokenManager.clearAll()
-
-                            val cookieManager = CookieManager.getInstance()
-                            cookieManager.removeAllCookies(null)
-                            cookieManager.flush()
-
-                            val intent = Intent(requireContext(), LoginActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
-                            requireActivity().finish()
-                        }.onFailure { error ->
-                            Toast.makeText(requireContext(), error.message ?: "탈퇴 실패", Toast.LENGTH_SHORT).show()
-                        }
-                    } catch (e: Exception) {
-                        Toast.makeText(requireContext(), "오류 발생: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-                }
-            }
-            .setNegativeButton("취소", null)
-            .show()
+        }
     }
 }

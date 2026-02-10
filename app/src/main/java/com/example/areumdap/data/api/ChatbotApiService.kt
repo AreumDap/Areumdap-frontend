@@ -22,7 +22,7 @@ interface ChatbotApiService {
     @GET("api/chatbot/recommend")
     suspend fun getTodayRecommendations(): GetChatbotRecommendsResponse
 
-    @POST("api/chatbot/start")
+    @POST("api/chat/thread")
     suspend fun startChat(
         @Body request: StartChatRequest
     ): Response<ApiResponse<StartChatResponse>>
@@ -32,7 +32,7 @@ interface ChatbotApiService {
         @Body request: SendChatMessageRequest
     ): Response<ApiResponse<SendChatMessageResponse>>
 
-    @DELETE("api/chatbot")
+    @DELETE("api/chat")
     suspend fun stopChat(
         @Query("userChatThreadId") threadId: Long
     ) : Response<ApiResponse<Unit>>
