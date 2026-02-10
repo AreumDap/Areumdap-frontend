@@ -3,6 +3,7 @@ package com.example.areumdap.data.repository
 import com.example.areumdap.data.api.AuthApi
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.source.TokenManager
+import com.example.areumdap.data.repository.UserRepository
 import com.example.areumdap.data.api.ConfirmEmailVerificationCodeRequest
 import com.example.areumdap.data.api.LoginRequest
 import com.example.areumdap.data.api.LoginResponse
@@ -30,30 +31,27 @@ object AuthRepository {
                 if (baseResponse.isSuccess && baseResponse.data != null) {
                     val loginData = baseResponse.data
 
-                    // 1. 토큰 저장 (null이면 빈 문자열 처리)
+                    // 1. 토큰 저장
                     TokenManager.saveTokens(
                         loginData.accessToken ?: "",
                         loginData.refreshToken ?: ""
                     )
 
-                    // 2. 유저 정보 저장 [수정된 부분]
-                    // userId가 Int이거나 null일 수 있으므로 Long으로 안전하게 변환합니다.
-                    // 만약 userId가 null이면 0L(0)으로 저장합니다.
+                    // 2. 유저 정보 저장
                     val userIdLong: Long = try {
                         loginData.userId?.toString()?.toLong() ?: 0L
                     } catch (e: Exception) {
-                        0L // 변환 실패시 0 저장
+                        0L
                     }
 
                     TokenManager.saveUserInfo(
                         userIdLong,
-                        loginData.email ?: "",  // null이면 빈 문자열
-                        loginData.name ?: ""    // null이면 빈 문자열
+                        loginData.email ?: "",
+                        loginData.name ?: ""
                     )
 
-                    // 3. 프로필 정보(닉네임 등) 추가 조회 및 저장
+                    // 3. 프로필 정보 조회 및 저장
                     try {
-                        // UserRepository를 통해 프로필 조회
                         val profileResult = UserRepository.getProfile()
                         profileResult.onSuccess { profile ->
                             profile.nickname?.let {
@@ -62,25 +60,22 @@ object AuthRepository {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        // 프로필 조회 실패해도 로그인은 성공 처리
                     }
 
                     Result.success(loginData)
                 } else {
+                    // 서버에서 200 OK를 줬지만 isSuccess가 false인 경우
                     Result.failure(Exception(baseResponse.message))
                 }
             } else {
-                val errorMessage = when (response.code()) {
-                    400 -> "이메일 또는 비밀번호 형식이 올바르지 않습니다."
-                    401 -> "비밀번호가 일치하지 않습니다."
-                    404 -> "존재하지 않는 계정입니다."
-                    else -> "로그인에 실패했습니다. (코드: ${response.code()})"
-                }
-                Result.failure(Exception(errorMessage))
+                // [수정된 부분] ★ 중요 ★
+                // 여기서 문자열로 바꾸지 않고 HttpException을 그대로 던져야
+                // Activity에서 error.code() == 401을 체크할 수 있습니다.
+                Result.failure(HttpException(response))
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.failure(Exception("네트워크 오류가 발생했습니다: ${e.message}"))
+            Result.failure(e)
         }
     }
 
@@ -93,13 +88,10 @@ object AuthRepository {
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                val errorMessage = when (response.code()) {
-                    400 -> "입력 형식이 올바르지 않습니다."
-                    401 -> "이메일 인증을 완료해주세요."
-                    409 -> "이미 가입된 이메일입니다."
-                    else -> "회원가입에 실패했습니다."
-                }
-                Result.failure(Exception(errorMessage))
+                // 다른 API들도 통일성을 위해 HttpException을 던지는 것을 권장하지만,
+                // 일단 로그인 문제 해결을 위해 기존 로직을 유지하거나 필요시 수정하세요.
+                // 여기서는 로그인과 동일하게 HttpException을 던지도록 수정해드립니다.
+                Result.failure(HttpException(response))
             }
         } catch (e: Exception) {
             Result.failure(Exception("네트워크 오류가 발생했습니다."))
@@ -115,11 +107,7 @@ object AuthRepository {
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                val errorMessage = when (response.code()) {
-                    400 -> "올바른 이메일 형식을 입력해주세요."
-                    else -> "인증 코드 전송에 실패했습니다."
-                }
-                Result.failure(Exception(errorMessage))
+                Result.failure(HttpException(response))
             }
         } catch (e: Exception) {
             Result.failure(Exception("네트워크 오류가 발생했습니다."))
@@ -132,28 +120,17 @@ object AuthRepository {
     suspend fun confirmEmailVerificationCode(email: String, verificationCode: String): Result<Unit> {
         return try {
             val response = authApi.confirmEmailVerificationCode(
-                ConfirmEmailVerificationCodeRequest(
-                    email,
-                    verificationCode
-                )
+                ConfirmEmailVerificationCodeRequest(email, verificationCode)
             )
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                val errorMessage = when (response.code()) {
-                    400 -> "올바른 이메일 형식을 입력해주세요."
-                    401 -> "인증 코드가 만료되었거나 일치하지 않습니다."
-                    404 -> "해당 이메일로 인증 요청을 보내지 않았습니다."
-                    else -> "인증 확인에 실패했습니다."
-                }
-                Result.failure(Exception(errorMessage))
+                Result.failure(HttpException(response))
             }
         } catch (e: Exception) {
             Result.failure(Exception("네트워크 오류가 발생했습니다."))
         }
     }
-
-
 
     /**
      * 포기하기 (회원탈퇴)
@@ -162,15 +139,10 @@ object AuthRepository {
         return try {
             val response = authApi.withdraw()
             if (response.isSuccessful) {
-                // 성공 시에도 로컬 데이터 클리어
                 TokenManager.clearAll()
                 Result.success(Unit)
             } else {
-                val errorMessage = when (response.code()) {
-                    404 -> "유저가 존재하지 않습니다."
-                    else -> "탈퇴 처리에 실패했습니다. (코드: ${response.code()})"
-                }
-                Result.failure(Exception(errorMessage))
+                Result.failure(HttpException(response))
             }
         } catch (e: Exception) {
             Result.failure(Exception("네트워크 오류가 발생했습니다."))
@@ -202,7 +174,6 @@ object AuthRepository {
                 val body = response.body()
                 val data = body?.data
 
-                // 계절 정보 추출 및 저장
                 data?.imageUrl?.let { url ->
                     val season = when {
                         url.contains("spring") -> "SPRING"
@@ -215,7 +186,6 @@ object AuthRepository {
                         TokenManager.saveSeason(season)
                     }
                 }
-
                 Result.success(data)
             } else {
                 Result.failure(HttpException(response))
