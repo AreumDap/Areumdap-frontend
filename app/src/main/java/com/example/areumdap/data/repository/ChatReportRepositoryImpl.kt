@@ -1,9 +1,10 @@
-package com.example.areumdap.data.repository
+package com.example.areumdap.Data.repository
 
-import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.Data.api.ChatReportApiService
+import com.example.areumdap.data.api.ApiResponse
 import com.example.areumdap.data.model.ChatReportDataDto
-import com.example.areumdap.data.model.ChatThreadsData
 import com.example.areumdap.data.model.ChatThreadHistoriesDto
+import com.example.areumdap.data.model.ChatThreadsData
 
 class ChatReportRepositoryImpl(
     private val api: ChatReportApiService
@@ -59,4 +60,16 @@ class ChatReportRepositoryImpl(
 
             body.data
         }
+
+    override suspend fun toggleFavorite(threadId: Long): Result<ApiResponse<Unit>>  =
+        runCatching {
+            val res = api.toggleFavorite(threadId = threadId)
+
+            if (res.isSuccessful) {
+                res.body() ?: throw IllegalStateException("응답 body가 비어있음")
+            } else {
+                throw IllegalStateException("HTTP ${res.code()} ${res.message()}")
+            }
+        }
+
 }

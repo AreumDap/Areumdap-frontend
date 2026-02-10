@@ -7,9 +7,9 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.areumdap.data.api.ChatReportApiService
-import com.example.areumdap.data.repository.ChatReportRepository
-import com.example.areumdap.data.repository.ChatReportRepositoryImpl
+import com.example.areumdap.Data.api.ChatReportApiService
+import com.example.areumdap.Data.repository.ChatReportRepository
+import com.example.areumdap.Data.repository.ChatReportRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.R
 import com.example.areumdap.adapter.ChatDetailRVAdapter
