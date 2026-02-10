@@ -1,11 +1,12 @@
-package com.example.areumdap.data.api
+package com.example.areumdap.Data.api
 
-
+import com.example.areumdap.data.api.ApiResponse
 import com.example.areumdap.data.model.ChatReportDataDto
 import com.example.areumdap.data.model.ChatThreadHistoriesDto
 import com.example.areumdap.data.model.ChatThreadsData
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -25,4 +26,9 @@ interface ChatReportApiService{
     suspend fun getChatReport(
         @Path("reportId") reportId: Long
     ) : Response<ApiResponse<ChatReportDataDto>>
+
+    @PATCH("api/chat/threads/{threadId}/favorite")
+    suspend fun toggleFavorite(
+        @Path("threadId") threadId: Long,
+    ) : Response<ApiResponse<Unit>>
 }
