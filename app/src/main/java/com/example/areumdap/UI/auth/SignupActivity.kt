@@ -11,10 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.data.repository.AuthRepository
 import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.R
-import com.example.areumdap.UI.auth.EmailLoginActivity
 import com.example.areumdap.databinding.ActivitySignupBinding
 import com.example.areumdap.databinding.FragmentToastDialogBinding
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
@@ -94,13 +94,15 @@ class SignupActivity : AppCompatActivity() {
 
         if (email.isEmpty()) {
             Log.w(tag, "이메일이 비어있음")
-            showCustomToast("이메일을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             return
         }
 
         if (!isValidEmail(email)) {
             Log.w(tag, "이메일 형식이 잘못됨: $email")
-            showCustomToast("올바른 이메일 형식을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             return
         }
 
@@ -127,12 +129,28 @@ class SignupActivity : AppCompatActivity() {
                     Log.e(tag, "에러 메시지: ${error.message}")
                     Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
 
-                    showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+                    if (error is HttpException) {
+                        when (error.code()) {
+                            400, 401, 403, 404 -> {
+                                // A. 입력 문제 - Error
+                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+                            }
+                            else -> {
+                                // B. 시스템/네트워크 문제 - Failure
+                                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                            }
+                        }
+                    } else {
+                        // B. 시스템/네트워크 문제 - Failure
+                        showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                    }
+
                     binding.btnEmailCheck.isEnabled = true
                 }
             } catch (e: Exception) {
                 Log.e(tag, "이메일 인증 요청 중 예외 발생: ${e.message}", e)
-                showCustomToast("이메일 인증 요청 중 오류가 발생했습니다", isSuccess = false)
+                // C. 원인 불명 - 최소 기준
+                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
                 binding.btnEmailCheck.isEnabled = true
             }
         }
@@ -148,7 +166,8 @@ class SignupActivity : AppCompatActivity() {
 
         if (authCode.isEmpty()) {
             Log.w(tag, "인증번호가 비어있음")
-            showCustomToast("인증번호를 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             return
         }
 
@@ -177,13 +196,28 @@ class SignupActivity : AppCompatActivity() {
                     Log.e(tag, "에러 메시지: ${error.message}")
                     Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
 
-                    showCustomToast("인증번호 확인에 실패했습니다. 다시 시도해 주세요", isSuccess = false)
+                    if (error is HttpException) {
+                        when (error.code()) {
+                            400, 401, 403, 404 -> {
+                                // A. 입력 문제 - Error
+                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+                            }
+                            else -> {
+                                // B. 시스템/네트워크 문제 - Failure
+                                showCustomToast("일시적인 문제로 로그인을 완료하지 못했어요", isSuccess = false)
+                            }
+                        }
+                    } else {
+                        // B. 시스템/네트워크 문제 - Failure
+                        showCustomToast("일시적인 문제로 로그인을 완료하지 못했어요", isSuccess = false)
+                    }
 
                     binding.btnAuthConfirm.isEnabled = true
                 }
             } catch (e: Exception) {
                 Log.e(tag, "인증번호 확인 중 예외 발생: ${e.message}", e)
-                showCustomToast("인증번호 확인 중 오류가 발생했습니다", isSuccess = false)
+                // C. 원인 불명 - 최소 기준
+                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
                 binding.btnAuthConfirm.isEnabled = true
             }
         }
@@ -236,7 +270,21 @@ class SignupActivity : AppCompatActivity() {
                     Log.e(tag, "에러 메시지: ${error.message}")
                     Log.e(tag, "에러 타입: ${error.javaClass.simpleName}")
 
-                    showCustomToast("회원가입 실패: ${error.message}", isSuccess = false)
+                    if (error is HttpException) {
+                        when (error.code()) {
+                            400, 409 -> {
+                                // A. 입력 문제 (중복, 잘못된 입력) - Error
+                                showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
+                            }
+                            else -> {
+                                // B. 시스템/네트워크 문제 - Failure
+                                showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                            }
+                        }
+                    } else {
+                        // B. 시스템/네트워크 문제 - Failure
+                        showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
+                    }
 
                     binding.btnSignUp.isEnabled = true
                 }
@@ -245,7 +293,8 @@ class SignupActivity : AppCompatActivity() {
                 Log.e(tag, "예외 메시지: ${e.message}")
                 Log.e(tag, "예외 타입: ${e.javaClass.simpleName}")
 
-                showCustomToast("회원가입 중 오류 발생: ${e.message}", isSuccess = false)
+                // C. 원인 불명 - 최소 기준
+                showCustomToast("로그인을 완료하지 못했어요\n다시 시도해 주세요", isSuccess = false)
                 binding.btnSignUp.isEnabled = true
             }
         }
@@ -291,42 +340,48 @@ class SignupActivity : AppCompatActivity() {
 
         if (name.isEmpty()) {
             Log.w(tag, "❌ 이름 빈값 에러")
-            showCustomToast("이름을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etName.requestFocus()
             return false
         }
 
         if (birth.isEmpty()) {
             Log.w(tag, "❌ 생년월일 빈값 에러")
-            showCustomToast("생년월일을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
 
         if (birth.length != 8) {
             Log.w(tag, "❌ 생년월일 길이 에러: ${birth.length}자리 (8자리 필요)")
-            showCustomToast("생년월일을 8자리로 입력해주세요. (예: 19900101)", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
 
         if (!isValidBirth(birth)) {
             Log.w(tag, "❌ 생년월일 날짜 유효성 에러: $birth")
-            showCustomToast("올바른 날짜를 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etBirth.requestFocus()
             return false
         }
 
         if (email.isEmpty()) {
             Log.w(tag, "❌ 이메일 빈값 에러")
-            showCustomToast("이메일을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etEmail.requestFocus()
             return false
         }
 
         if (!isValidEmail(email)) {
             Log.w(tag, "❌ 이메일 형식 에러: $email")
-            showCustomToast("올바른 이메일 형식을 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etEmail.requestFocus()
             return false
         }
@@ -334,27 +389,31 @@ class SignupActivity : AppCompatActivity() {
         if (!isEmailVerified) {
             Log.w(tag, "❌ 이메일 미인증 에러 - isEmailVerified = $isEmailVerified")
             Log.w(tag, "이메일 인증을 먼저 완료해야 합니다!")
-            showCustomToast("이메일 인증을 완료해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             return false
         }
 
         if (password.isEmpty()) {
             Log.w(tag, "❌ 비밀번호 빈값 에러")
-            showCustomToast("비밀번호를 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etPw.requestFocus()
             return false
         }
 
         if (password.length < 6) {
             Log.w(tag, "❌ 비밀번호 길이 에러: ${password.length}자리 (최소 6자리)")
-            showCustomToast("비밀번호는 6자리 이상 입력해주세요.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etPw.requestFocus()
             return false
         }
 
         if (password != passwordConfirm) {
             Log.w(tag, "❌ 비밀번호 확인 불일치 에러")
-            showCustomToast("비밀번호가 일치하지 않습니다.", isSuccess = false)
+            // A. 입력 문제 - Error
+            showCustomToast("아이디 또는 비밀번호가 올바르지 않아요", isSuccess = false)
             binding.etPwConfirm.requestFocus()
             return false
         }

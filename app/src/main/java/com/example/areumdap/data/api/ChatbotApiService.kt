@@ -19,7 +19,7 @@ interface ChatbotApiService {
     @GET("api/chatbot/recommend")
     suspend fun getTodayRecommendations(): GetChatbotRecommendsResponse
 
-    @POST("api/chatbot/start")
+    @POST("api/chat/thread")
     suspend fun startChat(
         @Body request: StartChatRequest
     ): Response<ApiResponse<StartChatResponse>>
@@ -29,7 +29,7 @@ interface ChatbotApiService {
         @Body request: SendChatMessageRequest
     ): Response<ApiResponse<SendChatMessageResponse>>
 
-    @DELETE("api/chatbot")
+    @DELETE("api/chat")
     suspend fun stopChat(
         @Query("UserChatThreadId") threadId: Long
     ) : Response<ApiResponse<Unit>>
@@ -38,5 +38,16 @@ interface ChatbotApiService {
     suspend fun getChatSummary(
         @Body body: ChatSummaryRequest
     ) : ApiResponse<ChatSummaryData>
+
+    @POST("api/chat/report")
+    suspend fun createReport(
+        @Body req: ReportRequest
+    ) : Response<ReportResponse>
+
+    @POST("api/questions/{chatHistoryId}")
+    suspend fun saveQuestion(
+        @Path("chatHistoryId") chatHistoryId:Long
+    ) : Response<ApiResponse<Unit>>
+
 }
 
