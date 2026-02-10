@@ -65,6 +65,13 @@ class OnboardingInfoFragment: Fragment() {
         // 시작 화면 진입 시 하단 버튼을 즉시 활성화(pink1) 상태로
         viewModel.isKeywordSelected.value = true
 
+        // ViewModel에 저장된 캐릭터 정보 복원 (Fragment 재생성 대응)
+        createdCharacterId = viewModel.createdCharacterId
+        createdImageUrl = viewModel.createdImageUrl
+
+        // 이미 캐릭터가 생성된 상태라면 이미지 복원
+        restoreCharacterImage()
+
         // 캐릭터 생성 상태 관찰
         observeCharacterCreation()
 
@@ -78,6 +85,19 @@ class OnboardingInfoFragment: Fragment() {
                 3 -> showText4() // "아름이는 oo님이..."
                 4 -> saveOnboardingAndNavigate(createdCharacterId, createdImageUrl) // 온보딩 저장 + 메인 이동
             }
+        }
+    }
+
+    // Fragment 재생성 시 이미 생성된 캐릭터 이미지를 복원
+    private fun restoreCharacterImage() {
+        val imageUrl = viewModel.createdImageUrl
+        if (!imageUrl.isNullOrEmpty()) {
+            Log.d("CharacterAPI", "이미지 복원: $imageUrl")
+            Glide.with(this)
+                .load(imageUrl)
+                .error(R.drawable.img_character_egg)
+                .into(binding.ivCharacter)
+            binding.ivCharacter.visibility = View.VISIBLE
         }
     }
 
@@ -159,15 +179,23 @@ class OnboardingInfoFragment: Fragment() {
                         }
                         is CharacterUiState.Success -> {
                             Log.d("CharacterAPI", "성공! ID: ${state.characterId}, URL: ${state.imageUrl}")
+                            Log.d("CharacterAPI", "imageUrl isNullOrEmpty: ${state.imageUrl.isNullOrEmpty()}")
                             createdCharacterId = state.characterId
                             createdImageUrl = state.imageUrl
+                            // ViewModel에도 저장 (Fragment 재생성 시 복원용)
+                            viewModel.createdCharacterId = state.characterId
+                            viewModel.createdImageUrl = state.imageUrl
                             // 계절별 알 이미지 로드
-                            state.imageUrl?.let { url ->
+                            if (!state.imageUrl.isNullOrEmpty()) {
+                                Log.d("CharacterAPI", "Glide로 이미지 로드 시도: ${state.imageUrl}")
                                 Glide.with(this@OnboardingInfoFragment)
-                                    .load(url)
+                                    .load(state.imageUrl)
                                     .error(R.drawable.img_character_egg)
                                     .into(binding.ivCharacter)
                                 binding.ivCharacter.visibility = View.VISIBLE
+                            } else {
+                                Log.d("CharacterAPI", "imageUrl이 null/empty -> fallback 이미지 미표시 상태")
+                                // imageUrl이 null이면 이미지가 표시되지 않음
                             }
                             hideLoading()
                             characterViewModel.resetUiState()
