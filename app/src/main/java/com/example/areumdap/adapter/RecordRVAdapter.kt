@@ -11,7 +11,7 @@ import com.example.areumdap.data.model.RecordItem
 
 class RecordRVAdapter(
     private val onItemClick: (RecordItem) -> Unit,
-    //private val onStarClick: (RecordItem) -> Unit
+    private val onStarClick: (RecordItem, Boolean) -> Unit
 ) : ListAdapter<RecordItem, RecordRVAdapter.ViewHolder>(DIFF) {
 
     inner class ViewHolder(
@@ -26,12 +26,22 @@ class RecordRVAdapter(
 
             // 내용
             recTitleTv.text = item.title
-            recContentTv.text = item.summary
+            recContentTv.text = ellipsize35(item.summary)
             dateTv.text = item.dateText
+
+            btnFavorite.setImageResource(
+                if (item.isStarred) com.example.areumdap.R.drawable.ic_favorite_on
+                else com.example.areumdap.R.drawable.ic_star
+            )
 
 
             // 카드 클릭
             root.setOnClickListener { onItemClick(item) }
+
+            btnFavorite.setOnClickListener {
+                val newState = !item.isStarred
+                onStarClick(item, newState)
+            }
         }
     }
 
@@ -52,5 +62,10 @@ class RecordRVAdapter(
             override fun areContentsTheSame(oldItem: RecordItem, newItem: RecordItem) =
                 oldItem == newItem
         }
+    }
+    // 레포트 카드 35글자 이상 문장 ...으로 교체
+    private fun ellipsize35(text:String):String{
+        val t = text.trim()
+        return if(t.length <35) t else t.take(35) +"..."
     }
 }

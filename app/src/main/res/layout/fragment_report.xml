@@ -188,7 +188,8 @@
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp"
                         android:paddingStart="10dp"
-                        android:src="@drawable/ic_coner_pink" />
+                        android:src="@drawable/ic_coner_pink"
+                        app:tint="?attr/colorPrimary"/>
 
                     <TextView
                         android:id="@+id/report_summary_tv"
@@ -211,7 +212,8 @@
                         android:paddingVertical="10dp"
                         android:paddingStart="10dp"
                         android:rotation="180"
-                        android:src="@drawable/ic_coner_pink" />
+                        android:src="@drawable/ic_coner_pink"
+                        app:tint="?attr/colorPrimary"/>
                 </LinearLayout>
 
                 <Space
@@ -237,7 +239,7 @@
                     style="@style/TA_Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="대화를 통해 얻은 과제"
+                    android:text="대화를 통해 발견한 것"
                     android:textColor="@color/black"
                     android:layout_marginBottom="20dp"/>
                 
@@ -268,7 +270,7 @@
                     style="@style/TA_Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="자기 성찰 과제"
+                    android:text="대화를 통해 얻은 과제"
                     android:textColor="@color/black"
                     android:layout_margin="20dp"/>
 

@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 class ConversationSummaryFragment : Fragment() {
     private var _binding: FragmentCoversationSummaryBinding? = null
     private val binding get() = _binding!!
+    private var reportRequested = false
 
     private val viewModel: ChatViewModel by activityViewModels()
 
@@ -46,11 +47,16 @@ class ConversationSummaryFragment : Fragment() {
             Toast.makeText(requireContext(), "대화 정보를 찾을 수 없어요.", Toast.LENGTH_SHORT).show()
         } else {
             viewModel.fetchSummary(accessToken, threadId)
+
         }
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.summaryState.collect{state ->
+                    if (!reportRequested && state is SummaryUiState.Success) {
+                        reportRequested = true
+                        viewModel.createReport() // ✅ 요약 성공 후 레포트 생성
+                    }
                     when(state){
                         is SummaryUiState.Idle -> Unit
                         is SummaryUiState.Loading -> {
@@ -73,6 +79,7 @@ class ConversationSummaryFragment : Fragment() {
                         is SummaryUiState.Error ->{
                             Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
                         }
+
                     }
                 }
             }

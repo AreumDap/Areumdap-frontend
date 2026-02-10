@@ -1,7 +1,7 @@
 package com.example.areumdap.data.source
 
-import com.example.areumdap.Data.api.ChatReportApiService
-import com.example.areumdap.Data.api.ChatbotApiService
+import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.api.ChatbotApiService
 import com.example.areumdap.data.api.AuthApi
 import com.example.areumdap.data.api.TaskApiService
 import com.example.areumdap.data.api.CharacterApiService

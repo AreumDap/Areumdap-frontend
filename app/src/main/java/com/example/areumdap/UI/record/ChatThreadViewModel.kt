@@ -2,7 +2,7 @@ package com.example.areumdap.UI.record
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.areumdap.Data.repository.ChatReportRepository
+import com.example.areumdap.data.repository.ChatReportRepository
 import com.example.areumdap.data.model.ChatReportDataDto
 import com.example.areumdap.data.model.ChatThreadHistoriesDto
 import com.example.areumdap.data.model.UserChatThread
@@ -101,6 +101,43 @@ class ChatThreadViewModel(
                 .onFailure { e ->
                     _reportState.value = ReportUiState.Error(e.message ?: "레포트 불러오기 실패")
                 }
+        }
+    }
+
+    fun toggleFavorite(threadId: Long) {
+        viewModelScope.launch {
+            _error.value = null
+
+            // 1) 현재 상태 찾기
+            val currentList = _threads.value
+            val idx = currentList.indexOfFirst { it.threadId == threadId }
+            if (idx == -1) return@launch
+
+            val target = currentList[idx]
+            val newState = !target.favorite
+
+            // 2) UI 먼저 반영(낙관적 업데이트)
+            val optimistic = currentList.toMutableList().apply {
+                this[idx] = target.copy(favorite = newState)
+            }
+            _threads.value = optimistic
+
+            // 3) 서버 반영 (실패하면 롤백)
+            val ok = repo.toggleFavorite(threadId = threadId)
+                .fold(onSuccess = { true }, onFailure = { false })
+
+            if (!ok) {
+                // 롤백
+                val rollback = _threads.value.toMutableList().apply {
+                    val nowIdx = indexOfFirst { it.threadId == threadId }
+                    if (nowIdx != -1) {
+                        val nowTarget = this[nowIdx]
+                        this[nowIdx] = nowTarget.copy(favorite = !newState)
+                    }
+                }
+                _threads.value = rollback
+                _error.value = "즐겨찾기 반영 실패"
+            }
         }
     }
 

@@ -78,7 +78,9 @@
                 android:layout_height="wrap_content"
                 android:text="대화요약대화요약대화요약대화요약대화요약"
                 style="@style/TA_Caption1"
-                android:textColor="@color/gray3" />
+                android:textColor="@color/gray3"
+                android:maxLines="1"
+                android:ellipsize="end"/>
         </LinearLayout>
 
         <!-- 날짜 -->

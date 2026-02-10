@@ -3,7 +3,7 @@
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.areumdap.Data.api.ChatReportApiService
+import com.example.areumdap.data.api.ChatReportApiService
 import com.example.areumdap.data.model.ChatMessage
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.Sender
@@ -19,12 +19,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.internal.http.hasBody
 
 sealed interface SummaryUiState{
     data object Idle: SummaryUiState
     data object Loading : SummaryUiState
     data class Success(val data : ChatSummaryData) : SummaryUiState
     data class Error(val message:String) : SummaryUiState
+}
+
+sealed interface ReportCreateUiState {
+    data object Idle : ReportCreateUiState
+    data object Loading : ReportCreateUiState
+    data class Success(val reportId: Long) : ReportCreateUiState
+    data class Error(val message: String) : ReportCreateUiState
 }
 
 class ChatViewModel(
@@ -40,10 +48,13 @@ class ChatViewModel(
     private var threadId: Long? = null
     private var lastEndedThreadId: Long? = null
     private var lastRecommendTag: String? = null
+    private var sessionEnded: Boolean = false
 
     private val _summaryState = MutableStateFlow<SummaryUiState>(SummaryUiState.Idle)
     val summaryState: StateFlow<SummaryUiState> = _summaryState
 
+    private val _reportCreateState = MutableStateFlow<ReportCreateUiState>(ReportCreateUiState.Idle)
+    val reportCreateState: StateFlow<ReportCreateUiState> = _reportCreateState
     fun getThreadId(): Long? = threadId
     fun getLastEndedThreadId(): Long? = lastEndedThreadId
     fun getLastRecommendTag(): String? = lastRecommendTag
@@ -59,6 +70,7 @@ class ChatViewModel(
         _messages.value = emptyList()
         _summaryState.value = SummaryUiState.Idle
         lastRecommendTag = null
+        sessionEnded = false
     }
 
 
@@ -83,6 +95,10 @@ class ChatViewModel(
         if (trimmed.isBlank()) return
 
         viewModelScope.launch {
+            if (sessionEnded) {
+                addFailMessage("대화가 종료되었어요. 과제를 확인하거나 새 대화를 시작해줘.")
+                return@launch
+            }
             if (threadId == null) {
                 val ok = startChatInternal(content = trimmed, userQuestionId = null)
                 if (!ok) {
@@ -141,7 +157,8 @@ class ChatViewModel(
                 if (reply.isSessionEnd) {
                     // runCatching { repo.stopChat(currentThreadId) }
                     //     .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
-                    resetChatSession(currentThreadId)
+                    lastEndedThreadId = currentThreadId
+                    sessionEnded = true
                     _endEvent.tryEmit(Unit)
                 }
             } catch (e: Exception) {
@@ -306,6 +323,23 @@ class ChatViewModel(
             }
         }.onFailure { e ->
             Log.e("ChatViewModel", "attachChatHistoryId failed", e)
+        }
+    }
+
+    fun createReport(){
+        val id = lastEndedThreadId ?: threadId ?: return
+
+        viewModelScope.launch {
+            _reportCreateState.value = ReportCreateUiState.Loading
+
+            repo.createReport(id)
+                .onSuccess { body ->
+                    val reportId = body.reportId
+                    _reportCreateState.value = ReportCreateUiState.Success(reportId)
+                }
+                .onFailure { e ->
+                    _reportCreateState.value = ReportCreateUiState.Error(e.message ?: "과제 생성 실패")
+                }
         }
     }
 }

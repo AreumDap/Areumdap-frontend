@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:paddingVertical="12dp"
         android:gravity="center"
-        android:textColor="#333333"
-        android:textSize="15sp" />
+        style="@style/TA_Caption1"
+        android:textColor="#333333" />
 
     <ImageView
         android:id="@+id/dropdown_iv"

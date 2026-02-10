@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="16dp"
         android:paddingVertical="20dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <ImageView
             android:layout_width="38dp"
@@ -33,7 +34,7 @@
             android:lineSpacingExtra="2dp"
             android:maxLines="6"
             android:ellipsize="end"
-            android:text="지은님은 이것보다 저것을 추구하는 사람이에요.\n그것보단 이러이러한 것을 더 좋아해요." />
+            android:text="지은님은 이것보다 저것을 추구하는 사람이에요."/>
 
     </LinearLayout>
 
