@@ -1,8 +1,8 @@
 package com.example.areumdap.data.repository
 
 import android.util.Log
+import com.example.areumdap.Data.api.ChatbotApiService
 import com.example.areumdap.data.api.ApiResponse
-import com.example.areumdap.data.api.ChatbotApiService
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.ChatSummaryRequest
 import com.example.areumdap.data.model.ReportRequest
