@@ -28,8 +28,8 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/empty_task_ai_btn"
-        android:layout_width="185dp"
-        android:layout_height="33dp"
+        android:layout_width="160dp"
+        android:layout_height="40dp"
         android:text="대화 시작하기"
         style="@style/TA_Caption1"
         android:textColor="@color/black"
@@ -41,15 +41,15 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/empty_task_recommend_btn"
-        android:layout_width="185dp"
-        android:layout_height="33dp"
+        android:layout_width="160dp"
+        android:layout_height="40dp"
         android:text="질문 추천 받기"
         style="@style/TA_Caption1"
         android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@id/empty_task_ai_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="13dp"
         android:background="@drawable/bg_empty_task_btn"/>
 
 

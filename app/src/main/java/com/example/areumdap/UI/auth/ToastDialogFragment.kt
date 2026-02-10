@@ -1,6 +1,5 @@
 package com.example.areumdap.UI.auth
 
-import android.R
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -42,11 +41,12 @@ class ToastDialogFragment(private val message: String, private val iconResId: In
             // 왼쪽으로 쏠림현상을 해결함
             setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             //화면 위에 띄게
-            setGravity(Gravity.TOP)
+            setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL)
             //위 마진 조절
             val params = attributes
-            params.y = 40
-            params.windowAnimations = R.style.Animation_Toast
+            val yOffset = (50 * resources.displayMetrics.density).toInt()
+            params.y = yOffset
+            params.windowAnimations = android.R.style.Animation_Toast
             attributes = params
         }
 

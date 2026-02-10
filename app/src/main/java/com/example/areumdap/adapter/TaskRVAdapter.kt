@@ -29,7 +29,7 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
             taskCardView.translationX = 0f
 
             // 질문 제목 반영
-            itemArchiveTaskTv.text = item.title
+            archiveItemTitleTv.text = item.title
 
             // 날짜 및 요일 반영 (예: 2026.02.02 (월))
             itemArchiveDateTv.text = formatDateWithDay(item.completedAt)
@@ -105,40 +105,50 @@ class TaskRVAdapter(private val questionList: ArrayList<MissionItem>):
         val binding = holder.binding
 
         var textColorRes = com.example.areumdap.R.color.black
-        var iconRes = com.example.areumdap.R.drawable.ic_reflection // 기본 아이콘
+        var iconRes = com.example.areumdap.R.drawable.ic_reflection
+        var tagName = "기타"
 
         when (tag) {
             "CAREER" -> {
                 textColorRes = com.example.areumdap.R.color.career2
                 iconRes = com.example.areumdap.R.drawable.ic_career
+                tagName = "진로"
             }
             "RELATIONSHIP", "RELATION" -> {
                 textColorRes = com.example.areumdap.R.color.relationship2
                 iconRes = com.example.areumdap.R.drawable.ic_relationship
+                tagName = "관계"
             }
             "REFLECTION", "SELF_REFLECTION" -> {
                 textColorRes = com.example.areumdap.R.color.reflection2
                 iconRes = com.example.areumdap.R.drawable.ic_reflection
+                tagName = "자기성찰"
             }
             "EMOTION" -> {
                 textColorRes = com.example.areumdap.R.color.emotion2
                 iconRes = com.example.areumdap.R.drawable.ic_emotion
+                tagName = "감정"
             }
             "GROWTH" -> {
                 textColorRes = com.example.areumdap.R.color.growth2
                 iconRes = com.example.areumdap.R.drawable.ic_growth
+                tagName = "성장"
             }
             "ETC", "OTHER", "OTHERS", "ELSE" -> {
                 textColorRes = com.example.areumdap.R.color.etc2
                 iconRes = com.example.areumdap.R.drawable.ic_etc
+                tagName = "기타"
             }
             else -> {
                 textColorRes = com.example.areumdap.R.color.etc2
                 iconRes = com.example.areumdap.R.drawable.ic_etc
+                tagName = "기타"
             }
         }
 
-
+        // 텍스트 설정 (태그 이름)
+        binding.itemArchiveTaskTv.text = tagName
+        
         // 텍스트 색상 적용
         val textColor = androidx.core.content.ContextCompat.getColor(context, textColorRes)
         binding.itemArchiveTaskTv.setTextColor(textColor)

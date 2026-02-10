@@ -14,6 +14,13 @@ import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.data.repository.CharacterViewModelFactory
 import com.example.areumdap.databinding.FragmentCharacterXpBinding
 import kotlin.getValue
+import com.example.areumdap.UI.auth.LoadingDialogFragment
+import androidx.fragment.app.DialogFragment
+import android.graphics.drawable.Drawable
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 
 class CharacterXpFragment : Fragment() {
     lateinit var binding : FragmentCharacterXpBinding
@@ -36,6 +43,9 @@ class CharacterXpFragment : Fragment() {
 
         (activity as? MainActivity)?.setBottomNavVisibility(true)
 
+        val loadingDialog = LoadingDialogFragment()
+        loadingDialog.show(parentFragmentManager, "loading_dialog")
+
         viewModel.fetchCharacterLevel()
 
         viewModel.characterLevel.observe(viewLifecycleOwner){ data ->
@@ -52,6 +62,28 @@ class CharacterXpFragment : Fragment() {
                 binding.characterXpIv.visibility = View.VISIBLE
                 Glide.with(this)
                     .load(it.imageUrl)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            (parentFragmentManager.findFragmentByTag("loading_dialog") as? DialogFragment)?.dismiss()
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            resource: Drawable,
+                            model: Any,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            (parentFragmentManager.findFragmentByTag("loading_dialog") as? DialogFragment)?.dismiss()
+                            return false
+                        }
+                    })
                     .error(R.drawable.ic_character)
                     .into(binding.characterXpIv)
             }
@@ -65,7 +97,8 @@ class CharacterXpFragment : Fragment() {
         
         // 에러 메시지 관찰
         viewModel.errorMessage.observe(viewLifecycleOwner) { msg ->
-            msg?.let { 
+            msg?.let {
+                (parentFragmentManager.findFragmentByTag("loading_dialog") as? DialogFragment)?.dismiss()
                  android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_SHORT).show()
                  Log.e("CharacterXpFragment", "Error occurred: $it")
             }

@@ -28,6 +28,18 @@ class ArchiveFragment : Fragment(){
             tab.text = information[position]
         }.attach()
 
+        // 계절 테마 적용
+        val prefs = requireContext().getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        val season = prefs.getString("SEASON", "SPRING")
+        val indicatorColor = when (season) {
+            "SPRING" -> com.example.areumdap.R.color.pink2
+            "SUMMER" -> com.example.areumdap.R.color.green2
+            "FALL" -> com.example.areumdap.R.color.yellow2
+            "WINTER" -> com.example.areumdap.R.color.blue2
+            else -> com.example.areumdap.R.color.pink2
+        }
+        binding.archiveTb.setSelectedTabIndicatorColor(androidx.core.content.ContextCompat.getColor(requireContext(), indicatorColor))
+
         return binding.root
     }
 }
