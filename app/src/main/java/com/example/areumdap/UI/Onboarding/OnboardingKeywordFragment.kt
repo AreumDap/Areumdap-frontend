@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -123,14 +124,23 @@ class OnboardingKeywordFragment : Fragment(){
             // 초기 상태: 미선택 (흰색 배경 + 테두리)
             applyUnselectedStyle()
 
-            setOnCheckedChangeListener { _, isChecked ->
+            setOnCheckedChangeListener { chip, isChecked ->
                 if (isChecked) {
-                    applySelectedStyle()
+                    val success = viewModel.toggleKeyword(keyword)
+                    if (success) {
+                        applySelectedStyle()
+                    } else {
+                        // 3개 초과 → 선택 되돌리기 + 토스트
+                        chip.isChecked = false
+                        Toast.makeText(requireContext(), "키워드는 3개까지만 선택 가능합니다", Toast.LENGTH_SHORT).show()
+                        return@setOnCheckedChangeListener
+                    }
                 } else {
+                    viewModel.toggleKeyword(keyword)
                     applyUnselectedStyle()
                 }
 
-                handleKeywordSelection(keyword, isChecked)
+                updateButtonState()
             }
 
             if (viewModel.selectedKeywords.value?.contains(keyword) == true) {
@@ -157,11 +167,6 @@ class OnboardingKeywordFragment : Fragment(){
         chipStrokeWidth = 1f * resources.displayMetrics.density
     }
 
-
-    private fun handleKeywordSelection(keyword: String, isChecked: Boolean) {
-        viewModel.toggleKeyword(keyword)
-        updateButtonState()
-    }
 
     // 최소 1개 이상의 키워드가 선택되어야 버튼 활성화
     private fun updateButtonState() {

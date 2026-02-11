@@ -29,16 +29,27 @@ class OnboardingViewModel : ViewModel() {
     // 4단계: 닉네임
     val nickname = MutableLiveData<String>("")
 
-    fun toggleKeyword(keyword: String) {
+    companion object {
+        const val MAX_KEYWORD_COUNT = 3
+    }
+
+    /**
+     * @return true: 토글 성공, false: 3개 초과로 추가 실패
+     */
+    fun toggleKeyword(keyword: String): Boolean {
         val current = selectedKeywords.value ?: mutableListOf()
         if (current.contains(keyword)) {
             current.remove(keyword)
         } else {
+            if (current.size >= MAX_KEYWORD_COUNT) {
+                return false // 3개 초과 선택 불가
+            }
             current.add(keyword)
         }
         selectedKeywords.value = current
 
         // 키워드가 하나라도 있으면 버튼 활성화
         isKeywordSelected.value = current.isNotEmpty()
+        return true
     }
 }
