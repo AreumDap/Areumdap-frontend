@@ -178,39 +178,48 @@
 
                 </LinearLayout>
 
-                <LinearLayout
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
 
                     <ImageView
+                        android:id="@+id/ic_coner_top"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp"
                         android:paddingStart="10dp"
                         android:src="@drawable/ic_coner_pink"
-                        app:tint="?attr/colorPrimary"/>
+                        app:tint="?attr/colorPrimary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
 
                     <TextView
                         android:id="@+id/report_summary_tv"
                         style="@style/TA_Body3"
-                        android:layout_width="300dp"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
                         android:paddingVertical="6dp"
                         android:gravity="center"
-                        android:text="오늘은 이러이러한 대화를 나눴어요.\n이러이러한 고민을 나눴고,\n이러이러한 이야기를 이야기해줬어요." />
+                        android:text="오늘은 이러이러한 대화를 나눴어요.\n이러이러한 고민을 나눴고,\n이러이러한 이야기를 이야기해줬어요."
+                        app:layout_constraintStart_toEndOf="@id/ic_coner_top"
+                        app:layout_constraintEnd_toStartOf="@id/ic_coner_bottom"
+                        app:layout_constraintTop_toBottomOf="@id/ic_coner_top"
+                        app:layout_constraintBottom_toTopOf="@id/ic_coner_bottom"/>
 
                     <ImageView
+                        android:id="@+id/ic_coner_bottom"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
                         android:paddingVertical="10dp"
                         android:paddingStart="10dp"
                         android:rotation="180"
                         android:src="@drawable/ic_coner_pink"
-                        app:tint="?attr/colorPrimary"/>
-                </LinearLayout>
+                        app:tint="?attr/colorPrimary"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                 <Space
                     android:layout_width="1dp"
@@ -270,23 +279,13 @@
                     android:textColor="@color/black"
                     android:layout_margin="20dp"/>
 
-                <HorizontalScrollView
-                    android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/report_task_rv"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:nestedScrollingEnabled="false"
                     android:overScrollMode="never"
-                    android:scrollbars="none">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/report_task_rv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:overScrollMode="never"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/item_report_task"/>
-
-                </HorizontalScrollView>
+                    tools:listitem="@layout/item_report_task"/>
             </LinearLayout>
 
         </LinearLayout>
