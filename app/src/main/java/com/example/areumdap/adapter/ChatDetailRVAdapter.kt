@@ -32,12 +32,12 @@ class ChatDetailRVAdapter : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DI
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = getItem(position)
 
-        val prev = if(position >0) getItem(position -1) else null
-        val showProfile = prev?.sender != msg.sender
+        val next = if (position < itemCount - 1) getItem(position + 1) else null
+        val isLastOfBlock = next?.sender != msg.sender   // 다음 sender가 다르면 지금이 블록의 마지막
 
         when (holder) {
             is MeVH -> holder.bind(msg)
-            is AiVH -> holder.bind(msg, showProfile)
+            is AiVH -> holder.bind(msg, showProfile = isLastOfBlock)
         }
     }
 

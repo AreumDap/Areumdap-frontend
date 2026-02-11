@@ -1,6 +1,6 @@
 package com.example.areumdap.data.repository
 
-import com.example.areumdap.Data.api.ChatbotApiService
+import com.example.areumdap.data.api.ChatbotApiService
 
 
 

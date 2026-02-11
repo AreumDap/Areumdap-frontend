@@ -1,6 +1,5 @@
-package com.example.areumdap.Data.api
+package com.example.areumdap.data.api
 
-import com.example.areumdap.data.api.ApiResponse
 import com.example.areumdap.data.model.ChatReportDataDto
 import com.example.areumdap.data.model.ChatThreadHistoriesDto
 import com.example.areumdap.data.model.ChatThreadsData

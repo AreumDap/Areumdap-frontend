@@ -188,6 +188,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
             override fun onConfirm() {
                 view?.post {
+                    val endedThreadId = vm.getLastEndedThreadId() ?: vm.getThreadId()
+                    vm.resetChatSession(endedThreadId)
                     val summaryFragment = ConversationSummaryFragment().apply {
                         arguments = Bundle().apply {
                             val tag = vm.getLastRecommendTag()

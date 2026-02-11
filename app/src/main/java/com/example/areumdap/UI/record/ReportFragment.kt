@@ -11,11 +11,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.areumdap.Data.api.ChatReportApiService
-import com.example.areumdap.Data.repository.ChatReportRepositoryImpl
+import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.repository.ChatReportRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.adapter.DiscoveryRVAdapter
 import com.example.areumdap.adapter.ReportTaskRVAdapter
+import com.example.areumdap.R
 import com.example.areumdap.databinding.FragmentReportBinding
 import kotlinx.coroutines.launch
 
@@ -39,11 +40,8 @@ class ReportFragment: Fragment() {
             .filter { it.isNotBlank() }
             .take(5)
             .forEach { tag ->
-                val chip = com.google.android.material.chip.Chip(requireContext()).apply {
-                    text = "#$tag"
-                    isClickable = false
-                    isCheckable = false
-                }
+                val chip = layoutInflater.inflate(R.layout.item_hashtag, binding.hashtagGroup, false) as com.google.android.material.chip.Chip
+                chip.text = tag
                 binding.hashtagGroup.addView(chip)
             }
     }

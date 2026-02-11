@@ -2,7 +2,7 @@ package com.example.areumdap.UI.record
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.areumdap.Data.repository.ChatReportRepository
+import com.example.areumdap.data.repository.ChatReportRepository
 
 class ChatThreadViewModelFactory(
     private val repo : ChatReportRepository

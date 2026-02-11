@@ -1,4 +1,4 @@
-package com.example.areumdap.Data.repository
+package com.example.areumdap.data.repository
 
 
 import com.example.areumdap.data.api.ApiResponse

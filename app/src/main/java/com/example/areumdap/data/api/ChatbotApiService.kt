@@ -1,6 +1,5 @@
-package com.example.areumdap.Data.api
+package com.example.areumdap.data.api
 
-import com.example.areumdap.data.api.ApiResponse
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.ChatSummaryRequest
 import com.example.areumdap.data.model.GetChatbotRecommendsResponse
@@ -42,7 +41,7 @@ interface ChatbotApiService {
         @Body body: ChatSummaryRequest
     ) : ApiResponse<ChatSummaryData>
 
-    @POST("api/chatbot/report")
+    @POST("api/chat/report")
     suspend fun createReport(
         @Body req: ReportRequest
     ) : Response<ReportResponse>

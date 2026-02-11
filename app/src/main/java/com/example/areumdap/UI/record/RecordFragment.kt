@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.areumdap.Data.api.ChatReportApiService
-import com.example.areumdap.Data.repository.ChatReportRepository
-import com.example.areumdap.Data.repository.ChatReportRepositoryImpl
+import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.repository.ChatReportRepository
+import com.example.areumdap.data.repository.ChatReportRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.adapter.RecordRVAdapter
 import com.example.areumdap.databinding.FragmentRecordBinding
@@ -30,6 +32,19 @@ class RecordFragment : Fragment() {
     private lateinit var adapter: RecordRVAdapter
 
     private lateinit var viewModel : ChatThreadViewModel
+    private var allThreads: List<UserChatThread> = emptyList()
+    private var currentFilter: String = "최신순"
+    private val filterOptions = listOf(
+        "최신순",
+        "오래된순",
+        "즐겨찾기",
+        "진로",
+        "관계",
+        "자기성찰",
+        "감정",
+        "성장",
+        "기타"
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,23 +65,60 @@ class RecordFragment : Fragment() {
                     .replace(R.id.main_frm, ChatDetailFragment.newInstance(item.id))
                     .addToBackStack(null)
                     .commit()
+            },
+            onStarClick = { item,_ ->
+                viewModel.toggleFavorite(item.id)
             }
         )
         binding.recCardRv.apply{
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@RecordFragment.adapter
         }
-        //ViewModel 만들기(Repo/Impl 연결)
+        //ViewModel (Repo/Impl 연결)
         val api = RetrofitClient.create(ChatReportApiService::class.java)
         val repo: ChatReportRepository = ChatReportRepositoryImpl(api)
         viewModel = ChatThreadViewModel(repo)
+
+
+        val spinnerAdapter = object : ArrayAdapter<String>(
+            requireContext(),
+            R.layout.item_spinner_text,
+            R.id.tv_spinner_item,
+            filterOptions
+        ) {
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val v = convertView ?: LayoutInflater.from(context)
+                    .inflate(R.layout.item_spinner_dropdown, parent, false)
+                val tv = v.findViewById<android.widget.TextView>(R.id.tv_dropdown_item)
+                tv.text = getItem(position)
+                return v
+            }
+        }
+        binding.recordSp.adapter = spinnerAdapter
+        binding.recordSp.setSelection(filterOptions.indexOf(currentFilter))
+
+        binding.recordSp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                currentFilter = filterOptions[position]
+                adapter.submitList(applyFilter(allThreads, currentFilter).map{it.toRecordItem()})
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?)  = Unit
+        }
+
         viewModel.loadThreads()
 
         viewLifecycleOwner.lifecycleScope.launch{
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 launch{
                     viewModel.threads.collect { threads ->
-                        adapter.submitList(threads.map{it.toRecordItem()})
+                        allThreads = threads
+                        adapter.submitList(applyFilter(allThreads, currentFilter).map { it.toRecordItem() })
 
                     }
                 }
@@ -86,6 +138,24 @@ class RecordFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+private fun applyFilter(
+    threads: List<UserChatThread>,
+    filter: String
+): List<UserChatThread> {
+    return when (filter) {
+        "최신순" -> threads.sortedByDescending { it.createdAt }
+        "오래된순" -> threads.sortedBy { it.createdAt }
+        "즐겨찾기" -> threads.filter { it.favorite }.sortedByDescending { it.createdAt }
+        "진로" -> threads.filter { it.tag.equals("CAREER", ignoreCase = true) }
+        "관계" -> threads.filter { it.tag.equals("RELATIONSHIP", ignoreCase = true) || it.tag.equals("RELATION", ignoreCase = true) }
+        "자기성찰" -> threads.filter { it.tag.equals("SELF_REFLECTION", ignoreCase = true) || it.tag.equals("REFLECTION", ignoreCase = true) }
+        "감정" -> threads.filter { it.tag.equals("EMOTION", ignoreCase = true) }
+        "성장" -> threads.filter { it.tag.equals("GROWTH", ignoreCase = true) }
+        "기타" -> threads.filter { it.tag.equals("ETC", ignoreCase = true) }
+        else -> threads
     }
 }
 private fun UserChatThread.toRecordItem(): RecordItem {
@@ -141,5 +211,6 @@ private fun String.toKoreanDate(): String {
         this
     }
 }
+
 
 
