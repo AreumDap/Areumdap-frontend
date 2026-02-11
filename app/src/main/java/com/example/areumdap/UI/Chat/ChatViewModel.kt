@@ -14,6 +14,7 @@ import com.example.areumdap.data.repository.ChatRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.source.RetrofitClient.chatbotApiService
 import com.example.areumdap.data.source.TokenManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -90,6 +91,7 @@ class ChatViewModel(
         }
     }
 
+    // 메시지 전송
     fun send(text: String) {
         val trimmed = text.trim()
         if (trimmed.isBlank()) return
@@ -120,13 +122,7 @@ class ChatViewModel(
             )
 
             val typingId = "typing_$now"
-            _messages.value = _messages.value + ChatMessage(
-                id = typingId,
-                sender = Sender.AI,
-                text = "…",
-                time = System.currentTimeMillis(),
-                status = Status.TYPING
-            )
+            showTyping(typingId)
 
             // 다음 단계에서 /api/chatbot으로 교체
             try {
@@ -141,21 +137,31 @@ class ChatViewModel(
                 val parts = splitToBubbles(reply.content)
 
                 val base = System.currentTimeMillis()
-                val aiMsgs = parts.mapIndexed { i, part ->
-                    ChatMessage(
-                        id = "ai_${base}_$i",
-                        sender = Sender.AI,
-                        text = part,
-                        time = base + i,
-                        status = Status.SENT,
-                        chatHistoryId = if (i == parts.lastIndex) reply.chatHistoryId else null
-                    )
+                for ((i, part) in parts.withIndex()) {
+                    val isLast = i == parts.lastIndex
+
+                    _messages.value = _messages.value.filterNot { it.id == typingId }
+
+                    val aiMsgs = ChatMessage(
+                            id = "ai_${base}_$i",
+                            sender = Sender.AI,
+                            text = part,
+                            time = base + i,
+                            status = Status.SENT,
+                            chatHistoryId = if (i == parts.lastIndex) reply.chatHistoryId else null
+                        )
+                    _messages.value = _messages.value+aiMsgs
+                    if (!isLast) {
+                        showTyping(typingId)
+                        delay(1000L)
+                    }
+
                 }
 
                 _messages.value = _messages.value
-                    .filterNot { it.id == typingId } + aiMsgs
+                    .filterNot { it.id == typingId }
 
-                val lastAiId = aiMsgs.lastOrNull()?.id
+                val lastAiId = "ai_${base}_${parts.lastIndex}"
                 if (reply.chatHistoryId == null && lastAiId != null) {
                     attachChatHistoryId(currentThreadId, lastAiId, reply.content)
                 }
@@ -190,6 +196,8 @@ class ChatViewModel(
             .map { it.trim() }
             .filter { it.isNotBlank() }
     }
+
+
     private suspend fun startChatInternal(content: String, userQuestionId: Long?): Boolean {
         return try {
             Log.d("ChatViewModel", "startChatInternal request: content='$content', userQuestionId=$userQuestionId")
@@ -231,6 +239,7 @@ class ChatViewModel(
         "안녕하세요, {nick}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요."
     )
 
+    // 대화 바로 시작할 때 자동으로 나오는 질문
     fun seedPrefillQuestion(question: String, nickname: String? = null) {
         if (_messages.value.isNotEmpty()) return
 
@@ -295,6 +304,19 @@ class ChatViewModel(
             time = System.currentTimeMillis(),
             status = Status.FAILED
         )
+    }
+
+    private fun showTyping(typingId: String) {
+        val typing = ChatMessage(
+            id = typingId,
+            sender = Sender.AI,
+            text = "…",
+            time = System.currentTimeMillis(),
+            status = Status.TYPING
+        )
+        _messages.value = _messages.value
+            .filterNot { it.id == typingId }
+            .plus(typing)
     }
 
     fun fetchSummary(accessToken : String, threadId:Long){

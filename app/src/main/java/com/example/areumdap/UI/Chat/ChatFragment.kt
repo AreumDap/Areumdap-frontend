@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.areumdap.R
 import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.UI.auth.PopUpDialogFragment
@@ -79,6 +80,9 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         }
 
 
+        binding.chatRv.layoutManager = LinearLayoutManager(requireContext()).apply {
+            stackFromEnd = true
+        }
         binding.chatRv.adapter = adapter
         binding.chatRv.itemAnimator = null
 
@@ -93,7 +97,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                     vm.message.collect { list ->
                         adapter.submitList(list) {
                             if (adapter.itemCount > 0) {
-                                binding.chatRv.scrollToPosition(adapter.itemCount - 1)
+                                binding.chatRv.post{
+                                    binding.chatRv.scrollToPosition(list.lastIndex)
+                                }
+
                             }
                         }
                     }
