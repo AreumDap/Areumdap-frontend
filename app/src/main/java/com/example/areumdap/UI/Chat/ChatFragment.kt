@@ -231,6 +231,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                         .commit()
                 }
             }
+
+            override fun onCancel() {
+                vm.resumeChatSession()
+            }
         })
 
         dialog.show(parentFragmentManager, "chat_end_dialog")
