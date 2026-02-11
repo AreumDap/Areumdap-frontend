@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.net.Uri
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -170,6 +171,11 @@ class SettingFragment : Fragment() {
 
     // ============ 클릭 리스너 설정 ============
 
+    private fun openUrl(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
+    }
+
     private fun setupClickListeners() {
         binding.layoutNotificationTime.setOnClickListener {
             if (isNotificationEnabled) showTimePickerDialog()
@@ -178,9 +184,9 @@ class SettingFragment : Fragment() {
         binding.layoutName.setOnClickListener { showNicknameDialog() }
         binding.layoutBirthday.setOnClickListener { showDatePickerDialog() }
 
-        binding.layoutServiceIntro.setOnClickListener { /* TODO */ }
-        binding.layoutPrivacyPolicy.setOnClickListener { /* TODO */ }
-        binding.layoutTerms.setOnClickListener { /* TODO */ }
+        binding.layoutServiceIntro.setOnClickListener { openUrl("https://areumdap.notion.site/1f08d65f6acf8009952ed1e1a76b0b3a") }
+        binding.layoutPrivacyPolicy.setOnClickListener { openUrl("https://areumdap.notion.site/1f08d65f6acf807c942ef5bf97c753c2") }
+        binding.layoutTerms.setOnClickListener { openUrl("https://areumdap.notion.site/1f08d65f6acf8085b0e5c00b9d6d8cd2") }
 
         binding.layoutLogout.setOnClickListener { showLogoutConfirmDialog() }
         binding.layoutDeleteAccount.setOnClickListener { showDeleteAccountConfirmDialog() }

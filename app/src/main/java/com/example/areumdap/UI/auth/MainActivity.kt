@@ -32,38 +32,39 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // =========================================================
+        // [추가된 부분] 로그인 화면에서 전달된 환영 메시지 확인 및 표시
+        // =========================================================
+        val toastMessage = intent.getStringExtra("TOAST_MESSAGE")
+        if (toastMessage != null) {
+            val toast = ToastDialogFragment(toastMessage, R.drawable.ic_success)
+            toast.show(supportFragmentManager, "WelcomeToast")
+        }
+
         initBottomNavigation()
         checkFcmToken()
         askNotificationPermission()
     }
 
-    // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
         if (isGranted) {
             // FCM SDK (and your app) can post notifications.
         } else {
-            // TODO: Inform user that that your app will not show notifications.
+            // TODO: Inform user
         }
     }
 
     private fun askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
                 PackageManager.PERMISSION_GRANTED
             ) {
-                // FCM SDK (and your app) can post notifications.
+                // Granted
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: Display an educational UI explaining to the user the features that will be enabled
-                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
-                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
-                //       If the user selects "No thanks," allow the user to continue without notifications.
-                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             } else {
-                // Directly ask for the permission
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
@@ -76,11 +77,9 @@ class MainActivity : AppCompatActivity() {
                 return@addOnCompleteListener
             }
 
-            // Get new FCM registration token
             val token = task.result
             Log.d("MainActivity", "FCM Token: $token")
 
-            // 서버에 토큰 전송
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     UserRepository.updateFcmToken(token)
@@ -133,9 +132,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             false
-            }
-            binding.mainBnv.selectedItemId = R.id.homeFragment
         }
+        binding.mainBnv.selectedItemId = R.id.homeFragment
+    }
 
     private fun applySeasonTheme() {
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
@@ -147,13 +146,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * 툴바 설정 함수
-     * @param visible 툴바 노출 여부
-     * @param title 툴바 타이틀 (기본값: 빈 문자열)
-     * @param showBackButton 뒤로가기 버튼 노출 여부 (기본값: false)
-     * @param subText 서브 텍스트 (기본값: null, null이면 숨김)
-     */
     fun setToolbar(
         visible: Boolean,
         title: String = "",
@@ -171,7 +163,6 @@ class MainActivity : AppCompatActivity() {
             binding.characterToolBar.tvSub.visibility = if (subText != null) View.VISIBLE else View.GONE
             binding.characterToolBar.tvSub.text = subText ?: ""
 
-            // 뒤로가기 버튼 클릭 리스너
             binding.characterToolBar.ivBack.setOnClickListener {
                 onBackClick?.invoke() ?: onBackPressedDispatcher.onBackPressed()
             }
