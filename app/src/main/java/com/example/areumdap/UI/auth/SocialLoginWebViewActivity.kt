@@ -8,9 +8,9 @@ import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.areumdap.R
 import com.example.areumdap.data.repository.AuthRepository
 import com.example.areumdap.data.repository.SocialAuthRepository
 import com.example.areumdap.data.repository.UserRepository
@@ -55,12 +55,29 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
         Log.d(tag, "==================================================")
 
         if (loginUrl.isEmpty() || (loginType != TYPE_KAKAO && loginType != TYPE_NAVER)) {
-            Toast.makeText(this, "로그인 정보가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            showCustomToast("로그인 정보가 올바르지 않습니다.", isSuccess = false)
             finish()
             return
         }
 
         setupWebView(loginUrl)
+    }
+
+    // [수정됨] 커스텀 토스트 표시 함수 (ToastDialogFragment 사용)
+    private fun showCustomToast(message: String, isSuccess: Boolean = true) {
+        // 액티비티가 종료된 상태라면 실행하지 않음
+        if (isFinishing || isDestroyed) return
+
+        // 성공/실패에 따라 아이콘 변경 (프로젝트 리소스 이름에 맞춰주세요)
+        val iconRes = if (isSuccess) {
+            R.drawable.ic_success
+        } else {
+            R.drawable.ic_failure // 또는 ic_error
+        }
+
+        val toast = ToastDialogFragment(message, iconRes)
+        // Activity에서는 supportFragmentManager를 사용
+        toast.show(supportFragmentManager, "CustomToast")
     }
 
     private fun setupWebView(loginUrl: String) {
@@ -184,7 +201,7 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
         val uri = Uri.parse(url)
         val errorDescription = uri.getQueryParameter("error_description") ?: "로그인이 취소되었습니다."
         Log.e(tag, "❌ 로그인 에러: $errorDescription")
-        Toast.makeText(this, errorDescription, Toast.LENGTH_SHORT).show()
+        showCustomToast(errorDescription, isSuccess = false)
         finish()
     }
 
@@ -205,21 +222,14 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 Log.d(tag, "   userId: ${response?.userId}")
                 Log.d(tag, "   name: ${response?.name}")
                 Log.d(tag, "   email: ${response?.email}")
-                Log.d(tag, "   accessToken: ${response?.accessToken?.take(30)}...")
-                Log.d(tag, "   refreshToken: ${response?.refreshToken?.take(30)}...")
 
                 // 토큰 저장 확인
                 val savedAccessToken = TokenManager.getAccessToken()
                 val savedUserId = TokenManager.getUserId()
                 Log.d(tag, "3️⃣ [토큰 저장 확인]")
-                Log.d(tag, "   저장된 accessToken: ${savedAccessToken?.take(30)}...")
-                Log.d(tag, "   저장된 userId: $savedUserId")
 
-                Toast.makeText(
-                    this@SocialLoginWebViewActivity,
-                    "${response?.name ?: "회원"}님 환영합니다!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                // 성공 토스트
+                showCustomToast("${response?.name ?: "회원"}님 환영합니다!", isSuccess = true)
 
                 saveLoginState()
 
@@ -236,14 +246,9 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 val error = result.exceptionOrNull()
                 Log.e(tag, "❌ [카카오 로그인] API 실패!")
                 Log.e(tag, "   에러 메시지: ${error?.message}")
-                Log.e(tag, "   에러 타입: ${error?.javaClass?.simpleName}")
                 Log.d(tag, "==================================================")
 
-                Toast.makeText(
-                    this@SocialLoginWebViewActivity,
-                    error?.message ?: "카카오 로그인에 실패했습니다.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showCustomToast(error?.message ?: "카카오 로그인에 실패했습니다.", isSuccess = false)
                 finish()
             }
         }
@@ -267,21 +272,14 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 Log.d(tag, "   userId: ${response?.userId}")
                 Log.d(tag, "   name: ${response?.name}")
                 Log.d(tag, "   email: ${response?.email}")
-                Log.d(tag, "   accessToken: ${response?.accessToken?.take(30)}...")
-                Log.d(tag, "   refreshToken: ${response?.refreshToken?.take(30)}...")
 
                 // 토큰 저장 확인
                 val savedAccessToken = TokenManager.getAccessToken()
                 val savedUserId = TokenManager.getUserId()
                 Log.d(tag, "3️⃣ [토큰 저장 확인]")
-                Log.d(tag, "   저장된 accessToken: ${savedAccessToken?.take(30)}...")
-                Log.d(tag, "   저장된 userId: $savedUserId")
 
-                Toast.makeText(
-                    this@SocialLoginWebViewActivity,
-                    "${response?.name ?: "회원"}님 환영합니다!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                // 성공 토스트
+                showCustomToast("${response?.name ?: "회원"}님 환영합니다!", isSuccess = true)
 
                 saveLoginState()
 
@@ -298,14 +296,9 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 val error = result.exceptionOrNull()
                 Log.e(tag, "❌ [네이버 로그인] API 실패!")
                 Log.e(tag, "   에러 메시지: ${error?.message}")
-                Log.e(tag, "   에러 타입: ${error?.javaClass?.simpleName}")
                 Log.d(tag, "==================================================")
 
-                Toast.makeText(
-                    this@SocialLoginWebViewActivity,
-                    error?.message ?: "네이버 로그인에 실패했습니다.",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showCustomToast(error?.message ?: "네이버 로그인에 실패했습니다.", isSuccess = false)
                 finish()
             }
         }
