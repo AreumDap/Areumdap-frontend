@@ -17,6 +17,7 @@ import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.adapter.DiscoveryRVAdapter
 import com.example.areumdap.adapter.ReportTaskRVAdapter
 import com.example.areumdap.R
+import com.example.areumdap.UI.auth.ToastDialogFragment
 import com.example.areumdap.databinding.FragmentReportBinding
 import kotlinx.coroutines.launch
 
@@ -31,6 +32,10 @@ class ReportFragment: Fragment() {
         val api = RetrofitClient.create(ChatReportApiService::class.java)
         val repo = ChatReportRepositoryImpl(api)
         ChatThreadViewModelFactory(repo)
+    }
+    private fun showCustomToast(message: String, iconResId:Int) {
+        val toast = ToastDialogFragment(message, iconResId)
+        toast.show(requireActivity().supportFragmentManager, "custom_toast")
     }
 
     private fun renderHashtags(tags: List<String>) {
@@ -98,6 +103,8 @@ class ReportFragment: Fragment() {
                             is ReportUiState.Error -> {
                                 Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT)
                                     .show()
+                                showCustomToast(state.message, R.drawable.ic_failure)
+
                             }
 
                             is ReportUiState.Success -> {
