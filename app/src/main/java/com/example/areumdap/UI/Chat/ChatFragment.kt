@@ -18,6 +18,8 @@ import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.UI.auth.PopUpDialogFragment
 import com.example.areumdap.adapter.ChatMessageRVAdapter
 import com.example.areumdap.data.model.ChatMessage
+import com.example.areumdap.data.repository.UserRepository
+import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.databinding.FragmentChatBinding
 import com.example.areumdap.databinding.ItemChatMenuBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -51,17 +53,29 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         if (!prefillTag.isNullOrBlank()) vm.setRecommendTag(prefillTag)
 
         if (!prefill.isNullOrBlank()) {
-            if (prefillQuestionId != -1L) vm.seedPrefillQuestion(prefill)
-            else vm.seedQuestionOnly(prefill)
-            arguments?.remove("prefill_question")
+            if (prefillQuestionId != -1L) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val profileNick = runCatching { UserRepository.getProfile() }
+                        .getOrNull()
+                        ?.getOrNull()
+                        ?.nickname
+                    if (TokenManager.getUserNickname().isNullOrBlank()) {
+                        if (!profileNick.isNullOrBlank()) {
+                            TokenManager.saveNickname(profileNick)
+                        }
+                    }
+                    vm.seedPrefillQuestion(prefill, profileNick)
+                    vm.startChat(prefill, prefillQuestionId)
+                    arguments?.remove("prefill_question")
+                }
+            } else {
+                vm.seedQuestionOnly(prefill)
+                arguments?.remove("prefill_question")
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             showExitDialog()
-        }
-
-        if (!prefill.isNullOrBlank() && prefillQuestionId != -1L) {
-            vm.startChat(prefill, prefillQuestionId)
         }
 
 

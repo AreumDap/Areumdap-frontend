@@ -224,21 +224,24 @@ class ChatViewModel(
     }
 
     private val prefillBaseTemplates = listOf(
-        "안녕하세요 {name}님!\n오늘 나누고 싶은 이야기가 있으시군요.\n몇 가지 질문을 통해 함께 생각해볼게요.",
-        "반가워요 {name}님!\n오늘의 이야기를 시작해볼까요?",
-        "다시 만나서 반가워요, {name}님.\n선택하신 질문으로 대화를 시작해볼게요.",
-        "안녕하세요, {name}님.\n오늘은 이 질문을 중심으로 이야기를 시작해볼게요.",
-        "안녕하세요, {name}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요."
+        "안녕하세요 {nick}님!\n오늘 나누고 싶은 이야기가 있으시군요.\n몇 가지 질문을 통해 함께 생각해볼게요.",
+        "반가워요 {nick}님!\n오늘의 이야기를 시작해볼까요?",
+        "다시 만나서 반가워요, {nick}님.\n선택하신 질문으로 대화를 시작해볼게요.",
+        "안녕하세요, {nick}님.\n오늘은 이 질문을 중심으로 이야기를 시작해볼게요.",
+        "안녕하세요, {nick}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요."
     )
 
-    fun seedPrefillQuestion(question: String) {
+    fun seedPrefillQuestion(question: String, nickname: String? = null) {
         if (_messages.value.isNotEmpty()) return
 
         val now = System.currentTimeMillis()
-        val name = TokenManager.getUserName().orEmpty().ifBlank { "사용자" }
+        val nick = nickname
+            ?: TokenManager.getUserNickname()
+            ?: TokenManager.getUserName()
+            ?: "사용자"
 
         val baseText = prefillBaseTemplates.random()
-            .replace("{name}", name)
+            .replace("{nick}", nick)
 
         val base = ChatMessage(
             id = "ai_base_$now",

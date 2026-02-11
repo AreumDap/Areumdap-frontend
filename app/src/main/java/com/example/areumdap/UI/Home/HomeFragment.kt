@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.areumdap.data.api.ChatbotApiService
 import com.example.areumdap.data.repository.ChatbotRepository
@@ -23,6 +24,9 @@ import com.example.areumdap.UI.Chat.RecommendQuestionViewModel
 import com.example.areumdap.databinding.FragmentHomeBinding
 import com.example.areumdap.UI.auth.Category
 import com.example.areumdap.data.model.RecommendQuestion
+import com.example.areumdap.data.repository.UserRepository
+import com.example.areumdap.data.source.TokenManager
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -70,8 +74,13 @@ class HomeFragment : Fragment() {
         recommendViewModel.fetch()
 
         binding.chatStartButton.setOnClickListener {
-            chatViewModel.startChat(content = "", userQuestionId = null)
-            goToChat("", null, null)
+            viewLifecycleOwner.lifecycleScope.launch {
+                if (TokenManager.getUserNickname().isNullOrBlank()) {
+                    runCatching { UserRepository.getProfile() }
+                }
+                chatViewModel.startChat(content = "", userQuestionId = null)
+                goToChat("", null, null)
+            }
         }
     }
 
