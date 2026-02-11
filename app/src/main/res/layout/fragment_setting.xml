@@ -157,7 +157,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="이름 변경"
+                    android:text="닉네임"
                     android:textColor="#1A1A1A"
                     android:textSize="15sp" />
 

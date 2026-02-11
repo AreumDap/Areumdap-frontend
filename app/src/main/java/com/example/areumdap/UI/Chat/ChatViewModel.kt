@@ -74,6 +74,10 @@ class ChatViewModel(
         sessionEnded = false
     }
 
+    fun resumeChatSession() {
+        sessionEnded = false
+    }
+
 
 
     //    오늘의 추천 질문

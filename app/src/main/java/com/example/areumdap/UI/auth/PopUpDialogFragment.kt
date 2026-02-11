@@ -15,7 +15,8 @@ class PopUpDialogFragment : DialogFragment() {
     private var callback: MyDialogCallback? = null
 
     interface MyDialogCallback{
-        fun onConfirm()
+        fun onConfirm() {}
+        fun onCancel() {}
     }
 
     fun setCallback(callback: MyDialogCallback){
@@ -43,6 +44,7 @@ class PopUpDialogFragment : DialogFragment() {
         binding.btnRight.text = arguments?.getString("btnright") ?: "확인"
 
         binding.btnContinue.setOnClickListener {
+            callback?.onCancel()
             dismiss()
         }
 
