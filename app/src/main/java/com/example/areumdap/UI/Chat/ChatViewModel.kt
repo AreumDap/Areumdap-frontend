@@ -138,20 +138,26 @@ class ChatViewModel(
 
                 val reply = repo.ask(trimmed, currentThreadId)
 
-                val aiMessageId = "ai_${System.currentTimeMillis()}"
-                _messages.value = _messages.value
-                    .filterNot { it.id == typingId } +
-                        ChatMessage(
-                            id = aiMessageId,
-                            sender = Sender.AI,
-                            text = reply.content,
-                            time = System.currentTimeMillis(),
-                            status = Status.SENT,
-                            chatHistoryId = reply.chatHistoryId
-                        )
+                val parts = splitToBubbles(reply.content)
 
-                if (reply.chatHistoryId == null) {
-                    attachChatHistoryId(currentThreadId, aiMessageId, reply.content)
+                val base = System.currentTimeMillis()
+                val aiMsgs = parts.mapIndexed { i, part ->
+                    ChatMessage(
+                        id = "ai_${base}_$i",
+                        sender = Sender.AI,
+                        text = part,
+                        time = base + i,
+                        status = Status.SENT,
+                        chatHistoryId = if (i == parts.lastIndex) reply.chatHistoryId else null
+                    )
+                }
+
+                _messages.value = _messages.value
+                    .filterNot { it.id == typingId } + aiMsgs
+
+                val lastAiId = aiMsgs.lastOrNull()?.id
+                if (reply.chatHistoryId == null && lastAiId != null) {
+                    attachChatHistoryId(currentThreadId, lastAiId, reply.content)
                 }
 
                 if (reply.isSessionEnd) {
@@ -173,6 +179,16 @@ class ChatViewModel(
                         )
             }
         }
+    }
+
+    // 구분자 기준으로 채팅 버블 나누기
+    private fun splitToBubbles(text: String): List<String> {
+        // . ? ! 뒤에서 끊고, 공백/줄바꿈은 무시
+        val regex = Regex("(?<=[.!?])\\s+")
+        return text.trim()
+            .split(regex)
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
     }
     private suspend fun startChatInternal(content: String, userQuestionId: Long?): Boolean {
         return try {

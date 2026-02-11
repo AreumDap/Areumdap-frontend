@@ -35,8 +35,11 @@ class ChatMessageRVAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = getItem(position)
 
-        val prev = if(position >0) getItem(position -1) else null
-        val showProfile = prev?.sender != msg.sender
+        // "마지막" 판단은 다음 아이템을 봐야 함
+        val next = if (position < itemCount - 1) getItem(position + 1) else null
+
+        // AI 연속 구간의 마지막이면 true (다음이 없거나, 다음 sender가 ME면 마지막)
+        val showProfile = msg.sender == Sender.AI && (next?.sender != Sender.AI)
 
         when (holder) {
             is MeVH -> holder.bind(msg)
