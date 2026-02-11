@@ -144,8 +144,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             copyToClipboard(msg.text)
         }
 
-        // 말풍선 위에 뜨게 (원하면 위치 튜닝 가능)
-        popup.showAsDropDown(anchor, 0, -anchor.height * 2)
+        // 말풍선 위에 뜨게
+        val menuWidth = (100 * resources.displayMetrics.density).toInt()
+        val xOffset = anchor.width - menuWidth
+        popup.showAsDropDown(anchor, xOffset, -anchor.height + 130)
 
         menuPopup = popup
     }

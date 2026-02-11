@@ -2,7 +2,6 @@ package com.example.areumdap.UI.Task
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -120,13 +119,11 @@ class DataTaskFragment: DialogFragment() {
                             parentFragmentManager.popBackStack()
                         }
                     } else {
-                        Log.e("DataTaskFragment", "Failed to complete mission: ${result?.message}")
+                        // Mission completion failed
                         if (isAdded) {
                         }
                     }
                 } else if (response.code() == 409) {
-                    // 이미 완료된 경우 (토스트 없이 조용히 닫기)
-                    // Refresh trigger (to remove it from list)
                     // reward도 함께 전달하여 즉시 UI 반영
                     val resultBundle = Bundle().apply {
                         putInt("missionId", missionId)
@@ -142,12 +139,12 @@ class DataTaskFragment: DialogFragment() {
                         parentFragmentManager.popBackStack()
                     }
                 } else {
-                    Log.e("DataTaskFragment", "Failed to complete mission: ${response.code()}")
+                    // Failed to complete mission
                     if (isAdded) {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("DataTaskFragment", "Error completing mission", e)
+                // Error completing mission
                 if (isAdded) {
                 }
             }
@@ -159,7 +156,7 @@ class DataTaskFragment: DialogFragment() {
         dialog?.window?.apply {
             // 배경 투명하게 처리
             setBackgroundDrawableResource(android.R.color.transparent)
-            // 화면 전체를 팝업 창으로 설정 (이게 없으면 XML의 'parent' 기준이 틀어져서 마진이 다르게 보입니다)
+            // 화면 전체를 팝업 창으로 설정
             setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
     }
@@ -177,15 +174,15 @@ class DataTaskFragment: DialogFragment() {
                         
                         // API에서 reward가 0이 아니면 업데이트
                         if (missionDetail.rewardXp > 0) {
-                            currentReward = missionDetail.rewardXp // Update class property
+                            currentReward = missionDetail.rewardXp
                             binding.dataTaskCard.xpTv.text = "${missionDetail.rewardXp} XP"
-                            Log.d("DEBUG_XP", "Updated currentReward from API: $currentReward")
+
                         }
                         
                         // 태그에 따른 스타일 적용
                         applyTagStyle(missionDetail.tag)
                         
-                        // Tip 및 D-day 가시성 처리 (초기 설정은 onViewCreated에서 했지만, 내용 채우기 위해 유지)
+                        // Tip 및 D-day 가시성 처리
                         if (showTip) {
                              // 가이드 텍스트 설정
                             missionDetail.guide?.let { guideText ->
@@ -225,22 +222,22 @@ class DataTaskFragment: DialogFragment() {
         val color1 = ContextCompat.getColor(context, color1Res)
         val color2 = ContextCompat.getColor(context, color2Res)
 
-        // 1. 버튼 배경색 변경 (color2)
+        // 버튼 배경색 변경
         binding.taskCompleteBtn.backgroundTintList = ColorStateList.valueOf(color2)
 
-        // 2. 포함된 카드 뷰 스타일 변경
+        // 포함된 카드 뷰 스타일 변경
         with(binding.dataTaskCard) {
-            // 카드 테두리 및 그림자 (color1)
+            // 카드 테두리 및 그림자
             summaryCv.strokeColor = color1
             summaryCv.setOutlineAmbientShadowColor(color1)
             summaryCv.setOutlineSpotShadowColor(color1)
 
-            // 카테고리 텍스트 및 아이콘 (color2)
+            // 카테고리 텍스트 및 아이콘
             sumCatTv.text = catName
             sumCatTv.setTextColor(color2)
             sumCatIv.setImageResource(iconRes)
             
-            // 듀데이 텍스트 (color2) - item_task_card.xml 에 있음
+            // 듀데이 텍스트
             sumDuedayTv.setTextColor(color2)
         }
     }

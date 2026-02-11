@@ -15,6 +15,7 @@ import com.example.areumdap.UI.Character.CharacterFragment
 import com.example.areumdap.UI.Home.HomeFragment
 import com.example.areumdap.adapter.TaskGuideVPAdapter
 import com.example.areumdap.databinding.FragmentTaskGuideBinding
+import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.UI.auth.LoadingDialogFragment
 
 
@@ -84,16 +85,10 @@ class TaskGuideFragment: Fragment() {
         }
 
         binding.btnTaskPage.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, CharacterFragment())
-                .addToBackStack(null)
-                .commit()
+            (requireActivity() as MainActivity).goToCharacterFragment()
         }
         binding.btnHome.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.main_frm, HomeFragment())
-                .addToBackStack(null)
-                .commit()
+            (requireActivity() as MainActivity).goToHome()
         }
         return binding.root
     }

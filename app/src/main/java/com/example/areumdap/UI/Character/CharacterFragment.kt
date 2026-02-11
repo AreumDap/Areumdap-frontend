@@ -20,7 +20,7 @@ class CharacterFragment : Fragment() {
     private var _binding: FragmentCharacterBinding? = null
     private val binding get() = _binding!!
 
-    // 뷰모델 초기화 (Activity Scope로 변경)
+    // 뷰모델 초기화
     private val viewModel: CharacterViewModel by activityViewModels {
         CharacterViewModelFactory(RetrofitClient.service)
     }

@@ -149,12 +149,12 @@ private fun applyFilter(
         "최신순" -> threads.sortedByDescending { it.createdAt }
         "오래된순" -> threads.sortedBy { it.createdAt }
         "즐겨찾기" -> threads.filter { it.favorite }.sortedByDescending { it.createdAt }
-        "진로" -> threads.filter { it.tag.equals("CAREER", ignoreCase = true) }
-        "관계" -> threads.filter { it.tag.equals("RELATIONSHIP", ignoreCase = true) || it.tag.equals("RELATION", ignoreCase = true) }
-        "자기성찰" -> threads.filter { it.tag.equals("SELF_REFLECTION", ignoreCase = true) || it.tag.equals("REFLECTION", ignoreCase = true) }
-        "감정" -> threads.filter { it.tag.equals("EMOTION", ignoreCase = true) }
-        "성장" -> threads.filter { it.tag.equals("GROWTH", ignoreCase = true) }
-        "기타" -> threads.filter { it.tag.equals("ETC", ignoreCase = true) }
+        "진로" -> threads.filter { it.tag.equals("CAREER", ignoreCase = true) || it.tag == "진로" }
+        "관계" -> threads.filter { it.tag.equals("RELATIONSHIP", ignoreCase = true) || it.tag.equals("RELATION", ignoreCase = true) || it.tag == "관계" }
+        "자기성찰" -> threads.filter { it.tag.equals("SELF_REFLECTION", ignoreCase = true) || it.tag.equals("REFLECTION", ignoreCase = true) || it.tag == "자기성찰" }
+        "감정" -> threads.filter { it.tag.equals("EMOTION", ignoreCase = true) || it.tag == "감정" }
+        "성장" -> threads.filter { it.tag.equals("GROWTH", ignoreCase = true) || it.tag == "성장" }
+        "기타" -> threads.filter { it.tag.equals("ETC", ignoreCase = true) || it.tag == "기타" }
         else -> threads
     }
 }
@@ -191,13 +191,7 @@ private fun String?.parseSummaryJson(): ParsedSummary {
     }
 }
 
-private fun String.toCategory(): Category = when (this) {
-    "SELF_REFLECTION" -> Category.REFLECTION
-    "CAREER" -> Category.CAREER
-    "RELATIONSHIP" -> Category.RELATIONSHIP
-    "EMOTION" -> Category.EMOTION
-    else -> Category.REFLECTION
-}
+private fun String.toCategory(): Category = Category.fromServerTag(this)
 
 private fun String.toKoreanDate(): String {
     // 예: 2026-01-26T01:44:27.394324 -> 2026. 01. 26

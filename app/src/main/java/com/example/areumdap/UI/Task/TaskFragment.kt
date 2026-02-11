@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.graphics.Canvas
-import android.util.Log
 import android.widget.AdapterView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -128,7 +127,7 @@ class TaskFragment : Fragment() {
         // 완료된 과제 목록 관찰
         viewModel.completedMissions.observe(viewLifecycleOwner) { missionList ->
             missionList?.let {
-                Log.d("FRAGMENT_OBSERVER", "데이터 전달받음: ${it.size}개")
+
 
                 binding.taskFinishTv.text = "${it.size}"
                 taskRVAdapter.updateData(it)
@@ -136,7 +135,7 @@ class TaskFragment : Fragment() {
         }
 
         viewModel.totalMissionCount.observe(viewLifecycleOwner) { total ->
-            Log.d("TOTAL_COUNT", "서버에서 받은 전체 개수: $total")
+
             binding.taskTotalTv.text = "$total"
         }
 

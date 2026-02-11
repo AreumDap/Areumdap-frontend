@@ -13,6 +13,7 @@ enum class Category(
     RELATIONSHIP("관계", R.drawable.ic_relationship, R.color.relationship2),
     CAREER("진로", R.drawable.ic_career, R.color.career2),
     EMOTION("감정", R.drawable.ic_emotion, R.color.emotion2),
+    GROWTH("성장", R.drawable.ic_growth, R.color.growth2),
     ETC("기타", R.drawable.ic_etc, R.color.etc2);
 
     companion object{
@@ -22,6 +23,7 @@ enum class Category(
                 "관계"->RELATIONSHIP
                 "진로" -> CAREER
                 "감정" ->EMOTION
+                "성장" -> GROWTH
                 else -> ETC
             }
         }
@@ -31,6 +33,7 @@ enum class Category(
                 "RELATION", "RELATIONSHIP" -> RELATIONSHIP
                 "CAREER" -> CAREER
                 "EMOTION" -> EMOTION
+                "GROWTH" -> GROWTH
                 else -> ETC
             }
         }
