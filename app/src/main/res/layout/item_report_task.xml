@@ -17,8 +17,7 @@
         android:background="@color/background2"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingHorizontal="27dp"
-        >
+        android:paddingHorizontal="27dp">
 
         <ImageView
             android:id="@+id/rep_task_cat_iv"
@@ -47,7 +46,7 @@
             android:gravity="center"
             android:maxLines="3"
             android:textColor="@color/black"
-            tools:text="내용\n내용\n뇽" />
+            tools:text="과제 설명" />
 
     </LinearLayout>
 

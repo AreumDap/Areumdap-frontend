@@ -5,24 +5,30 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
+import androidx.viewpager2.widget.ViewPager2
 import com.example.areumdap.UI.auth.LoadingDialogFragment
 import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.adapter.TaskGuideVPAdapter
 import com.example.areumdap.data.repository.MissionRepository
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.databinding.FragmentTaskGuideBinding
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlin.math.abs
 
 class TaskGuideFragment : Fragment() {
 
     private var _binding: FragmentTaskGuideBinding? = null
     private val binding get() = _binding!!
+
+    private var indicatorMediator: TabLayoutMediator? = null
+    private var pageCallback: ViewPager2.OnPageChangeCallback? = null
 
     private val missionViewModel: MissionViewModel by viewModels {
         val repo = MissionRepository(RetrofitClient.missionApi)
@@ -47,6 +53,7 @@ class TaskGuideFragment : Fragment() {
             if (missions.isNotEmpty()) {
                 binding.vpTasks.setCurrentItem(0, false)
             }
+            setupIndicator(missions.size)
         }
 
         missionViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
@@ -112,9 +119,51 @@ class TaskGuideFragment : Fragment() {
             clipChildren = false
         }
     }
+    private fun setupIndicator(count: Int) {
+        // 기존 연결/콜백 정리
+        indicatorMediator?.detach()
+        indicatorMediator = null
+        pageCallback?.let { binding.vpTasks.unregisterOnPageChangeCallback(it) }
+        pageCallback = null
+
+        // 0~1개면 점 굳이 안 보여도 되면 숨김 처리
+        if (count <= 1) {
+            binding.pageIndicator.visibility = View.GONE
+            return
+        }
+        binding.pageIndicator.visibility = View.VISIBLE
+
+        indicatorMediator = TabLayoutMediator(binding.pageIndicator, binding.vpTasks) { tab, _ ->
+            tab.setCustomView(com.example.areumdap.R.layout.item_indicator_dot)
+        }.also { it.attach() }
+
+        fun updateDots(selectedPos: Int) {
+            for (i in 0 until binding.pageIndicator.tabCount) {
+                val dot = binding.pageIndicator.getTabAt(i)
+                    ?.customView
+                    ?.findViewById<ImageView>(/* id = */ com.example.areumdap.R.id.dot)
+                    ?: continue
+
+                dot.setImageResource(
+                    if (i == selectedPos) com.example.areumdap.R.drawable.indicator_dot_selected
+                    else com.example.areumdap.R.drawable.indicator_dot_unselected
+                )
+            }
+        }
+
+        updateDots(binding.vpTasks.currentItem)
+
+        pageCallback = object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                updateDots(position)
+            }
+        }.also { binding.vpTasks.registerOnPageChangeCallback(it) }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 }
+
+
