@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.areumdap.R
 import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.UI.auth.PopUpDialogFragment
+import com.example.areumdap.UI.auth.ToastDialogFragment
 import com.example.areumdap.adapter.ChatMessageRVAdapter
 import com.example.areumdap.data.model.ChatMessage
 import com.example.areumdap.data.repository.UserRepository
@@ -35,6 +36,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private val binding get() = _binding!!
 
     private var menuPopup: PopupWindow? = null
+
+    private fun showCustomToast(message: String, iconResId:Int) {
+        val toast = ToastDialogFragment(message, iconResId)
+        toast.show(requireActivity().supportFragmentManager, "custom_toast")
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -152,12 +158,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             val id = msg.chatHistoryId
             if (id == null) {
                 android.util.Log.w("ChatFragment", "saveQuestion skipped: chatHistoryId is null")
-                android.widget.Toast
-                    .makeText(requireContext(), "저장할 수 없는 메시지예요.", android.widget.Toast.LENGTH_SHORT)
-                    .show()
+                showCustomToast("저장할 수 없는 메시지예요.",R.drawable.ic_failure)
                 return@setOnClickListener
             }
             vm.saveQuestion(id)
+            showCustomToast("저장되었습니다",R.drawable.ic_success)
         }
 
         menuBinding.menuCopy.setOnClickListener {
@@ -168,7 +173,8 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         // 말풍선 위에 뜨게
         val menuWidth = (100 * resources.displayMetrics.density).toInt()
         val xOffset = anchor.width - menuWidth
-        popup.showAsDropDown(anchor, xOffset, -anchor.height + 130)
+        val yOffset = (-30 * resources.displayMetrics.density).toInt()
+        popup.showAsDropDown(anchor, xOffset, yOffset)
 
         menuPopup = popup
     }

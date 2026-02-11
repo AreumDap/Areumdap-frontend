@@ -171,6 +171,8 @@ class ChatViewModel(
                     //     .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
                     lastEndedThreadId = currentThreadId
                     sessionEnded = true
+
+                    delay(1000L)
                     _endEvent.tryEmit(Unit)
                 }
             } catch (e: Exception) {
