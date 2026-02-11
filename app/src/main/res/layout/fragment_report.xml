@@ -31,7 +31,6 @@
                 android:paddingTop="25dp"
                 android:paddingBottom="40dp">
 
-                <!-- 1) 메인 타이틀 -->
                 <TextView
                     android:id="@+id/cor_value_title_tv"
                     style="@style/TA_Body1"
@@ -43,39 +42,41 @@
                     android:text="나에게 가장 중요한 가치"
                     android:textColor="@color/black" />
 
-                <!-- 2) 대화 요약 + 날짜 -->
                 <LinearLayout
                     android:id="@+id/summary_title_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
                     android:orientation="horizontal"
-                    android:paddingBottom="24dp">
-
-                    <TextView
-                        style="@style/TA_Body1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="13dp"
-                        android:text="대화 요약" />
+                    android:paddingBottom="12dp"> <TextView
+                    style="@style/TA_Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="13dp"
+                    android:text="대화 요약" />
 
                     <TextView
                         android:id="@+id/sum_date_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2025.10.06" />
+                        android:text="2026.02.11" />
                 </LinearLayout>
 
-                <!-- 3) 해시태그 -->
-                <com.google.android.material.chip.ChipGroup
-                    android:id="@+id/hashtag_group"
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:singleLine="false"
-                    app:chipSpacingHorizontal="8dp"
-                    app:chipSpacingVertical="8dp" />
+                    android:scrollbars="none"
+                    android:overScrollMode="never"
+                    android:layout_marginBottom="24dp">
 
-                <!-- 4) 통계 카드 2개 + 1개 -->
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/hashtag_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleLine="true"
+                        app:chipSpacingHorizontal="8dp" />
+                </HorizontalScrollView>
+
                 <LinearLayout
                     android:id="@+id/sum_content_layout"
                     android:layout_width="match_parent"
@@ -111,7 +112,7 @@
                                 style="@style/TA_Subtitle1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="00개"
+                                android:text="23개"
                                 android:textColor="@color/black" />
                         </LinearLayout>
 
@@ -142,7 +143,7 @@
                                 style="@style/TA_Subtitle1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="00분"
+                                android:text="2분"
                                 android:textColor="@color/black" />
                         </LinearLayout>
 
@@ -177,7 +178,6 @@
 
                 </LinearLayout>
 
-                <!-- 5) 코너 장식 + 요약 텍스트 박스 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -198,12 +198,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:paddingVertical="6dp"
-                        android:text="오늘은 이러이러한 대화를 나눴어요.
-이러이러한 고민을 나눴고,
-이러이러한 이야기를 이야기해줬어요.
-대화 요약내용이 들어가요 대화 요약내용이 들어가요
-대화 요약내용이 들어가요대화 요약내용이 들어가요
-대화 요약내용이 들어가요" />
+                        android:gravity="center"
+                        android:text="오늘은 이러이러한 대화를 나눴어요.\n이러이러한 고민을 나눴고,\n이러이러한 이야기를 이야기해줬어요." />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -242,7 +238,7 @@
                     android:text="대화를 통해 발견한 것"
                     android:textColor="@color/black"
                     android:layout_marginBottom="20dp"/>
-                
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/found_card_rv"
                     android:layout_width="match_parent"
@@ -293,11 +289,8 @@
                 </HorizontalScrollView>
             </LinearLayout>
 
-
         </LinearLayout>
 
-
     </androidx.core.widget.NestedScrollView>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
