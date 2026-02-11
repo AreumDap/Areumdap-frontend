@@ -104,7 +104,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                         adapter.submitList(list) {
                             if (adapter.itemCount > 0) {
                                 binding.chatRv.post{
-                                    binding.chatRv.scrollToPosition(list.lastIndex)
+                                    binding?.chatRv?.scrollToPosition(list.lastIndex)
                                 }
 
                             }
@@ -171,7 +171,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         }
 
         // 말풍선 위에 뜨게
-        val menuWidth = (100 * resources.displayMetrics.density).toInt()
+        val menuWidth = (92 * resources.displayMetrics.density).toInt()
         val xOffset = anchor.width - menuWidth
         val yOffset = (-30 * resources.displayMetrics.density).toInt()
         popup.showAsDropDown(anchor, xOffset, yOffset)
