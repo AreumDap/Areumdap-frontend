@@ -34,17 +34,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_selected_season_result" />
 
+    <TextView
+        android:id="@+id/tv_keyword_limit_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        android:text="키워드는 최대 3개까지만 선택 가능해요."
+        style="@style/TA_Body3"
+        android:textColor="@color/gray5"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide" />
+
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/flexbox_keywords"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="23dp"
         app:flexWrap="wrap"
         app:justifyContent="center"
         app:alignItems="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide">
+        app:layout_constraintTop_toBottomOf="@id/tv_keyword_limit_warning">
     </com.google.android.flexbox.FlexboxLayout>
 
     <TextView
@@ -56,7 +69,6 @@
         android:textColor="@color/gray3"
         style="@style/TA_Caption1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.445"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/flexbox_keywords" />
 

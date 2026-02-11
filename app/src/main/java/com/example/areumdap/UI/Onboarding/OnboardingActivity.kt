@@ -87,26 +87,37 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun handleInfoStepBackPress(): Boolean {
+        val currentStep = OnboardingStep.fromValue(viewModel.currentStep.value ?: 0)
         val currentTextStep = InfoTextStep.fromValue(viewModel.infoTextStep.value ?: 0)
 
-        return when (currentTextStep) {
-            InfoTextStep.FINAL_MESSAGE -> {
-                viewModel.infoTextStep.value = InfoTextStep.NICKNAME_INPUT.value
-                viewModel.isKeywordSelected.value = true
-                true
+        return when (currentStep) {
+            // FINAL 화면 (닉네임 입력 후: step2 "좋아요! 앞으로~", step3 "아름이는 닉네임님이~")
+            OnboardingStep.FINAL -> when (currentTextStep) {
+                InfoTextStep.FINAL_MESSAGE -> {
+                    // step3 → step2
+                    viewModel.infoTextStep.value = InfoTextStep.NICKNAME_INPUT.value
+                    viewModel.isKeywordSelected.value = true
+                    true
+                }
+                else -> {
+                    // step2 → NICKNAME Fragment로 돌아가기 (popBackStack)
+                    false
+                }
             }
 
-            InfoTextStep.NICKNAME_INPUT -> {
-                viewModel.infoTextStep.value = InfoTextStep.NICKNAME_INTRO.value
-                viewModel.isKeywordSelected.value = true
-                binding.btnNext.text = ButtonText.I_AM.text
-                true
+            // INFO 화면 (닉네임 입력 전: step0 "아름이가 태어났어요", step1 "서로를 알아가기 위해~")
+            OnboardingStep.INFO -> when (currentTextStep) {
+                InfoTextStep.NICKNAME_INTRO -> {
+                    // step1 → step0
+                    viewModel.infoTextStep.value = InfoTextStep.AREUM_BORN.value
+                    true
+                }
+                else -> {
+                    // step0 → KEYWORD Fragment로 돌아가기 (popBackStack)
+                    false
+                }
             }
 
-            InfoTextStep.NICKNAME_INTRO -> {
-                viewModel.infoTextStep.value = InfoTextStep.AREUM_BORN.value
-                true
-            }
             else -> false
         }
     }
