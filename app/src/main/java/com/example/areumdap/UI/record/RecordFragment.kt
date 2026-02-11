@@ -19,6 +19,7 @@ import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.adapter.RecordRVAdapter
 import com.example.areumdap.databinding.FragmentRecordBinding
 import com.example.areumdap.UI.auth.Category
+import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.data.model.RecordItem
 import com.example.areumdap.R
 import com.example.areumdap.data.model.UserChatThread
@@ -57,6 +58,7 @@ class RecordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as? MainActivity)?.setToolbar(false)
 
         adapter = RecordRVAdapter(
             onItemClick = { item ->
@@ -131,6 +133,11 @@ class RecordFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.setToolbar(false)
     }
 
 
