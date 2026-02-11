@@ -1,6 +1,5 @@
 package com.example.areumdap.UI.Character
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -82,7 +81,7 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
 
                 if (response.isSuccessful) {
                     val body = response.body()
-                    Log.d("DEBUG_API", "fetchCharacterLevel Body: $body")
+
                     if (body?.data != null) {
                         var newData = body.data
 
@@ -111,27 +110,24 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
                         try {
                             val summaryResponse = apiService.postCharacterHistorySummary()
                             if (summaryResponse.isSuccessful) {
-                                Log.d("DEBUG_API", "History Summary Updated")
+
                             } else {
-                                Log.e(
-                                    "DEBUG_API",
-                                    "History Summary Update Failed: ${summaryResponse.code()}"
-                                )
+
                             }
                         } catch (e: Exception) {
-                            Log.e("DEBUG_API", "History Summary Update Exception", e)
+
                         }
 
                     } else {
-                        Log.e("DEBUG_API", "fetchCharacterLevel Body Data is NULL")
+
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("DEBUG_API", "fetchCharacterLevel Error: $errorBody")
+
                     _errorMessage.value = "레벨 정보를 가져오는데 실패했습니다 (${response.code()})"
                 }
             } catch (e: Exception) {
-                Log.e("DEBUG_API", "fetchCharacterLevel Exception", e)
+
                 _errorMessage.value = "네트워크 오류가 발생했습니다"
             } finally {
                 _isLoading.value = false
@@ -139,20 +135,19 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
         }
     }
 
-    // 히스토리 요약 생성 요청 (명시적 호출용)
+    // 히스토리 요약 생성 요청
     fun requestHistorySummary() {
         viewModelScope.launch {
             try {
                 val response = apiService.postCharacterHistorySummary()
                 if (response.isSuccessful) {
-                    Log.d("DEBUG_API", "History Summary Generated Successfully")
                     // 생성 후 다시 조회
                     fetchCharacterHistory()
                 } else {
-                    Log.e("DEBUG_API", "History Summary Generation Failed: ${response.code()}")
+
                 }
             } catch (e: Exception) {
-                Log.e("DEBUG_API", "History Summary Generation Exception", e)
+
             }
         }
     }
@@ -186,9 +181,6 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
 
         // 경험치 증가
         var newXp = currentXp + amount
-        // if (maxXp > 0 && newXp > maxXp) {     <-- 이 부분 삭제
-        //    newXp = maxXp
-        // }
 
         val newData = currentData.copy(currentXp = newXp)
         _characterLevel.value = newData

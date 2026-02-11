@@ -1,7 +1,6 @@
 package com.example.areumdap.UI.Character
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import com.example.areumdap.R
@@ -50,15 +49,12 @@ class CharacterXpFragment : Fragment() {
 
         viewModel.characterLevel.observe(viewLifecycleOwner){ data ->
             data?.let {
-
-                // 진화 후의 정보를 바로 보여준다.
-                // 레벨: 현재 달성한 레벨
+                // 현재 달성한 레벨
                 binding.characterXpLevelTv.text = "${it.displayLevel}"
                 
-                // 필요 경험치: 다음 단계로 가기 위한 목표치 (maxXp)
+                // 필요 경험치
                 binding.characterNextXpTv.text = "${it.maxXp}"
 
-                // 이미지: 진화된 캐릭터 이미지
                 binding.characterXpIv.visibility = View.VISIBLE
                 Glide.with(this)
                     .load(it.imageUrl)
@@ -100,7 +96,6 @@ class CharacterXpFragment : Fragment() {
             msg?.let {
                 (parentFragmentManager.findFragmentByTag("loading_dialog") as? DialogFragment)?.dismiss()
                  android.widget.Toast.makeText(context, it, android.widget.Toast.LENGTH_SHORT).show()
-                 Log.e("CharacterXpFragment", "Error occurred: $it")
             }
         }
     }

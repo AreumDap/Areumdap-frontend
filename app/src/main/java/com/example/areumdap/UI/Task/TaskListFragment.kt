@@ -1,7 +1,6 @@
 package com.example.areumdap.UI.Task
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -68,7 +67,7 @@ class TaskListFragment: Fragment() {
                 viewModel.addXp(reward)
                  Toast.makeText(context, "+${reward} XP", Toast.LENGTH_SHORT).show()
             } else {
-                 Log.e("DEBUG_XP", "Reward is 0 or less")
+                 // Reward is 0 or less
             }
 
             // 3. 서버 데이터 갱신 (지연 호출 - 데이터 정합성 맞춤)
@@ -85,12 +84,12 @@ class TaskListFragment: Fragment() {
             val dataTaskFragment = DataTaskFragment()
             val bundle = Bundle()
             bundle.putInt("missionId", missionItem.missionId)
-            bundle.putInt("reward", missionItem.reward) // reward 전달
-            bundle.putString("title", missionItem.title) // title 전달
-            bundle.putString("tag", missionItem.tag)   // tag 전달
-            bundle.putBoolean("showTip", true) // 팁 표시
-            bundle.putBoolean("isCompleted", false) // 미완료 과제
-            bundle.putBoolean("isTransparent", true) // 캐릭터 페이지에서는 투명 배경 (다이얼로그)
+            bundle.putInt("reward", missionItem.reward)
+            bundle.putString("title", missionItem.title)
+            bundle.putString("tag", missionItem.tag)
+            bundle.putBoolean("showTip", true)
+            bundle.putBoolean("isCompleted", false)
+            bundle.putBoolean("isTransparent", true)
             dataTaskFragment.arguments = bundle
             
             dataTaskFragment.show(childFragmentManager, "DataTaskDialog")
@@ -107,7 +106,6 @@ class TaskListFragment: Fragment() {
 
             dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
                 override fun onConfirm() {
-                    // CharacterXpFragment로 이동 (Activity의 FragmentManager 사용)
                     val transaction = requireActivity().supportFragmentManager.beginTransaction()
                     transaction.replace(R.id.main_frm, CharacterXpFragment())
                     transaction.addToBackStack(null)
@@ -140,7 +138,7 @@ class TaskListFragment: Fragment() {
         val levelData = viewModel.characterLevel.value ?: return
         val currentTag = viewModel.selectedTag.value
 
-        //  활성 과제만 필터링 (서버 상태 + 뷰모델 블랙리스트)
+        //  활성 과제 필터링
         var filteredMissions = levelData.missions?.filter { mission ->
             val status = mission.status?.uppercase() ?: ""
             status != "COMPLETED" && status != "DONE" && mission.isCompleted != true && (mission.dDay ?: 0) >= 0 && !viewModel.isMissionCompleted(mission.missionId)

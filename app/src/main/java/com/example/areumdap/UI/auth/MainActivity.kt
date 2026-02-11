@@ -185,4 +185,8 @@ class MainActivity : AppCompatActivity() {
     fun goToHome() {
         binding.mainBnv.selectedItemId = R.id.homeFragment
     }
+
+    fun goToCharacterFragment() {
+        binding.mainBnv.selectedItemId = R.id.characterFragment
     }
+}

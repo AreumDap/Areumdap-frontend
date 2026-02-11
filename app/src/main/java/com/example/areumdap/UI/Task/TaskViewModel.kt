@@ -1,6 +1,5 @@
 package com.example.areumdap.UI.Task
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.MutableLiveData
@@ -57,12 +56,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                     size = size
                 )
 
-                Log.d("TaskViewModel", "fetchCompletedMissions Response Code: ${response.code()}")
+
                 if (response.isSuccessful) {
                     val body = response.body()
-                    Log.d("TaskViewModel", "isSuccess: ${body?.isSuccess}")
+
                     body?.data?.let { data ->
-                        Log.d("TaskViewModel", "Total: ${data.totalCount}, Missions: ${data.missions.size}")
                         _totalMissionCount.value = data.totalCount
 
                         _completedMissions.value = data.missions
@@ -70,11 +68,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                         nextCursorId = data.nextCursorId
                         _hasNext.value = data.hasNext
                     } ?: run {
-                        Log.e("TaskViewModel", "Data is null!")
+
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
-                    Log.e("TaskViewModel", "Error Body: $errorBody")
+
                     _errorMessage.value = "서버 에러(${response.code()}): $errorBody"
                 }
             } catch (e: Exception) {
@@ -131,23 +129,13 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                     size = size
                 )
 
-                Log.d("API_CHECK", "Status Code: ${response.code()}")
 
-                Log.d("TaskViewModel", "fetchSavedQuestions Response Code: ${response.code()}")
 
                 if (response.isSuccessful) {
                     val responseBody = response.body()
                     responseBody?.data?.let { data ->
                         _questionTotalCount.value = data.totalCount
-
-                        Log.d("TaskViewModel", "Total Questions: ${data.totalCount}, Loaded: ${data.questions.size}")
-
                         _savedQuestions.value = data.questions
-
-                        // 로그 추가: 받아온 ID 확인
-                        data.questions.forEach {
-                            Log.d("TaskViewModel", "Fetched Item - Content: ${it.content}, ThreadID: ${it.userChatThreadId}, QuestionID: ${it.userQuestionId}")
-                        }
 
                         questionsNextCursorTime = data.nextCursorTime
                         questionsNextCursorId = data.nextCursorId
@@ -155,11 +143,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
-                    Log.e("TaskViewModel", "Question Server Error: ${response.code()}, Body: $errorBody")
+
                     _errorMessage.value = "서버 에러(${response.code()}): $errorBody"
                 }
             } catch (e: Exception) {
-                Log.e("QUESTION_API_ERROR", "Exception: ${e.message}")
+
                 _errorMessage.value = "네트워크 오류가 발생했습니다."
             } finally {
                 _isLoading.value = false
@@ -207,17 +195,17 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
         return sdf.format(Date())
     }
 
-    // 과제 삭제 (API 호출)
+    // 과제 삭제
     fun deleteCompletedMission(missionId: Int) {
-        Log.d("TaskViewModel", "deleteCompletedMission 호출됨. ID: $missionId")
+
         viewModelScope.launch {
             _isLoading.value = true
             try {
                 val response = apiService.deleteCompletedMission(missionId)
-                Log.d("TaskViewModel", "Mission Delete Response Code: ${response.code()}")
+
 
                 if (response.isSuccessful && response.body()?.isSuccess == true) {
-                    Log.d("TaskViewModel", "미션 삭제 성공")
+
                     // 성공 시 로컬 리스트에서도 제거
                     val currentList = _completedMissions.value?.toMutableList() ?: return@launch
                     val itemToRemove = currentList.find { it.missionId == missionId }
@@ -234,11 +222,11 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
-                    Log.e("TaskViewModel", "미션 삭제 실패. Code: ${response.code()}, ErrorBody: $errorBody")
+
                     _errorMessage.value = "삭제 실패: ${response.message()}"
                 }
             } catch (e: Exception) {
-                Log.e("TaskViewModel", "미션 삭제 중 예외 발생: ${e.message}")
+
                 _errorMessage.value = "네트워크 오류가 발생했습니다."
             } finally {
                 _isLoading.value = false
@@ -246,29 +234,28 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
         }
     }
 
-    // 질문 삭제 (API 호출)
+    // 질문 삭제
     fun deleteSavedQuestion(userQuestionId: Long) {
-        Log.d("TaskViewModel", "deleteSavedQuestion 호출됨. Target ID (QuestionID): $userQuestionId")
+
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                // userQuestionId 파라미터로 전달
                 val response = apiService.deleteSavedQuestion(userQuestionId)
-                Log.d("TaskViewModel", "API Response Code: ${response.code()}")
+
 
                 if (response.isSuccessful) {
                     val body = response.body()
-                    Log.d("TaskViewModel", "삭제 API 요청 성공. Body: $body")
+
 
                     if (body?.isSuccess == true) {
-                        Log.d("TaskViewModel", "삭제 성공 (isSuccess=true)")
+
                         // 성공 시 로컬 리스트에서도 제거
                         val currentList = _savedQuestions.value?.toMutableList() ?: mutableListOf()
                         // 로컬 리스트에서 userQuestionId가 일치하는 항목 찾기
                         val itemToRemove = currentList.find { it.userQuestionId == userQuestionId }
 
                         if (itemToRemove != null) {
-                            Log.d("TaskViewModel", "로컬 리스트에서 항목 제거: ${itemToRemove.content}")
+
                             currentList.remove(itemToRemove)
                             _savedQuestions.value = currentList
 
@@ -278,19 +265,19 @@ class TaskViewModel(private val apiService: TaskApiService) : ViewModel() {
                                 _questionTotalCount.value = currentCount - 1
                             }
                         } else {
-                            Log.e("TaskViewModel", "로컬 리스트에서 항목을 찾을 수 없음. ID: $userQuestionId")
+
                         }
                     } else {
-                        Log.e("TaskViewModel", "삭제 실패 (isSuccess=false). Message: ${body?.message}")
+
                         _errorMessage.value = "삭제 실패: ${body?.message}"
                     }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: ""
-                    Log.e("TaskViewModel", "삭제 실패. Code: ${response.code()}, ErrorBody: $errorBody")
+
                     _errorMessage.value = "서버 에러: ${response.code()} $errorBody"
                 }
             } catch (e: Exception) {
-                Log.e("TaskViewModel", "삭제 중 예외 발생: ${e.message}")
+
                 e.printStackTrace()
                 _errorMessage.value = "네트워크 오류: ${e.message}"
             } finally {

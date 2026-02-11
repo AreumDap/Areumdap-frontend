@@ -166,7 +166,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="40dp">
+            android:paddingHorizontal="20dp">
 
             <TextView
                 android:text="자기 성찰 과제"
@@ -181,12 +181,13 @@
                 android:layout_width="73dp"
                 android:layout_height="36dp"
                 android:layout_alignParentEnd="true"
-                android:gravity="center"
-                android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:background="@drawable/bg_spinner"
+                android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:layout_marginTop="20dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="5dp"
+                android:paddingStart="15dp"
+                android:paddingEnd="1dp"
+                android:overlapAnchor="true"
+                android:dropDownHorizontalOffset="-27dp"
                 android:spinnerMode="dropdown"/>
 
         </RelativeLayout>

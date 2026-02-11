@@ -1,7 +1,6 @@
 package com.example.areumdap.UI.Character
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,12 +65,7 @@ class CharacterHistoryFragment : Fragment() {
                 binding.pastContentTv.text = it.pastDescription ?: ""
                 binding.presentContentTv.text = it.presentDescription ?: ""
 
-                // 디버깅 로그 추가
-                Log.d("HistoryDebug", "Past: ${it.pastDescription}, Present: ${it.presentDescription}")
-                Log.d("HistoryDebug", "History List Size: ${it.historyList?.size}")
-                it.historyList?.forEach { item ->
-                    Log.d("HistoryDebug", "Level: ${item.level}, ImageUrl: ${item.imageUrl}")
-                }
+
 
                 // 히스토리 목록 이미지들 미리 불러오기
                 it.historyList?.forEach { historyItem ->
@@ -82,7 +76,7 @@ class CharacterHistoryFragment : Fragment() {
                 
                 // 만약 내용이 비어있다면 자동 생성 요청 (최초 1회만)
                 if (it.pastDescription.isNullOrEmpty() && it.presentDescription.isNullOrEmpty() && !attemptedGeneration) {
-                    Log.d("HistoryDebug", "Descriptions empty, attempting generation...")
+
                     attemptedGeneration = true
                     viewModel.requestHistorySummary()
                 }

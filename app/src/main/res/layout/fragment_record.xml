@@ -54,7 +54,7 @@
                 android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:spinnerMode="dropdown"
                 android:paddingStart="18dp"
-                android:paddingEnd="12dp" />
+                android:paddingEnd="20dp" />
         </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
