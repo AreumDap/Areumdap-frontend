@@ -1,80 +1,70 @@
-package com.example.areumdap.UI.Chat
+﻿package com.example.areumdap.UI.Chat
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.util.Log
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.CompositePageTransformer
+import androidx.viewpager2.widget.MarginPageTransformer
+import com.example.areumdap.UI.auth.LoadingDialogFragment
+import com.example.areumdap.UI.auth.MainActivity
+import com.example.areumdap.adapter.TaskGuideVPAdapter
 import com.example.areumdap.data.repository.MissionRepository
 import com.example.areumdap.data.source.RetrofitClient
-import com.example.areumdap.R
-import com.example.areumdap.UI.Character.CharacterFragment
-import com.example.areumdap.UI.Home.HomeFragment
-import com.example.areumdap.adapter.TaskGuideVPAdapter
 import com.example.areumdap.databinding.FragmentTaskGuideBinding
-import com.example.areumdap.UI.auth.MainActivity
-import com.example.areumdap.UI.auth.LoadingDialogFragment
+import kotlin.math.abs
 
+class TaskGuideFragment : Fragment() {
 
-class TaskGuideFragment: Fragment() {
     private var _binding: FragmentTaskGuideBinding? = null
     private val binding get() = _binding!!
 
-    private val missionViewModel : MissionViewModel by viewModels{
+    private val missionViewModel: MissionViewModel by viewModels {
         val repo = MissionRepository(RetrofitClient.missionApi)
         MissionViewModelFactory(repo)
     }
-    private lateinit var pagerAdapter : TaskGuideVPAdapter
 
-    private val pageCallback = object : androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback(){
-        override fun onPageSelected(position: Int) {
-            val isFirst  = position==0
-            binding.taskTipLl.visibility = if (isFirst) View.VISIBLE else View.GONE
-
-
-            if(isFirst){
-                binding.tipTv.text  = pagerAdapter.getItem(0)?.tip.orEmpty()
-
-            }
-        }
-    }
-
+    private lateinit var pagerAdapter: TaskGuideVPAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentTaskGuideBinding.inflate(inflater, container, false)
+
         pagerAdapter = TaskGuideVPAdapter()
         binding.vpTasks.adapter = pagerAdapter
+        setupPagerPreview()
 
-        binding.vpTasks.registerOnPageChangeCallback(pageCallback)
-        // observe
         missionViewModel.missions.observe(viewLifecycleOwner) { missions ->
             pagerAdapter.submitList(missions)
-
-            binding.vpTasks.setCurrentItem(0, false)
-            val hasMissions = missions.isNotEmpty()
-            binding.taskTipLl.visibility = if (hasMissions) View.VISIBLE else View.GONE
-            binding.tipTv.text = missions.firstOrNull()?.tip.orEmpty()
-        }
-        missionViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
-            if (isLoading) {
-                val dialog = LoadingDialogFragment()
-                dialog.show(parentFragmentManager, "LoadingDialog_TaskGuide")
-            } else {
-                (parentFragmentManager.findFragmentByTag("LoadingDialog_TaskGuide") as? LoadingDialogFragment)?.dismiss()
+            if (missions.isNotEmpty()) {
+                binding.vpTasks.setCurrentItem(0, false)
             }
         }
-        missionViewModel.error.observe(viewLifecycleOwner) { msg ->
-            if (msg != null) Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+
+        missionViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                LoadingDialogFragment()
+                    .show(parentFragmentManager, "LoadingDialog_TaskGuide")
+            } else {
+                (parentFragmentManager.findFragmentByTag("LoadingDialog_TaskGuide") as? LoadingDialogFragment)
+                    ?.dismissAllowingStateLoss()
+            }
         }
 
-        // api 호출
+        missionViewModel.error.observe(viewLifecycleOwner) { msg ->
+            if (!msg.isNullOrBlank()) {
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+        }
+
         val threadId = requireArguments().getLong("threadId", -1L)
         if (threadId == -1L) {
             Log.w("TaskGuideFragment", "threadId is missing")
@@ -87,13 +77,43 @@ class TaskGuideFragment: Fragment() {
         binding.btnTaskPage.setOnClickListener {
             (requireActivity() as MainActivity).goToCharacterFragment()
         }
+
         binding.btnHome.setOnClickListener {
             (requireActivity() as MainActivity).goToHome()
         }
+
         return binding.root
     }
+
+    private fun setupPagerPreview() {
+        val density = resources.displayMetrics.density
+        val sidePadding = (40f * density).toInt()
+        val pageMargin = (12f * density).toInt()
+
+        val pageTransformer = CompositePageTransformer().apply {
+            addTransformer(MarginPageTransformer(pageMargin))
+            addTransformer { page, position ->
+                val scale = 0.92f + (1 - abs(position)) * 0.08f
+                page.scaleY = scale
+            }
+        }
+
+        binding.vpTasks.apply {
+            clipToPadding = false
+            clipChildren = false
+            offscreenPageLimit = 3
+            setPadding(sidePadding, 0, sidePadding, 0)
+            setPageTransformer(pageTransformer)
+        }
+
+        (binding.vpTasks.getChildAt(0) as? RecyclerView)?.apply {
+            overScrollMode = RecyclerView.OVER_SCROLL_NEVER
+            clipToPadding = false
+            clipChildren = false
+        }
+    }
+
     override fun onDestroyView() {
-        binding.vpTasks.unregisterOnPageChangeCallback(pageCallback)
         super.onDestroyView()
         _binding = null
     }
