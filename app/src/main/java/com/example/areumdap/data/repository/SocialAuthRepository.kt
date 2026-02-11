@@ -71,6 +71,18 @@ object SocialAuthRepository {
                     )
                     TokenManager.saveSocialLoginInfo("kakao")
 
+                    // 프로필 정보 조회 및 저장
+                    try {
+                        val profileResult = UserRepository.getProfile()
+                        profileResult.onSuccess { profile ->
+                            profile.nickname?.let {
+                                TokenManager.saveNickname(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
                     Log.d(TAG, "카카오 로그인 성공: ${loginData.name}")
                     Result.success(loginData)
                 } else {
@@ -139,6 +151,18 @@ object SocialAuthRepository {
                         loginData.name ?: ""
                     )
                     TokenManager.saveSocialLoginInfo("naver")
+
+                    // 프로필 정보 조회 및 저장
+                    try {
+                        val profileResult = UserRepository.getProfile()
+                        profileResult.onSuccess { profile ->
+                            profile.nickname?.let {
+                                TokenManager.saveNickname(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
 
                     Log.d(TAG, "네이버 로그인 성공: ${loginData.name}")
                     Result.success(loginData)
