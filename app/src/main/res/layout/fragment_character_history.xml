@@ -78,6 +78,7 @@
                     android:id="@+id/past_content_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:lineSpacingExtra="10dp"
                     tools:text="제목없음"
                     style="@style/character_history_tv" />
 
@@ -106,6 +107,7 @@
                     android:id="@+id/present_content_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:lineSpacingExtra="10dp"
                     tools:text="제목없음"
                     style="@style/character_history_tv" />
 

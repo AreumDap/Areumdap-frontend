@@ -45,7 +45,37 @@ class CharacterTaskRVAdapter(private val missionList: ArrayList<MissionItem>):
                     itemClickListener?.invoke(item)
                 }
             }
+
+            // 태그별 색상 적용
+            applyTagStyle(holder, item.tag)
         }
+    }
+
+    private fun applyTagStyle(holder: ViewHolder, tag: String) {
+        val context = holder.binding.root.context
+        val binding = holder.binding
+
+        val colorRes = when (tag) {
+            "CAREER" -> com.example.areumdap.R.color.career2
+            "RELATIONSHIP", "RELATION" -> com.example.areumdap.R.color.relationship2
+            "REFLECTION", "SELF_REFLECTION" -> com.example.areumdap.R.color.reflection2
+            "EMOTION" -> com.example.areumdap.R.color.emotion2
+            "GROWTH" -> com.example.areumdap.R.color.growth2
+            "ETC", "OTHER", "OTHERS", "ELSE" -> com.example.areumdap.R.color.etc2
+            else -> com.example.areumdap.R.color.etc2
+        }
+
+        val color = androidx.core.content.ContextCompat.getColor(context, colorRes)
+
+        // 1. 시계 아이콘 색상 변경
+        binding.icClockIv.setColorFilter(color)
+
+        // 2. D-day 값 및 라벨 텍스트 색상 변경
+        binding.tvDdayValue.setTextColor(color)
+        binding.tvDdayLabel.setTextColor(color)
+
+        // 3. 버튼 배경색 변경
+        binding.taskCompleteBtn.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
     }
 
     override fun getItemCount(): Int = missionList.size

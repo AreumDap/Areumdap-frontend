@@ -127,7 +127,7 @@ class CharacterHistoryFragment : Fragment() {
 
         val combinedList = mutableListOf<HistoryItem>()
         val maxLevelInData = levelMap.keys.maxOrNull() ?: 1
-        val maxLevelToShow = maxOf(5, maxLevelInData)
+        val maxLevelToShow = maxOf(4, maxLevelInData)
 
         // 현재 레벨
         val currentLevel = currentLevelData?.currentLevel ?: currentLevelData?.level ?: 0

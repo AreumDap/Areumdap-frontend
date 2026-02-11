@@ -11,9 +11,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.R
+import com.example.areumdap.UI.auth.ToastDialogFragment
 import com.example.areumdap.databinding.FragmentDataTaskBinding
 import kotlinx.coroutines.launch
-import android.widget.Toast
+
 
 class DataTaskFragment: DialogFragment() {
     private var _binding: FragmentDataTaskBinding? = null
@@ -101,7 +102,7 @@ class DataTaskFragment: DialogFragment() {
                     val result = response.body()
                     if (result?.isSuccess == true) {
                         if (isAdded) {
-                             Toast.makeText(context, "과제가 완료되었습니다!", Toast.LENGTH_SHORT).show()
+                             showCustomToast("과제가 완료되었습니다!",R.drawable.ic_success)
                         }
                         // Refresh trigger
                         // reward 전달하여 즉시 UI 반영
@@ -121,7 +122,6 @@ class DataTaskFragment: DialogFragment() {
                     } else {
                         Log.e("DataTaskFragment", "Failed to complete mission: ${result?.message}")
                         if (isAdded) {
-                            Toast.makeText(context, "완료 실패: ${result?.message}", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else if (response.code() == 409) {
@@ -144,13 +144,11 @@ class DataTaskFragment: DialogFragment() {
                 } else {
                     Log.e("DataTaskFragment", "Failed to complete mission: ${response.code()}")
                     if (isAdded) {
-                        Toast.makeText(context, "서버 오류: ${response.code()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 Log.e("DataTaskFragment", "Error completing mission", e)
                 if (isAdded) {
-                    Toast.makeText(context, "에러 발생: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -175,7 +173,7 @@ class DataTaskFragment: DialogFragment() {
                     if (missionDetail != null) {
                         // UI 업데이트
                         binding.dataTaskCard.sumTaskTitleTv.text = missionDetail.title
-                        binding.dataTaskCard.sumTaskTitleTv.text = missionDetail.title
+                        binding.dataTaskCard.sumTaskDescTv.text = missionDetail.description ?: ""
                         
                         // API에서 reward가 0이 아니면 업데이트
                         if (missionDetail.rewardXp > 0) {
@@ -248,6 +246,11 @@ class DataTaskFragment: DialogFragment() {
     }
 
     data class Quadruple<out A, out B, out C, out D>(val first: A, val second: B, val third: C, val fourth: D)
+
+    private fun showCustomToast(message: String, iconResId:Int) {
+        val toast = ToastDialogFragment(message, iconResId)
+        toast.show(requireActivity().supportFragmentManager, "custom_toast")
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
