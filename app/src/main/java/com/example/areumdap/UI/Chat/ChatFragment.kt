@@ -13,11 +13,15 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.areumdap.R
 import com.example.areumdap.UI.auth.MainActivity
 import com.example.areumdap.UI.auth.PopUpDialogFragment
+import com.example.areumdap.UI.auth.ToastDialogFragment
 import com.example.areumdap.adapter.ChatMessageRVAdapter
 import com.example.areumdap.data.model.ChatMessage
+import com.example.areumdap.data.repository.UserRepository
+import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.databinding.FragmentChatBinding
 import com.example.areumdap.databinding.ItemChatMenuBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -32,6 +36,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private val binding get() = _binding!!
 
     private var menuPopup: PopupWindow? = null
+
+    private fun showCustomToast(message: String, iconResId:Int) {
+        val toast = ToastDialogFragment(message, iconResId)
+        toast.show(requireActivity().supportFragmentManager, "custom_toast")
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -51,20 +60,35 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         if (!prefillTag.isNullOrBlank()) vm.setRecommendTag(prefillTag)
 
         if (!prefill.isNullOrBlank()) {
-            if (prefillQuestionId != -1L) vm.seedPrefillQuestion(prefill)
-            else vm.seedQuestionOnly(prefill)
-            arguments?.remove("prefill_question")
+            if (prefillQuestionId != -1L) {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val profileNick = runCatching { UserRepository.getProfile() }
+                        .getOrNull()
+                        ?.getOrNull()
+                        ?.nickname
+                    if (TokenManager.getUserNickname().isNullOrBlank()) {
+                        if (!profileNick.isNullOrBlank()) {
+                            TokenManager.saveNickname(profileNick)
+                        }
+                    }
+                    vm.seedPrefillQuestion(prefill, profileNick)
+                    vm.startChat(prefill, prefillQuestionId)
+                    arguments?.remove("prefill_question")
+                }
+            } else {
+                vm.seedQuestionOnly(prefill)
+                arguments?.remove("prefill_question")
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             showExitDialog()
         }
 
-        if (!prefill.isNullOrBlank() && prefillQuestionId != -1L) {
-            vm.startChat(prefill, prefillQuestionId)
+
+        binding.chatRv.layoutManager = LinearLayoutManager(requireContext()).apply {
+            stackFromEnd = true
         }
-
-
         binding.chatRv.adapter = adapter
         binding.chatRv.itemAnimator = null
 
@@ -79,7 +103,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
                     vm.message.collect { list ->
                         adapter.submitList(list) {
                             if (adapter.itemCount > 0) {
-                                binding.chatRv.scrollToPosition(adapter.itemCount - 1)
+                                binding.chatRv.post{
+                                    binding?.chatRv?.scrollToPosition(list.lastIndex)
+                                }
+
                             }
                         }
                     }
@@ -131,12 +158,11 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             val id = msg.chatHistoryId
             if (id == null) {
                 android.util.Log.w("ChatFragment", "saveQuestion skipped: chatHistoryId is null")
-                android.widget.Toast
-                    .makeText(requireContext(), "저장할 수 없는 메시지예요.", android.widget.Toast.LENGTH_SHORT)
-                    .show()
+                showCustomToast("저장할 수 없는 메시지예요.",R.drawable.ic_failure)
                 return@setOnClickListener
             }
             vm.saveQuestion(id)
+            showCustomToast("저장되었습니다",R.drawable.ic_success)
         }
 
         menuBinding.menuCopy.setOnClickListener {
@@ -145,9 +171,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         }
 
         // 말풍선 위에 뜨게
-        val menuWidth = (100 * resources.displayMetrics.density).toInt()
+        val menuWidth = (92 * resources.displayMetrics.density).toInt()
         val xOffset = anchor.width - menuWidth
-        popup.showAsDropDown(anchor, xOffset, -anchor.height + 130)
+        val yOffset = (-30 * resources.displayMetrics.density).toInt()
+        popup.showAsDropDown(anchor, xOffset, yOffset)
 
         menuPopup = popup
     }

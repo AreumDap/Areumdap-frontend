@@ -11,6 +11,7 @@
         android:maxWidth="300dp"
         android:text="ㅎㅇ"
         style="@style/TA_Body3"
+        android:textStyle="bold"
         android:textColor="@color/white"
         android:paddingHorizontal="20.5dp"
         android:paddingVertical="12dp"

@@ -14,6 +14,7 @@ import com.example.areumdap.data.repository.ChatRepositoryImpl
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.source.RetrofitClient.chatbotApiService
 import com.example.areumdap.data.source.TokenManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -90,6 +91,7 @@ class ChatViewModel(
         }
     }
 
+    // 메시지 전송
     fun send(text: String) {
         val trimmed = text.trim()
         if (trimmed.isBlank()) return
@@ -120,13 +122,7 @@ class ChatViewModel(
             )
 
             val typingId = "typing_$now"
-            _messages.value = _messages.value + ChatMessage(
-                id = typingId,
-                sender = Sender.AI,
-                text = "…",
-                time = System.currentTimeMillis(),
-                status = Status.TYPING
-            )
+            showTyping(typingId)
 
             // 다음 단계에서 /api/chatbot으로 교체
             try {
@@ -138,20 +134,36 @@ class ChatViewModel(
 
                 val reply = repo.ask(trimmed, currentThreadId)
 
-                val aiMessageId = "ai_${System.currentTimeMillis()}"
-                _messages.value = _messages.value
-                    .filterNot { it.id == typingId } +
-                        ChatMessage(
-                            id = aiMessageId,
-                            sender = Sender.AI,
-                            text = reply.content,
-                            time = System.currentTimeMillis(),
-                            status = Status.SENT,
-                            chatHistoryId = reply.chatHistoryId
-                        )
+                val parts = splitToBubbles(reply.content)
 
-                if (reply.chatHistoryId == null) {
-                    attachChatHistoryId(currentThreadId, aiMessageId, reply.content)
+                val base = System.currentTimeMillis()
+                for ((i, part) in parts.withIndex()) {
+                    val isLast = i == parts.lastIndex
+
+                    _messages.value = _messages.value.filterNot { it.id == typingId }
+
+                    val aiMsgs = ChatMessage(
+                            id = "ai_${base}_$i",
+                            sender = Sender.AI,
+                            text = part,
+                            time = base + i,
+                            status = Status.SENT,
+                            chatHistoryId = if (i == parts.lastIndex) reply.chatHistoryId else null
+                        )
+                    _messages.value = _messages.value+aiMsgs
+                    if (!isLast) {
+                        showTyping(typingId)
+                        delay(1000L)
+                    }
+
+                }
+
+                _messages.value = _messages.value
+                    .filterNot { it.id == typingId }
+
+                val lastAiId = "ai_${base}_${parts.lastIndex}"
+                if (reply.chatHistoryId == null && lastAiId != null) {
+                    attachChatHistoryId(currentThreadId, lastAiId, reply.content)
                 }
 
                 if (reply.isSessionEnd) {
@@ -159,6 +171,8 @@ class ChatViewModel(
                     //     .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
                     lastEndedThreadId = currentThreadId
                     sessionEnded = true
+
+                    delay(1000L)
                     _endEvent.tryEmit(Unit)
                 }
             } catch (e: Exception) {
@@ -174,6 +188,18 @@ class ChatViewModel(
             }
         }
     }
+
+    // 구분자 기준으로 채팅 버블 나누기
+    private fun splitToBubbles(text: String): List<String> {
+        // . ? ! 뒤에서 끊고, 공백/줄바꿈은 무시
+        val regex = Regex("(?<=[.!?])\\s+")
+        return text.trim()
+            .split(regex)
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+    }
+
+
     private suspend fun startChatInternal(content: String, userQuestionId: Long?): Boolean {
         return try {
             Log.d("ChatViewModel", "startChatInternal request: content='$content', userQuestionId=$userQuestionId")
@@ -208,21 +234,25 @@ class ChatViewModel(
     }
 
     private val prefillBaseTemplates = listOf(
-        "안녕하세요 {name}님!\n오늘 나누고 싶은 이야기가 있으시군요.\n몇 가지 질문을 통해 함께 생각해볼게요.",
-        "반가워요 {name}님!\n오늘의 이야기를 시작해볼까요?",
-        "다시 만나서 반가워요, {name}님.\n선택하신 질문으로 대화를 시작해볼게요.",
-        "안녕하세요, {name}님.\n오늘은 이 질문을 중심으로 이야기를 시작해볼게요.",
-        "안녕하세요, {name}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요."
+        "안녕하세요 {nick}님!\n오늘 나누고 싶은 이야기가 있으시군요.\n몇 가지 질문을 통해 함께 생각해볼게요.",
+        "반가워요 {nick}님!\n오늘의 이야기를 시작해볼까요?",
+        "다시 만나서 반가워요, {nick}님.\n선택하신 질문으로 대화를 시작해볼게요.",
+        "안녕하세요, {nick}님.\n오늘은 이 질문을 중심으로 이야기를 시작해볼게요.",
+        "안녕하세요, {nick}님.\n이 질문이 눈에 들어온 데에는 이유가 있을지도 모르겠어요.\n함께 살펴볼게요."
     )
 
-    fun seedPrefillQuestion(question: String) {
+    // 대화 바로 시작할 때 자동으로 나오는 질문
+    fun seedPrefillQuestion(question: String, nickname: String? = null) {
         if (_messages.value.isNotEmpty()) return
 
         val now = System.currentTimeMillis()
-        val name = TokenManager.getUserName().orEmpty().ifBlank { "사용자" }
+        val nick = nickname
+            ?: TokenManager.getUserNickname()
+            ?: TokenManager.getUserName()
+            ?: "사용자"
 
         val baseText = prefillBaseTemplates.random()
-            .replace("{name}", name)
+            .replace("{nick}", nick)
 
         val base = ChatMessage(
             id = "ai_base_$now",
@@ -276,6 +306,19 @@ class ChatViewModel(
             time = System.currentTimeMillis(),
             status = Status.FAILED
         )
+    }
+
+    private fun showTyping(typingId: String) {
+        val typing = ChatMessage(
+            id = typingId,
+            sender = Sender.AI,
+            text = "…",
+            time = System.currentTimeMillis(),
+            status = Status.TYPING
+        )
+        _messages.value = _messages.value
+            .filterNot { it.id == typingId }
+            .plus(typing)
     }
 
     fun fetchSummary(accessToken : String, threadId:Long){

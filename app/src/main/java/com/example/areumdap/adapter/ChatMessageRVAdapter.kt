@@ -11,10 +11,13 @@ import com.example.areumdap.databinding.ItemChatAiBinding
 import com.example.areumdap.databinding.ItemChatMeBinding
 import com.example.areumdap.data.model.ChatMessage
 import com.example.areumdap.data.model.Sender
+import com.example.areumdap.data.model.Status
 
 class ChatMessageRVAdapter(
     private val onAiLongClick : (View, ChatMessage) ->Unit
 ) : ListAdapter<ChatMessage, RecyclerView.ViewHolder>(DIFF) {
+
+    private var lastProfileIndex: Int = -1
 
     override fun getItemViewType(position: Int): Int {
         return if (getItem(position).sender == Sender.ME) TYPE_ME else TYPE_AI
@@ -35,13 +38,42 @@ class ChatMessageRVAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val msg = getItem(position)
 
-        val prev = if(position >0) getItem(position -1) else null
-        val showProfile = prev?.sender != msg.sender
+        val lastProfileIndex = findLastAiIndexPreferTyping(currentList)
+        val showProfile =
+            msg.sender == Sender.AI &&
+            position == lastProfileIndex &&
+            (msg.status == Status.SENT || msg.status == Status.TYPING)
 
         when (holder) {
             is MeVH -> holder.bind(msg)
             is AiVH -> holder.bind(msg, showProfile)
         }
+    }
+
+    override fun onCurrentListChanged(
+        previousList: MutableList<ChatMessage>,
+        currentList: MutableList<ChatMessage>
+    ) {
+        val newIndex = findLastAiIndexPreferTyping(currentList)
+        if (lastProfileIndex != -1 && lastProfileIndex < itemCount) {
+            notifyItemChanged(lastProfileIndex)
+        }
+        if (newIndex != -1 && newIndex < itemCount) {
+            notifyItemChanged(newIndex)
+        }
+        lastProfileIndex = newIndex
+    }
+
+    private fun findLastAiIndexPreferTyping(list: List<ChatMessage>): Int {
+        for (i in list.size - 1 downTo 0) {
+            val msg = list[i]
+            if (msg.sender == Sender.AI && msg.status == Status.TYPING) return i
+        }
+        for (i in list.size - 1 downTo 0) {
+            val msg = list[i]
+            if (msg.sender == Sender.AI && msg.status == Status.SENT) return i
+        }
+        return -1
     }
 
     class MeVH(private val binding: ItemChatMeBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -72,3 +104,4 @@ class ChatMessageRVAdapter(
         }
     }
 }
+
