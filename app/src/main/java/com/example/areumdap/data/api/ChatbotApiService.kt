@@ -1,8 +1,8 @@
 package com.example.areumdap.data.api
 
+import com.example.areumdap.data.model.AssignedQuestionsResponse
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.ChatSummaryRequest
-import com.example.areumdap.data.model.GetChatbotRecommendsResponse
 import com.example.areumdap.data.model.ReportRequest
 import com.example.areumdap.data.model.ReportResponse
 import com.example.areumdap.data.model.SendChatMessageRequest
@@ -18,8 +18,11 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ChatbotApiService {
-    @GET("api/chatbot/recommend")
-    suspend fun getTodayRecommendations(): GetChatbotRecommendsResponse
+    @POST("api/chatbot/recommend")
+    suspend fun assignTodayRecommend(): Response<Unit>
+
+    @GET("api/chatbot/assigned")
+    suspend fun getAssignedQuestions(): ApiResponse<AssignedQuestionsResponse>
 
     @POST("api/chat/thread")
     suspend fun startChat(

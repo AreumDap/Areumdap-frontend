@@ -9,8 +9,11 @@ import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.R
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivityEmailLoginBinding
+import com.example.areumdap.data.api.ChatbotApiService
 import com.example.areumdap.data.repository.AuthRepository
+import com.example.areumdap.data.repository.ChatbotRepository
 import com.example.areumdap.data.repository.UserRepository
+import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.source.TokenManager
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
@@ -117,6 +120,7 @@ class EmailLoginActivity : AppCompatActivity() {
                     }
 
                     // FCM 토큰 등록 후 화면 이동
+                    assignTodayRecommendIfNeeded()
                     registerFcmTokenAndNavigate()
 
                 }.onFailure { error ->
@@ -179,6 +183,15 @@ class EmailLoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private suspend fun assignTodayRecommendIfNeeded() {
+        val api = RetrofitClient.create(ChatbotApiService::class.java)
+        val repo = ChatbotRepository(api)
+        repo.assignTodayRecommendOnLogin()
+            .onFailure { e ->
+                Log.w(tag, "assign recommend failed: ${e.message}")
+            }
     }
 
     private fun checkCharacterAndNavigate() {

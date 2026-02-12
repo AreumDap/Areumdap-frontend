@@ -1,8 +1,10 @@
 package com.example.areumdap.data.repository
 
 import android.util.Log
-import com.example.areumdap.data.api.ChatbotApiService
+import com.example.areumdap.data.api.ApiException
 import com.example.areumdap.data.api.ApiResponse
+import com.example.areumdap.data.api.ChatbotApiService
+import com.example.areumdap.data.model.AssignedQuestionDto
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.ChatSummaryRequest
 import com.example.areumdap.data.model.ReportRequest
@@ -13,6 +15,16 @@ import com.example.areumdap.data.model.SendChatMessageResponse
 class ChatRepositoryImpl(
     private val api: ChatbotApiService
 ) : ChatRepository {
+    override suspend fun fetchAssignedQuestions(): Result<List<AssignedQuestionDto>> =
+        runCatching {
+            val res = api.getAssignedQuestions()
+
+            if (!res.isSuccess) {
+                throw ApiException(res.code, res.message)
+            }
+
+            res.data?.questions ?: emptyList()
+        }
 
     override suspend fun ask(content: String, threadId: Long): SendChatMessageResponse {
         val req = SendChatMessageRequest(content = content, userChatThreadId = threadId)

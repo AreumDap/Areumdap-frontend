@@ -93,8 +93,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="오늘의 추천 질문"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:clickable="true"
+                android:focusable="true" />
         </RelativeLayout>
+
+        <ProgressBar
+            android:id="@+id/recommend_loading"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginBottom="6dp" />
+
+        <TextView
+            android:id="@+id/recommend_empty_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="추천 질문이 없어요."
+            android:textColor="@color/black"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recommend_question_rv"

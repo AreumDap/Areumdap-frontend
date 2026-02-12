@@ -23,6 +23,7 @@ import com.example.areumdap.UI.Chat.ChatViewModel
 import com.example.areumdap.UI.Chat.RecommendQuestionViewModel
 import com.example.areumdap.databinding.FragmentHomeBinding
 import com.example.areumdap.UI.auth.Category
+import com.example.areumdap.UI.auth.ToastDialogFragment
 import com.example.areumdap.data.model.RecommendQuestion
 import com.example.areumdap.data.repository.UserRepository
 import com.example.areumdap.data.source.TokenManager
@@ -68,10 +69,19 @@ class HomeFragment : Fragment() {
         viewModel.fetchMyCharacter()
 
         adapter = RecommendQuestionRVAdapter { item ->
+            chatViewModel.startChat(
+                content = item.text,
+                userQuestionId = item.id
+            )
             goToChat(item.text, prefillId = item.id, prefillTag = item.tag.name)
         }
         binding.recommendQuestionRv.adapter = adapter
-        recommendViewModel.fetch()
+
+        binding.titleTv.setOnClickListener {
+            recommendViewModel.fetchAssignedQuestionsOnClick()
+        }
+        // 홈 진입 시: 배정 -> 조회 순으로 자동 로드
+        recommendViewModel.fetchAssignedQuestionsOnHome()
 
         binding.chatStartButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -131,7 +141,33 @@ class HomeFragment : Fragment() {
                 )
             }
             adapter.submitList(domainQuestions)
+            binding.recommendEmptyTv.visibility =
+                if (domainQuestions.isEmpty()) View.VISIBLE else View.GONE
         }
+
+        recommendViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+            val loading = isLoading == true
+            binding.recommendLoading.visibility = if (loading) View.VISIBLE else View.GONE
+            binding.titleTv.isEnabled = !loading
+            if (loading) {
+                binding.recommendEmptyTv.visibility = View.GONE
+            }
+        }
+
+        recommendViewModel.error.observe(viewLifecycleOwner) { message ->
+            if (!message.isNullOrBlank()) {
+                showCustomToast(message, isSuccess = false)
+                binding.recommendEmptyTv.text = message
+                binding.recommendEmptyTv.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun showCustomToast(message: String, isSuccess: Boolean = true) {
+        if (!isAdded) return
+        val iconRes = if (isSuccess) R.drawable.ic_success else R.drawable.ic_error
+        val toast = ToastDialogFragment(message, iconRes)
+        toast.show(requireActivity().supportFragmentManager, "CustomToast")
     }
 
     private fun mapCategory(tag: String?): Category {

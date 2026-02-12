@@ -2,6 +2,9 @@ package com.example.areumdap.data.source
 
 import android.content.Context
 import android.content.SharedPreferences
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * JWT 토큰 저장 및 관리 클래스
@@ -17,6 +20,7 @@ object TokenManager {
     private const val KEY_SOCIAL_PROVIDER = "social_provider"
     private const val KEY_PROFILE_IMAGE = "profile_image"
     private const val KEY_FCM_TOKEN = "fcm_token"
+    private const val KEY_RECOMMEND_ASSIGNED_DATE = "recommend_assigned_date"
 
     private lateinit var prefs: SharedPreferences
 
@@ -117,6 +121,18 @@ object TokenManager {
         return prefs.getString(KEY_FCM_TOKEN, null)
     }
 
+    fun isTodayRecommendAssigned(): Boolean {
+        val today = getTodayDateString()
+        val saved = prefs.getString(KEY_RECOMMEND_ASSIGNED_DATE, null)
+        return saved == today
+    }
+
+    fun markTodayRecommendAssigned() {
+        prefs.edit()
+            .putString(KEY_RECOMMEND_ASSIGNED_DATE, getTodayDateString())
+            .apply()
+    }
+
     // 계절 테마 저장 (app_prefs)
     private lateinit var appContext: Context
 
@@ -125,5 +141,10 @@ object TokenManager {
             val appPrefs = appContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
             appPrefs.edit().putString("SEASON", season).apply()
         }
+    }
+
+    private fun getTodayDateString(): String {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
+        return formatter.format(Date())
     }
 }

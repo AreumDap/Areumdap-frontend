@@ -1,9 +1,12 @@
 ﻿package com.example.areumdap.UI.Chat
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.areumdap.data.api.ChatReportApiService
+import com.example.areumdap.data.model.AssignedQuestionDto
 import com.example.areumdap.data.model.ChatMessage
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.Sender
@@ -22,6 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.internal.http.hasBody
 
+// 요약UiState
 sealed interface SummaryUiState{
     data object Idle: SummaryUiState
     data object Loading : SummaryUiState
@@ -29,11 +33,20 @@ sealed interface SummaryUiState{
     data class Error(val message:String) : SummaryUiState
 }
 
+// 레포트 생성 UiState
 sealed interface ReportCreateUiState {
     data object Idle : ReportCreateUiState
     data object Loading : ReportCreateUiState
     data class Success(val reportId: Long) : ReportCreateUiState
     data class Error(val message: String) : ReportCreateUiState
+}
+
+// 배정된 질문 조회UiState
+sealed interface AssignedQuestionsUiState {
+    data object Idle : AssignedQuestionsUiState
+    data object Loading : AssignedQuestionsUiState
+    data class Success(val questions: List<AssignedQuestionDto>) : AssignedQuestionsUiState
+    data class Error(val message: String) : AssignedQuestionsUiState
 }
 
 class ChatViewModel(
@@ -56,13 +69,40 @@ class ChatViewModel(
 
     private val _reportCreateState = MutableStateFlow<ReportCreateUiState>(ReportCreateUiState.Idle)
     val reportCreateState: StateFlow<ReportCreateUiState> = _reportCreateState
+
+    // 배정 질문 리스트
+    private val _assignedQuestions = MutableLiveData<List<AssignedQuestionDto>>(emptyList())
+    val assignedQuestions: LiveData<List<AssignedQuestionDto>> = _assignedQuestions
+
+    private val _assignedState = MutableStateFlow<AssignedQuestionsUiState>(AssignedQuestionsUiState.Idle)
+    val assignedState: StateFlow<AssignedQuestionsUiState> = _assignedState
+
     fun getThreadId(): Long? = threadId
     fun getLastEndedThreadId(): Long? = lastEndedThreadId
     fun getLastRecommendTag(): String? = lastRecommendTag
     fun setRecommendTag(tag: String?) {
         lastRecommendTag = tag
     }
+    // 배정 질문 할당
+    fun fetchAssignedQuestions(){
+        viewModelScope.launch {
+            _assignedState.value = AssignedQuestionsUiState.Loading
 
+            repo.fetchAssignedQuestions()
+                .onSuccess { list ->
+                    _assignedQuestions.value = list
+                    _assignedState.value = AssignedQuestionsUiState.Success(list)
+                }
+                .onFailure { e ->
+                    _assignedState.value = AssignedQuestionsUiState.Error(
+                        e.message ?: "배정 질문 조회 실패"
+                    )
+                }
+        }
+    }
+
+
+    // 채팅 세션 리셋
     fun resetChatSession(endedThreadId: Long? = null) {
         if (endedThreadId != null) {
             lastEndedThreadId = endedThreadId
