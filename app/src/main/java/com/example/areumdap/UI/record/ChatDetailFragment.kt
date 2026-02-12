@@ -1,7 +1,6 @@
 ﻿package com.example.areumdap.UI.record
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -173,7 +172,6 @@ private fun parseToMillis(value: String): Long {
             val t = sdf.parse(value)?.time
             if (t != null) return t
         } catch (e: Exception) {
-            Log.d("parseToMillis", "fail pattern=$p value=$value", e)
         }
     }
     return System.currentTimeMillis()

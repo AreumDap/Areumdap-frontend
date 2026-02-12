@@ -3,7 +3,6 @@ package com.example.areumdap.UI.Onboarding
 import android.content.Context
 import android.os.Bundle
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,7 +76,6 @@ class OnboardingInfoFragment: Fragment() {
 
         // infoTextStep 관찰해서 텍스트 업데이트
         viewModel.infoTextStep.observe(viewLifecycleOwner) { step ->
-            Log.d("CharacterAPI", "infoTextStep 변경: $step")
             when (step) {
                 0 -> showText1() // "아름이가 태어났어요"
                 1 -> showText2() // "서로를 알아가기 위해..."
@@ -92,7 +90,6 @@ class OnboardingInfoFragment: Fragment() {
     private fun restoreCharacterImage() {
         val imageUrl = viewModel.createdImageUrl
         if (!imageUrl.isNullOrEmpty()) {
-            Log.d("CharacterAPI", "이미지 복원: $imageUrl")
             Glide.with(this)
                 .load(imageUrl)
                 .error(R.drawable.img_character_egg)
@@ -108,7 +105,6 @@ class OnboardingInfoFragment: Fragment() {
         )
         // 이미 캐릭터가 생성되어 있으면 API 호출 스킵, 저장된 이미지 사용
         if (viewModel.createdCharacterId != null) {
-            Log.d("CharacterAPI", "이미 생성된 캐릭터 사용: ID=${viewModel.createdCharacterId}")
             restoreCharacterImage()
             return
         }
@@ -144,16 +140,10 @@ class OnboardingInfoFragment: Fragment() {
         val season = viewModel.selectedSeason.value
         val keywords = viewModel.selectedKeywords.value ?: mutableListOf()
 
-        Log.d("CharacterAPI", "계절: $season")
-        Log.d("CharacterAPI", "키워드: $keywords")
-
         if (season.isNullOrEmpty()) {
-            Log.e("CharacterAPI", "계절 정보 없음!")
             showError("계절 정보가 없습니다.")
             return
         }
-
-        Log.d("CharacterAPI", "API 호출 시작: season=$season, keywords=$keywords")
 
         val currentState = characterViewModel.uiState.value
         if (currentState is CharacterUiState.Loading || currentState is CharacterUiState.Success) {
@@ -165,27 +155,20 @@ class OnboardingInfoFragment: Fragment() {
             season = season,
             keywords = emptyList()
         )
-
-        Log.d("CharacterAPI", "characterViewModel.createCharacter() 호출 완료")
     }
 
     // 캐릭터 생성 상태 관찰
     private fun observeCharacterCreation() {
-        Log.d("CharacterAPI", "observeCharacterCreation() 시작")
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 characterViewModel.uiState.collect { state ->
-                    Log.d("CharacterAPI", "uiState 변경: $state")
 
                     when (state) {
                         is CharacterUiState.Loading -> {
-                            Log.d("CharacterAPI", "캐릭터 생성 중...")
                             showLoading()
                         }
                         is CharacterUiState.Success -> {
-                            Log.d("CharacterAPI", "성공! ID: ${state.characterId}, URL: ${state.imageUrl}")
-                            Log.d("CharacterAPI", "imageUrl isNullOrEmpty: ${state.imageUrl.isNullOrEmpty()}")
                             createdCharacterId = state.characterId
                             createdImageUrl = state.imageUrl
                             // ViewModel에도 저장 (Fragment 재생성 시 복원용)
@@ -193,21 +176,18 @@ class OnboardingInfoFragment: Fragment() {
                             viewModel.createdImageUrl = state.imageUrl
                             // 계절별 알 이미지 로드
                             if (!state.imageUrl.isNullOrEmpty()) {
-                                Log.d("CharacterAPI", "Glide로 이미지 로드 시도: ${state.imageUrl}")
                                 Glide.with(this@OnboardingInfoFragment)
                                     .load(state.imageUrl)
                                     .error(R.drawable.img_character_egg)
                                     .into(binding.ivCharacter)
                                 binding.ivCharacter.visibility = View.VISIBLE
                             } else {
-                                Log.d("CharacterAPI", "imageUrl이 null/empty -> fallback 이미지 미표시 상태")
                                 // imageUrl이 null이면 이미지가 표시되지 않음
                             }
                             hideLoading()
                             characterViewModel.resetUiState()
                         }
                         is CharacterUiState.Error -> {
-                            Log.e("CharacterAPI", "에러: ${state.message}")
                             hideLoading()
                             showError(state.message)
                             characterViewModel.resetUiState()
@@ -221,8 +201,6 @@ class OnboardingInfoFragment: Fragment() {
 
     // 캐릭터 정보 저장
     private fun saveCharacterInfo(characterId: Int, imageUrl: String?) {
-        Log.d("CharacterAPI", "캐릭터 정보 저장: ID=$characterId, URL=$imageUrl")
-
         requireActivity().getSharedPreferences("character", Context.MODE_PRIVATE)
             .edit()
             .putInt("character_id", characterId)
@@ -239,20 +217,11 @@ class OnboardingInfoFragment: Fragment() {
 
         val nickname = viewModel.nickname.value ?: ""
 
-        Log.d("CharacterAPI", "=== 온보딩 저장 시작 ===")
-        Log.d("CharacterAPI", "닉네임: $nickname")
-        Log.d("CharacterAPI", "캐릭터 ID: $characterId")
-
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                Log.d("CharacterAPI", "API 호출 중...")
                 val response = userApi.saveOnboarding(OnboardingRequest(nickname = nickname))
 
-                Log.d("CharacterAPI", "응답 코드: ${response.code()}")
-                Log.d("CharacterAPI", "응답 성공 여부: ${response.isSuccessful}")
-
                 if (!response.isSuccessful) {
-                    Log.e("CharacterAPI", "온보딩 저장 응답 실패 (코드: ${response.code()}), 메인으로 이동 계속 진행")
                 }
 
                 // 캐릭터는 이미 생성 완료되었으므로 온보딩 저장 성공/실패 무관하게 메인으로 이동
@@ -262,7 +231,6 @@ class OnboardingInfoFragment: Fragment() {
                 hideLoading()
                 (activity as? OnboardingActivity)?.navigateToMain()
             } catch (e: Exception) {
-                Log.e("CharacterAPI", "예외 발생", e)
                 // 예외 발생해도 캐릭터는 이미 생성되었으므로 메인으로 이동
                 saveCharacterInfo(characterId, imageUrl)
                 characterViewModel.resetUiState()

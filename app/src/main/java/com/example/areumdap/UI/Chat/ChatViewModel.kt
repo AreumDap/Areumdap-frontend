@@ -1,6 +1,5 @@
 ﻿package com.example.areumdap.UI.Chat
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -123,14 +122,12 @@ class ChatViewModel(
     //    오늘의 추천 질문
     fun startChat(content: String, userQuestionId: Long? = null) {
         if (threadId != null) {
-            Log.d("ChatViewModel", "startChat skip: already threadId=$threadId")
             return
         }
 
         viewModelScope.launch {
             val ok = startChatInternal(content, userQuestionId)
             if (!ok) {
-                Log.e("ChatViewModel", "startChat() failed")
             }
         }
     }
@@ -211,8 +208,6 @@ class ChatViewModel(
                 }
 
                 if (reply.isSessionEnd) {
-                    // runCatching { repo.stopChat(currentThreadId) }
-                    //     .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
                     lastEndedThreadId = currentThreadId
                     sessionEnded = true
 
@@ -246,8 +241,6 @@ class ChatViewModel(
 
     private suspend fun startChatInternal(content: String, userQuestionId: Long?): Boolean {
         return try {
-            Log.d("ChatViewModel", "startChatInternal request: content='$content', userQuestionId=$userQuestionId")
-
             val res = chatbotApiService.startChat(
                 StartChatRequest(content = content, userQuestionId = userQuestionId)
             )
@@ -257,7 +250,6 @@ class ChatViewModel(
                 val data = wrapper?.data
 
                 if (data == null) {
-                    Log.e("ChatViewModel", "startChatInternal success but data=null")
                     false
                 } else {
                     threadId = data.userChatThreadId
@@ -267,12 +259,9 @@ class ChatViewModel(
                     true
                 }
             } else {
-                val err = runCatching { res.errorBody()?.string() }.getOrNull()
-                Log.e("ChatViewModel", "startChatInternal failed code=${res.code()} err=$err")
                 false
             }
         } catch (e: Exception) {
-            Log.e("ChatViewModel", "startChatInternal exception", e)
             false
         }
     }
@@ -296,7 +285,7 @@ class ChatViewModel(
             ?: "사용자"
 
         val baseText = prefillBaseTemplates.random()
-            .replace("{nick}", nick)
+             .replace("{nick}", nick)
 
         val base = ChatMessage(
             id = "ai_base_$now",
@@ -335,10 +324,8 @@ class ChatViewModel(
     // 대화 중 나가기 버튼 클릭 시
     fun stopChatOnExit(){
         val id = threadId?: return
-        Log.d("ChatExit", "stopChatOnExit threadId=$id")
         viewModelScope.launch {
             runCatching { repo.stopChat(id) }
-                .onFailure { Log.e("ChatViewModel", "stopChat failed", it) }
         }
     }
 
@@ -385,10 +372,6 @@ class ChatViewModel(
             if (token.isNullOrBlank()) return@launch
 
             repo.saveQuestion(chatHistoryId)
-                .onSuccess { res ->
-                    Log.d("ChatViewModel", "saveQuestion success: ${res.message}") }
-                .onFailure {  e ->
-                    Log.e("ChatViewModel", "saveQuestion failed", e) }
         }
     }
 
@@ -408,8 +391,6 @@ class ChatViewModel(
             _messages.value = _messages.value.map { msg ->
                 if (msg.id == aiMessageId) msg.copy(chatHistoryId = match.id) else msg
             }
-        }.onFailure { e ->
-            Log.e("ChatViewModel", "attachChatHistoryId failed", e)
         }
     }
 

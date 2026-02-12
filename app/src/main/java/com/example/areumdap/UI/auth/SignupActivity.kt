@@ -8,7 +8,6 @@ import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +23,6 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
     private var isEmailVerified = false
     private var verifiedEmail = ""
-    private val tag = "SignupActivity"
 
     // 비밀번호 보이기/숨기기 상태
     private var isPwVisible = false
@@ -43,8 +41,6 @@ class SignupActivity : AppCompatActivity() {
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Log.d(tag, "SignupActivity 생성됨")
-
         // TokenManager 초기화
         TokenManager.init(this)
 
@@ -55,8 +51,6 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun initClickListeners() {
-        Log.d(tag, "클릭 리스너 초기화")
-
         binding.btnBack.setOnClickListener { finish() }
 
         binding.btnEmailCheck.setOnClickListener { requestEmailVerification() }
