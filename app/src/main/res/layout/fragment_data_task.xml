@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/transparent">
+    android:background="@android:color/transparent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include
         android:id="@+id/data_task_card"
@@ -14,19 +14,49 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
+        app:layout_constraintVertical_bias="0.4"/>
+
+    <LinearLayout
+        android:id="@+id/task_tip_ll"
+        app:layout_constraintTop_toBottomOf="@+id/data_task_card"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="-30dp"
+        android:elevation="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_tip_bubble">
+
+        <TextView
+            style="@style/tip_tv"
+            android:text="Tip"
+            android:rotation="-15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="7dp"/>
+
+        <TextView
+            android:id="@+id/tip_tv"
+            android:gravity="center"
+            android:text="이걸 하기 어려울 땐 \n이렇게 저렇게 시작해보는 건 어때요?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="13dp"
+            style="@style/tip_title_tv"/>
+
+    </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/task_complete_btn"
         android:layout_width="134dp"
         android:layout_height="45dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="43dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/data_task_card"
+        app:layout_constraintTop_toBottomOf="@+id/task_tip_ll"
         android:text="이전으로"
         style="@style/TA_Body2"
         android:textColor="@color/white"
-        android:background="@drawable/bg_data_task" />
+        android:background="@drawable/bg_data_task"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

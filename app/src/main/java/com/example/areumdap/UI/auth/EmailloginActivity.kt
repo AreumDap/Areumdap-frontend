@@ -2,6 +2,7 @@ package com.example.areumdap.UI.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +19,7 @@ import retrofit2.HttpException
 class EmailLoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEmailLoginBinding
     private val tag = "EmailLoginActivity"
+    private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,19 @@ class EmailLoginActivity : AppCompatActivity() {
         // 로그인 버튼
         binding.btnLogin.setOnClickListener {
             performLogin()
+        }
+
+        // 비밀번호 보기 토글
+        binding.btnPasswordToggle.setOnClickListener {
+            isPasswordVisible = !isPasswordVisible
+            if (isPasswordVisible) {
+                binding.etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+                binding.btnPasswordToggle.setImageResource(R.drawable.ic_visibility)
+            } else {
+                binding.etPassword.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                binding.btnPasswordToggle.setImageResource(R.drawable.ic_visibility_off)
+            }
+            binding.etPassword.setSelection(binding.etPassword.text.length)
         }
     }
 
