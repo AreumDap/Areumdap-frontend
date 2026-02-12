@@ -3,11 +3,14 @@
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.PopupWindow
 import androidx.activity.addCallback
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -40,6 +43,17 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
     private fun showCustomToast(message: String, iconResId:Int) {
         val toast = ToastDialogFragment(message, iconResId)
         toast.show(requireActivity().supportFragmentManager, "custom_toast")
+    }
+
+    fun setInputRadius(editText: EditText, radiusDp: Float) {
+        val radiusPx = radiusDp * editText.resources.displayMetrics.density
+
+        val bg = editText.background
+        val gd = (bg as? GradientDrawable)?.mutate() as? GradientDrawable
+            ?: return
+
+        gd.cornerRadius = radiusPx
+        editText.background = gd
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -91,6 +105,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         }
         binding.chatRv.adapter = adapter
         binding.chatRv.itemAnimator = null
+        binding.etChatInput.addTextChangedListener {
+            val r = if (binding.etChatInput.lineCount >= 3) 14f else 18f
+            setInputRadius(binding.etChatInput, r)
+        }
 
         binding.sendBtn.setOnClickListener {
             vm.send(binding.etChatInput.text.toString())

@@ -59,11 +59,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="1dp"
             android:background="@color/background2"
             app:tabIndicatorHeight="0dp"
             app:tabRippleColor="@android:color/transparent"
-            app:tabBackground="@null"/>
+            app:tabBackground="@null"
+            app:tabMinWidth="0dp"
+            app:tabPadding="0dp"
+            app:tabPaddingStart="0dp"
+            app:tabPaddingEnd="0dp"
+            app:tabInlineLabel="true"/>
 
 
 
@@ -83,21 +88,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_task_page"
-            android:layout_width="170dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:text="과제 페이지"
             style="@style/TA_Body2_bold"
-            app:cornerRadius="100dp"
-            app:strokeColor="?attr/colorPrimary"
-            app:strokeWidth="1dp"
-            app:elevation="0dp"
+            android:layout_width="171dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="15dp"
+            android:layout_weight="1"
             android:stateListAnimator="@null"
+            android:text="과제 페이지"
+            android:textColor="?attr/colorPrimary"
             app:backgroundTint="@color/white"
-            android:textColor="?attr/colorPrimary"/>
-
+            app:cornerRadius="100dp"
+            app:elevation="0dp"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="1dp" />
 
         <Space
             android:layout_width="24dp"
@@ -106,8 +112,9 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_home"
             style="@style/TA_Body2_bold"
-            android:layout_width="170dp"
-            android:layout_height="50dp"
+            android:layout_width="171dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="15dp"
             android:layout_weight="1"
             android:stateListAnimator="@null"
             android:text="홈으로"
