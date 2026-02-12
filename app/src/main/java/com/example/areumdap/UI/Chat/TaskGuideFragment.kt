@@ -1,7 +1,6 @@
 ﻿package com.example.areumdap.UI.Chat
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,10 +73,8 @@ class TaskGuideFragment : Fragment() {
 
         val threadId = requireArguments().getLong("threadId", -1L)
         if (threadId == -1L) {
-            Log.w("TaskGuideFragment", "threadId is missing")
             Toast.makeText(requireContext(), "threadId 없음", Toast.LENGTH_SHORT).show()
         } else {
-            Log.d("TaskGuideFragment", "createMissions threadId=$threadId")
             missionViewModel.createMissions(threadId)
         }
 

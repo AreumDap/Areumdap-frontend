@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -32,7 +31,6 @@ import kotlin.coroutines.resume
 class SocialLoginWebViewActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySocialLoginWebviewBinding
-    private val tag = "SocialLoginWebView"
 
     private var loginType: String = ""
 
@@ -50,12 +48,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
 
         loginType = intent.getStringExtra(EXTRA_LOGIN_TYPE) ?: ""
         val loginUrl = intent.getStringExtra(EXTRA_LOGIN_URL) ?: ""
-
-        Log.d(tag, "==================================================")
-        Log.d(tag, "🚀 SocialLoginWebViewActivity 시작")
-        Log.d(tag, "로그인 타입: $loginType")
-        Log.d(tag, "로그인 URL: $loginUrl")
-        Log.d(tag, "==================================================")
 
         if (loginUrl.isEmpty() || (loginType != TYPE_KAKAO && loginType != TYPE_NAVER)) {
             showCustomToast("로그인 정보가 올바르지 않습니다.", isSuccess = false)
@@ -95,7 +87,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
                 val url = request?.url?.toString() ?: return false
-                Log.d(tag, "🌐 URL 로딩 감지: $url")
 
                 if (checkAndHandleCallback(url)) {
                     return true
@@ -120,7 +111,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                         }
                         return true
                     } catch (e: Exception) {
-                        Log.e(tag, "Intent 처리 실패: ${e.message}")
                     }
                 } else if (url.startsWith("market://")) {
                     try {
@@ -128,7 +118,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                         startActivity(intent)
                         return true
                     } catch (e: Exception) {
-                        Log.e(tag, "Market 처리 실패: ${e.message}")
                     }
                 }
 
@@ -145,7 +134,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 if (url != null) {
-                    Log.d(tag, "📄 페이지 완료: $url")
                 }
             }
         }
@@ -159,7 +147,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 if (url.contains("code=")) {
                     val code = extractQueryParam(url, "code")
                     if (code != null) {
-                        Log.d(tag, "🔑 카카오 인가 코드 획득: $code")
                         processKakaoLogin(code)
                         return true
                     }
@@ -174,9 +161,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                     val code = extractQueryParam(url, "code")
                     val state = extractQueryParam(url, "state")
                     if (code != null && state != null) {
-                        Log.d(tag, "🔑 네이버 인가 코드 획득")
-                        Log.d(tag, "   code: $code")
-                        Log.d(tag, "   state: $state")
                         processNaverLogin(code, state)
                         return true
                     }
@@ -195,7 +179,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
             val uri = Uri.parse(url)
             uri.getQueryParameter(param)
         } catch (e: Exception) {
-            Log.e(tag, "$param 추출 실패: ${e.message}")
             null
         }
     }
@@ -203,7 +186,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
     private fun handleLoginError(url: String) {
         val uri = Uri.parse(url)
         val errorDescription = uri.getQueryParameter("error_description") ?: "로그인이 취소되었습니다."
-        Log.e(tag, "❌ 로그인 에러: $errorDescription")
         showCustomToast(errorDescription, isSuccess = false)
         finish()
     }
@@ -213,23 +195,14 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
      */
     private fun processKakaoLogin(code: String) {
         lifecycleScope.launch {
-            Log.d(tag, "==================================================")
-            Log.d(tag, "1️⃣ [카카오 로그인] API 호출 시작")
-            Log.d(tag, "   전송할 code: $code")
-
             val result = SocialAuthRepository.loginWithKakaoCode(code)
 
             if (result.isSuccess) {
                 val response = result.getOrNull()
-                Log.d(tag, "2️⃣ [카카오 로그인] API 성공!")
-                Log.d(tag, "   userId: ${response?.userId}")
-                Log.d(tag, "   name: ${response?.name}")
-                Log.d(tag, "   email: ${response?.email}")
 
                 // 토큰 저장 확인
                 val savedAccessToken = TokenManager.getAccessToken()
                 val savedUserId = TokenManager.getUserId()
-                Log.d(tag, "3️⃣ [토큰 저장 확인]")
 
                 // 성공 토스트
                 showCustomToast("${response?.name ?: "회원"}님 환영합니다!", isSuccess = true)
@@ -238,19 +211,13 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 assignTodayRecommendIfNeeded()
 
                 // FCM 토큰 등록
-                Log.d(tag, "4️⃣ [FCM 토큰] 등록 시작")
                 registerFcmTokenSync()
-                Log.d(tag, "5️⃣ [FCM 토큰] 등록 완료")
 
                 // 캐릭터 확인
-                Log.d(tag, "6️⃣ [캐릭터 확인] API 호출 시작")
                 checkCharacterAndNavigateSync()
 
             } else {
                 val error = result.exceptionOrNull()
-                Log.e(tag, "❌ [카카오 로그인] API 실패!")
-                Log.e(tag, "   에러 메시지: ${error?.message}")
-                Log.d(tag, "==================================================")
 
                 showCustomToast(error?.message ?: "카카오 로그인에 실패했습니다.", isSuccess = false)
                 finish()
@@ -263,24 +230,14 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
      */
     private fun processNaverLogin(code: String, state: String) {
         lifecycleScope.launch {
-            Log.d(tag, "==================================================")
-            Log.d(tag, "1️⃣ [네이버 로그인] API 호출 시작")
-            Log.d(tag, "   전송할 code: $code")
-            Log.d(tag, "   전송할 state: $state")
-
             val result = SocialAuthRepository.loginWithNaverCode(code, state)
 
             if (result.isSuccess) {
                 val response = result.getOrNull()
-                Log.d(tag, "2️⃣ [네이버 로그인] API 성공!")
-                Log.d(tag, "   userId: ${response?.userId}")
-                Log.d(tag, "   name: ${response?.name}")
-                Log.d(tag, "   email: ${response?.email}")
 
                 // 토큰 저장 확인
                 val savedAccessToken = TokenManager.getAccessToken()
                 val savedUserId = TokenManager.getUserId()
-                Log.d(tag, "3️⃣ [토큰 저장 확인]")
 
                 // 성공 토스트
                 showCustomToast("${response?.name ?: "회원"}님 환영합니다!", isSuccess = true)
@@ -289,20 +246,13 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 assignTodayRecommendIfNeeded()
 
                 // FCM 토큰 등록
-                Log.d(tag, "4️⃣ [FCM 토큰] 등록 시작")
                 registerFcmTokenSync()
-                Log.d(tag, "5️⃣ [FCM 토큰] 등록 완료")
 
                 // 캐릭터 확인
-                Log.d(tag, "6️⃣ [캐릭터 확인] API 호출 시작")
                 checkCharacterAndNavigateSync()
 
             } else {
                 val error = result.exceptionOrNull()
-                Log.e(tag, "❌ [네이버 로그인] API 실패!")
-                Log.e(tag, "   에러 메시지: ${error?.message}")
-                Log.d(tag, "==================================================")
-
                 showCustomToast(error?.message ?: "네이버 로그인에 실패했습니다.", isSuccess = false)
                 finish()
             }
@@ -317,19 +267,15 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
             FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val token = task.result
-                    Log.d(tag, "   FCM 토큰 획득: ${token.take(30)}...")
 
                     lifecycleScope.launch {
                         try {
                             UserRepository.updateFcmToken(token)
-                            Log.d(tag, "   FCM 토큰 서버 등록 성공")
                         } catch (e: Exception) {
-                            Log.e(tag, "   FCM 등록 실패: ${e.message}")
                         }
                         continuation.resume(Unit)
                     }
                 } else {
-                    Log.e(tag, "   FCM 토큰 가져오기 실패: ${task.exception?.message}")
                     continuation.resume(Unit)
                 }
             }
@@ -344,7 +290,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
         val repo = ChatbotRepository(api)
         repo.assignTodayRecommendOnLogin()
             .onFailure { e ->
-                Log.w(tag, "assign recommend failed: ${e.message}")
             }
     }
 
@@ -352,47 +297,24 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
         try {
             // 현재 토큰 상태 확인
             val currentToken = TokenManager.getAccessToken()
-            Log.d(tag, "   현재 저장된 토큰: ${currentToken?.take(30)}...")
 
             val result = AuthRepository.getMyCharacter()
 
             result.onSuccess { character ->
-                Log.d(tag, "7️⃣ [캐릭터 확인] 성공! 캐릭터 있음")
-                Log.d(tag, "   캐릭터 정보: $character")
-                Log.d(tag, "   → 메인 화면으로 이동")
-                Log.d(tag, "==================================================")
                 navigateToMain(forceMain = true)
             }.onFailure { e ->
                 if (e is HttpException) {
-                    Log.d(tag, "7️⃣ [캐릭터 확인] HTTP 에러")
-                    Log.d(tag, "   HTTP 코드: ${e.code()}")
-                    Log.d(tag, "   메시지: ${e.message()}")
 
                     if (e.code() == 404) {
-                        Log.d(tag, "   → 캐릭터 없음, 온보딩으로 이동")
-                        Log.d(tag, "==================================================")
                         navigateToOnboarding()
                     } else {
-                        Log.e(tag, "   → 기타 에러, 메인으로 이동")
-                        Log.d(tag, "==================================================")
                         navigateToMain(forceMain = true)
                     }
                 } else {
-                    Log.e(tag, "7️⃣ [캐릭터 확인] 기타 에러")
-                    Log.e(tag, "   에러 타입: ${e.javaClass.simpleName}")
-                    Log.e(tag, "   에러 메시지: ${e.message}")
-                    Log.d(tag, "   → 메인으로 이동")
-                    Log.d(tag, "==================================================")
                     navigateToMain(forceMain = true)
                 }
             }
         } catch (e: Exception) {
-            Log.e(tag, "7️⃣ [캐릭터 확인] 예외 발생!")
-            Log.e(tag, "   예외 타입: ${e.javaClass.simpleName}")
-            Log.e(tag, "   예외 메시지: ${e.message}")
-            e.printStackTrace()
-            Log.d(tag, "   → 메인으로 이동")
-            Log.d(tag, "==================================================")
             navigateToMain(forceMain = true)
         }
     }
@@ -402,7 +324,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
             .edit()
             .putBoolean("keep_login", true)
             .apply()
-        Log.d(tag, "   로그인 상태 저장 완료 (keep_login = true)")
     }
 
     private fun navigateToOnboarding() {
@@ -411,7 +332,6 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
             .putBoolean("onboarding_done", false)
             .apply()
 
-        Log.d(tag, "🚪 OnboardingActivity로 이동")
         val intent = Intent(this, OnboardingActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
@@ -423,10 +343,8 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
         val isOnboardingDone = if (forceMain) true else pref.getBoolean("onboarding_done", false)
 
         val intent = if (isOnboardingDone) {
-            Log.d(tag, "🚪 MainActivity로 이동")
             Intent(this, MainActivity::class.java)
         } else {
-            Log.d(tag, "🚪 OnboardingActivity로 이동 (온보딩 미완료)")
             Intent(this, OnboardingActivity::class.java)
         }
 

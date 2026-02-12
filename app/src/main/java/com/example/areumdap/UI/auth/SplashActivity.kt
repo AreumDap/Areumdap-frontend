@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.data.repository.AuthRepository
@@ -50,24 +49,20 @@ class SplashActivity : AppCompatActivity() {
 
                 result.onSuccess {
                     // 200 OK: 캐릭터 있음 -> 온보딩 완료 처리 -> 메인으로
-                    Log.d("Splash", "캐릭터 있음: 메인으로 이동")
                     assignTodayRecommendIfNeeded()
                     saveOnboardingDone()
                     navigateToMain()
                 }.onFailure { e ->
                     if (e is HttpException && e.code() == 404) {
                         // 404: 캐릭터 없음 -> 온보딩 미완료 -> 온보딩으로
-                        Log.d("Splash", "캐릭터 없음(404): 온보딩으로 이동")
                         navigateToOnboarding()
                     } else {
                         // 그 외 에러(토큰 만료, 서버 오류 등) -> 로그인 화면으로 다시
-                        Log.e("Splash", "조회 실패: ${e.message}")
                         navigateToLogin()
                     }
                 }
             } catch (e: Exception) {
                 // 네트워크 오류 등 -> 안전하게 로그인 화면으로
-                Log.e("Splash", "네트워크 오류: ${e.message}", e)
                 navigateToLogin()
             }
         }
@@ -78,7 +73,6 @@ class SplashActivity : AppCompatActivity() {
         val repo = ChatbotRepository(api)
         repo.assignTodayRecommendOnLogin()
             .onFailure { e ->
-                Log.w("Splash", "assign recommend failed: ${e.message}")
             }
     }
 

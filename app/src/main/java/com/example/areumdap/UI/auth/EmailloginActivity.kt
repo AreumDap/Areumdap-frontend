@@ -3,7 +3,6 @@ package com.example.areumdap.UI.auth
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.R
@@ -21,7 +20,6 @@ import retrofit2.HttpException
 
 class EmailLoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEmailLoginBinding
-    private val tag = "EmailLoginActivity"
     private var isPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,8 +122,6 @@ class EmailLoginActivity : AppCompatActivity() {
                     registerFcmTokenAndNavigate()
 
                 }.onFailure { error ->
-                    Log.e(tag, "로그인 에러 발생: ${error.message} / 타입: ${error.javaClass.name}")
-
                     val errorMessage = error.message.toString()
 
                     when {
@@ -154,7 +150,6 @@ class EmailLoginActivity : AppCompatActivity() {
                     binding.btnLogin.isEnabled = true
                 }
             } catch (e: Exception) {
-                Log.e(tag, "로그인 중 예외 발생: ${e.message}")
                 showCustomToast("네트워크 오류가 발생했습니다.", isSuccess = false)
                 binding.btnLogin.isEnabled = true
             }
@@ -164,20 +159,16 @@ class EmailLoginActivity : AppCompatActivity() {
     private fun registerFcmTokenAndNavigate() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.e(tag, "FCM 토큰 가져오기 실패", task.exception)
                 checkCharacterAndNavigate()
                 return@addOnCompleteListener
             }
 
             val token = task.result
-            Log.d(tag, "FCM 토큰: $token")
 
             lifecycleScope.launch {
                 try {
                     UserRepository.updateFcmToken(token)
-                    Log.d(tag, "FCM 토큰 서버 등록 완료")
                 } catch (e: Exception) {
-                    Log.e(tag, "FCM 토큰 서버 등록 실패: ${e.message}")
                 } finally {
                     checkCharacterAndNavigate()
                 }
@@ -190,7 +181,6 @@ class EmailLoginActivity : AppCompatActivity() {
         val repo = ChatbotRepository(api)
         repo.assignTodayRecommendOnLogin()
             .onFailure { e ->
-                Log.w(tag, "assign recommend failed: ${e.message}")
             }
     }
 
@@ -199,20 +189,16 @@ class EmailLoginActivity : AppCompatActivity() {
             try {
                 val result = AuthRepository.getMyCharacter()
                 result.onSuccess {
-                    Log.d(tag, "캐릭터 있음 -> 메인으로")
                     navigateToMain(forceMain = true)
                 }.onFailure { e ->
                     // 404면 캐릭터 없음 -> 온보딩, 그 외엔 에러라도 메인으로
                     if ((e is HttpException && e.code() == 404) || e.message?.contains("404") == true) {
-                        Log.d(tag, "캐릭터 없음 -> 온보딩으로")
                         navigateToOnboarding()
                     } else {
-                        Log.e(tag, "캐릭터 조회 에러: ${e.message}")
                         navigateToMain(forceMain = true)
                     }
                 }
             } catch (e: Exception) {
-                Log.e(tag, "알 수 없는 오류: ${e.message}")
                 navigateToMain(forceMain = true)
             }
         }
