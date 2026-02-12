@@ -2,7 +2,6 @@ package com.example.areumdap.UI.auth
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.R
@@ -14,7 +13,6 @@ import kotlinx.coroutines.launch
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private val tag = "LoginActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +72,6 @@ class LoginActivity : AppCompatActivity() {
             val result = SocialAuthRepository.getKakaoLoginUrl()
 
             result.onSuccess { loginUrl ->
-                Log.d(tag, "카카오 로그인 URL: $loginUrl")
 
                 // 웹뷰 화면으로 이동
                 val intent = Intent(this@LoginActivity, SocialLoginWebViewActivity::class.java)
@@ -85,7 +82,6 @@ class LoginActivity : AppCompatActivity() {
                 binding.btnKakaoLogin.isEnabled = true
 
             }.onFailure { error ->
-                Log.e(tag, "카카오 로그인 URL 조회 실패: ${error.message}")
                 // 실패 시 커스텀 토스트 호출
                 showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
                 binding.btnKakaoLogin.isEnabled = true
@@ -101,7 +97,6 @@ class LoginActivity : AppCompatActivity() {
             val result = SocialAuthRepository.getNaverLoginUrl()
 
             result.onSuccess { loginUrl ->
-                Log.d(tag, "네이버 로그인 URL: $loginUrl")
 
                 // 웹뷰 화면으로 이동
                 val intent = Intent(this@LoginActivity, SocialLoginWebViewActivity::class.java)
@@ -112,7 +107,6 @@ class LoginActivity : AppCompatActivity() {
                 binding.btnNaverLogin.isEnabled = true
 
             }.onFailure { error ->
-                Log.e(tag, "네이버 로그인 URL 조회 실패: ${error.message}")
                 // 실패 시 커스텀 토스트 호출
                 showCustomToast("로그인에 실패했어요. 잠시 후 다시 시도해 주세요", isSuccess = false)
                 binding.btnNaverLogin.isEnabled = true

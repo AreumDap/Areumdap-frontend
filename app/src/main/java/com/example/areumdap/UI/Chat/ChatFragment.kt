@@ -177,7 +177,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
             popup.dismiss()
             val id = msg.chatHistoryId
             if (id == null) {
-                android.util.Log.w("ChatFragment", "saveQuestion skipped: chatHistoryId is null")
                 showCustomToast("저장할 수 없는 메시지예요.",R.drawable.ic_failure)
                 return@setOnClickListener
             }
@@ -215,7 +214,6 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         dialog.setCallback(object : PopUpDialogFragment.MyDialogCallback {
             override fun onConfirm() {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    android.util.Log.d("ChatExit", "confirm exit clicked")
                     vm.stopChatOnExit()
                     vm.resetChatSession()
                     parentFragmentManager.popBackStack()
