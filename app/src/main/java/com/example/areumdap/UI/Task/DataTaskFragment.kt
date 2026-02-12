@@ -6,12 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.R
-import com.example.areumdap.UI.auth.Category
 import com.example.areumdap.UI.auth.ToastDialogFragment
 import com.example.areumdap.databinding.FragmentDataTaskBinding
 import kotlinx.coroutines.launch
@@ -76,11 +74,11 @@ class DataTaskFragment: DialogFragment() {
 
         // Tip 및 D-day 가시성 초기 설정
         if (showTip) {
-            binding.dataTaskCard.taskTipLl.visibility = View.VISIBLE
+            binding.taskTipLl.visibility = View.VISIBLE
             binding.dataTaskCard.icClockIv.visibility = View.VISIBLE
             binding.dataTaskCard.sumDuedayTv.visibility = View.VISIBLE
         } else {
-            binding.dataTaskCard.taskTipLl.visibility = View.GONE
+            binding.taskTipLl.visibility = View.GONE
             binding.dataTaskCard.icClockIv.visibility = View.INVISIBLE
             binding.dataTaskCard.sumDuedayTv.visibility = View.INVISIBLE
 
@@ -188,7 +186,7 @@ class DataTaskFragment: DialogFragment() {
                         if (showTip) {
                              // 가이드 텍스트 설정
                             missionDetail.guide?.let { guideText ->
-                                binding.dataTaskCard.tipTv.text = guideText
+                                binding.tipTv.text = guideText
                             }
 
                             missionDetail.dDay?.let {
@@ -210,30 +208,37 @@ class DataTaskFragment: DialogFragment() {
     }
 
     private fun applyTagStyle(tag: String) {
-        val ctx = requireContext()
+        val (color1Res, color2Res, iconRes, catName) = when (tag) {
+            "CAREER" -> Quadruple(R.color.career1, R.color.career2, R.drawable.ic_career, "진로")
+            "RELATIONSHIP", "RELATION" -> Quadruple(R.color.relationship1, R.color.relationship2, R.drawable.ic_relationship, "관계")
+            "REFLECTION", "SELF_REFLECTION" -> Quadruple(R.color.reflection1, R.color.reflection2, R.drawable.ic_reflection, "자기성찰")
+            "EMOTION" -> Quadruple(R.color.emotion1, R.color.emotion2, R.drawable.ic_emotion, "감정")
+            "GROWTH" -> Quadruple(R.color.growth1, R.color.growth2, R.drawable.ic_growth, "성장")
+            "ETC", "OTHER", "OTHERS", "ELSE" -> Quadruple(R.color.etc1, R.color.etc2, R.drawable.ic_etc, "기타")
+            else -> Quadruple(R.color.etc1, R.color.etc2, R.drawable.ic_etc, "기타")
+        }
 
-        val cat = Category.fromServerTag(tag)
+        val context = requireContext()
+        val color1 = ContextCompat.getColor(context, color1Res)
+        val color2 = ContextCompat.getColor(context, color2Res)
 
-        val color = ContextCompat.getColor(ctx, cat.colorRes)
-        val lineColor = ContextCompat.getColor(ctx, cat.lineRes)
+        // 버튼 배경색 변경
+        binding.taskCompleteBtn.backgroundTintList = ColorStateList.valueOf(color2)
 
-        binding.taskCompleteBtn.backgroundTintList = ColorStateList.valueOf(color)
-
+        // 포함된 카드 뷰 스타일 변경
         with(binding.dataTaskCard) {
-            // 카드 테두리
-            summaryCv.setStrokeColor(lineColor)
+            // 카드 테두리 및 그림자
+            summaryCv.strokeColor = color1
+            summaryCv.setOutlineAmbientShadowColor(color1)
+            summaryCv.setOutlineSpotShadowColor(color1)
 
-            // 카테고리 텍스트/아이콘
-            sumCatTv.text = cat.label
-            sumCatTv.setTextColor(color)
-            sumCatIv.setImageResource(cat.iconRes)
-
-            // 아이콘 tint
-            ImageViewCompat.setImageTintList(sumCatIv, ColorStateList.valueOf(color))
-            ImageViewCompat.setImageTintList(icClockIv, ColorStateList.valueOf(color))
-
-            // 듀데이 tint
-            sumDuedayTv.setTextColor(color)
+            // 카테고리 텍스트 및 아이콘
+            sumCatTv.text = catName
+            sumCatTv.setTextColor(color2)
+            sumCatIv.setImageResource(iconRes)
+            
+            // 듀데이 텍스트
+            sumDuedayTv.setTextColor(color2)
         }
     }
 
