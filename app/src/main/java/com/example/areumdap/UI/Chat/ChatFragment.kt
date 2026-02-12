@@ -106,8 +106,10 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         binding.chatRv.adapter = adapter
         binding.chatRv.itemAnimator = null
         binding.etChatInput.addTextChangedListener {
-            val r = if (binding.etChatInput.lineCount >= 3) 14f else 18f
-            setInputRadius(binding.etChatInput, r)
+            binding.etChatInput.post{
+                val r = if (binding.etChatInput.lineCount >= 3) 14f else 18f
+                setInputRadius(binding.etChatInput, r)
+            }
         }
 
         binding.sendBtn.setOnClickListener {

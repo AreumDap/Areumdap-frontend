@@ -92,7 +92,7 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
     }
 
     private fun setupToolbar() {
-        val titleFromArgs = arguments?.getString("threadTitle").orEmpty()
+        val titleFromArgs = arguments?.getString(ARG_THREAD_TITLE).orEmpty()
         val title = if (titleFromArgs.isBlank()) "대화 기록" else titleFromArgs
         (activity as? MainActivity)?.setToolbar(
             visible = true,
