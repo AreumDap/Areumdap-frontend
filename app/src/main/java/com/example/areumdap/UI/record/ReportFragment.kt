@@ -1,10 +1,12 @@
 package com.example.areumdap.UI.record
 
 import android.os.Bundle
+import android.text.TextPaint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -44,6 +46,28 @@ class ReportFragment: Fragment() {
                 chip.text = tag
                 binding.hashtagGroup.addView(chip)
             }
+    }
+
+    fun wrapByWord(text: String, paint: TextPaint, maxWidthPx: Float): String {
+        val words = text.split(Regex("\\s+"))
+        val sb = StringBuilder()
+        var line = ""
+
+        for (w in words) {
+            val candidate = if (line.isEmpty()) w else "$line $w"
+            if (paint.measureText(candidate) <= maxWidthPx) {
+                line = candidate
+            } else {
+                if (sb.isNotEmpty()) sb.append('\n')
+                sb.append(line)
+                line = w
+            }
+        }
+        if (line.isNotEmpty()) {
+            if (sb.isNotEmpty()) sb.append('\n')
+            sb.append(line)
+        }
+        return sb.toString()
     }
 
     override fun onCreateView(
@@ -108,7 +132,10 @@ class ReportFragment: Fragment() {
                                 reportTaskRVAdapter.submitList(data.missions)
                                 binding.reportMessageCntTv.text = "${data.messageCount}개"
                                 binding.reportTimeCntTv.text = "${data.durationMinutes}분"
-                                binding.reportSummaryTv.text = data.summaryContent
+                                binding.reportSummaryTv.doOnLayout {
+                                    val width = binding.reportSummaryTv.width - binding.reportSummaryTv.paddingLeft - binding.reportSummaryTv.paddingRight
+                                    binding.reportSummaryTv.text = wrapByWord(data.summaryContent, binding.reportSummaryTv.paint, width.toFloat())
+                                }
                             }
                         }
                     }

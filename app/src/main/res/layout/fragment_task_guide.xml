@@ -54,36 +54,23 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             />
-
-        <LinearLayout
-            android:id="@+id/task_tip_ll"
-            app:layout_constraintTop_toBottomOf="@+id/vp_tasks"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="-30dp"
-            android:elevation="10dp"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/pageIndicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_tip_bubble">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="1dp"
+            android:background="@color/background2"
+            app:tabIndicatorHeight="0dp"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabBackground="@null"
+            app:tabMinWidth="0dp"
+            app:tabPadding="0dp"
+            app:tabPaddingStart="0dp"
+            app:tabPaddingEnd="0dp"
+            app:tabInlineLabel="true"/>
 
-            <TextView
-                style="@style/tip_tv"
-                android:text="Tip"
-                android:rotation="-15"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="7dp"/>
 
-            <TextView
-                android:id="@+id/tip_tv"
-                android:gravity="center"
-                android:text="이걸 하기 어려울 땐 \n이렇게 저렇게 시작해보는 건 어때요?"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="13dp"
-                style="@style/tip_title_tv"/>
-
-        </LinearLayout>
 
     </LinearLayout>
 
@@ -101,21 +88,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_task_page"
-            android:layout_width="170dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:text="과제 페이지"
             style="@style/TA_Body2_bold"
-            app:cornerRadius="100dp"
-            app:strokeColor="?attr/colorPrimary"
-            app:strokeWidth="1dp"
-            app:elevation="0dp"
+            android:layout_width="171dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="15dp"
+            android:layout_weight="1"
             android:stateListAnimator="@null"
+            android:text="과제 페이지"
+            android:textColor="?attr/colorPrimary"
             app:backgroundTint="@color/white"
-            android:textColor="?attr/colorPrimary"/>
-
+            app:cornerRadius="100dp"
+            app:elevation="0dp"
+            app:strokeColor="?attr/colorPrimary"
+            app:strokeWidth="1dp" />
 
         <Space
             android:layout_width="24dp"
@@ -124,8 +112,9 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_home"
             style="@style/TA_Body2_bold"
-            android:layout_width="170dp"
-            android:layout_height="50dp"
+            android:layout_width="171dp"
+            android:layout_height="wrap_content"
+            android:paddingVertical="15dp"
             android:layout_weight="1"
             android:stateListAnimator="@null"
             android:text="홈으로"

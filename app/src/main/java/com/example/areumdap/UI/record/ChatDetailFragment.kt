@@ -24,6 +24,7 @@ import java.util.Locale
 import java.util.TimeZone
 
 class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
+    private var navigatingToReport = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -47,24 +48,18 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
             repo.getThreadHistories(threadId)
                 .onSuccess { data ->
                     reportId = data.reportId
-                    val messages = data.histories.map { it.toChatMessage() }
+                    val messages = data.histories.flatMap { it.toChatMessages() }
                     adapter.submitList(messages)
-                    if (messages.isNotEmpty()) {
-                        binding.chatRv.scrollToPosition(messages.size - 1)
-                    }
+//                    if (messages.isNotEmpty()) {
+//                        binding.chatRv.scrollToPosition(messages.size - 1)
+//                    }
                 }
                 .onFailure { e ->
                     e.printStackTrace()
                 }
         }
 
-        (activity as? MainActivity)?.setToolbar(
-            visible = true,
-            title = "대화 기록",
-            showBackButton = true,
-            subText = "",
-            onBackClick = { parentFragmentManager.popBackStack() }
-        )
+        setupToolbar()
 
         binding.icReportIv.setOnClickListener {
             val rid = reportId
@@ -72,6 +67,7 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
                 Toast.makeText(requireContext(), "레포트 정보를 찾을 수 없어요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+            navigatingToReport = true
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, ReportFragment().apply{
                     arguments = Bundle().apply{
@@ -84,31 +80,80 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
     }
 
     override fun onDestroyView() {
-        (activity as? MainActivity)?.setToolbar(false)
+        if (!navigatingToReport) {
+            (activity as? MainActivity)?.setToolbar(false)
+        }
         super.onDestroyView()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupToolbar()
+    }
+
+    private fun setupToolbar() {
+        val titleFromArgs = arguments?.getString(ARG_THREAD_TITLE).orEmpty()
+        val title = if (titleFromArgs.isBlank()) "대화 기록" else titleFromArgs
+        (activity as? MainActivity)?.setToolbar(
+            visible = true,
+            title = title,
+            showBackButton = true,
+            subText = "",
+            onBackClick = { parentFragmentManager.popBackStack() }
+        )
     }
 
     companion object {
         private const val ARG_THREAD_ID = "threadId"
-        fun newInstance(threadId: Long) = ChatDetailFragment().apply {
-            arguments = Bundle().apply { putLong(ARG_THREAD_ID, threadId) }
+        private const val ARG_THREAD_TITLE = "threadTitle"
+        fun newInstance(threadId: Long, title:String?=null) = ChatDetailFragment().apply {
+            arguments = Bundle().apply { putLong(ARG_THREAD_ID, threadId)
+            putString(ARG_THREAD_TITLE, title)}
         }
     }
 }
 
-private fun HistoryDto.toChatMessage(): ChatMessage {
+private fun HistoryDto.toChatMessages(): List<ChatMessage> {
     val sender = when (senderType.uppercase()) {
         "USER", "ME" -> Sender.ME
         else -> Sender.AI
     }
     val timeMillis = parseToMillis(createdAt)
-    return ChatMessage(
-        id = id.toString(),
-        sender = sender,
-        text = content,
-        time = timeMillis,
-        chatHistoryId = id
+
+    if (sender == Sender.AI) {
+        val parts = splitToBubbles(content)
+        if (parts.isNotEmpty()) {
+            return parts.mapIndexed { index, part ->
+                ChatMessage(
+                    id = "${id}_$index",
+                    sender = sender,
+                    text = part,
+                    time = timeMillis + index,
+                    chatHistoryId = id
+                )
+            }
+        }
+    }
+
+    return listOf(
+        ChatMessage(
+            id = id.toString(),
+            sender = sender,
+            text = content,
+            time = timeMillis,
+            chatHistoryId = id
+        )
     )
+}
+
+
+// 구분자에 따라 버블 나누기
+private fun splitToBubbles(text: String): List<String> {
+    val regex = Regex("(?<=[.!?])\\s+")
+    return text.trim()
+        .split(regex)
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
 }
 
 private fun parseToMillis(value: String): Long {

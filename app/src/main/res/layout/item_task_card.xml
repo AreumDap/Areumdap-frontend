@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -9,12 +9,15 @@
         android:id="@+id/summary_cv"
         android:layout_width="244dp"
         android:layout_height="296dp"
-        android:layout_gravity="center"
         app:cardCornerRadius="16dp"
         app:cardElevation="6dp"
         app:cardUseCompatPadding="true"
         app:strokeWidth="1dp"
-        app:strokeColor="@color/reflection1">
+        app:strokeColor="@color/reflection1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:id="@+id/summary_layout"
@@ -48,7 +51,8 @@
                         android:layout_width="14dp"
                         android:layout_height="14dp"
                         android:src="@drawable/ic_reflection"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="8dp"
+                        app:tint="@color/reflection2"/>
 
                     <TextView
                         android:id="@+id/sum_cat_tv"
@@ -68,7 +72,6 @@
                     android:textColor="@color/black" />
             </LinearLayout>
 
-            <!-- Spacer -->
             <Space
                 android:layout_width="1dp"
                 android:layout_height="34dp" />
@@ -91,7 +94,7 @@
                     android:gravity="center"
                     android:textColor="@color/black"
                     android:maxLines="2"
-                    android:ellipsize="end"
+                    android:singleLine="false"
                     android:paddingBottom="10dp" />
 
                 <TextView
@@ -103,7 +106,9 @@
                     android:gravity="center"
                     android:textColor="@color/black"
                     android:maxLines="3"
-                    android:ellipsize="end" />
+                    android:ellipsize="end"
+                    android:breakStrategy="balanced"
+                     />
             </LinearLayout>
 
             <!-- 시간 -->
@@ -119,6 +124,7 @@
                     android:layout_width="16dp"
                     android:layout_height="16dp"
                     android:src="@drawable/ic_clock"
+                    app:tint="@color/black"
                     android:layout_marginEnd="6dp" />
 
                 <TextView
@@ -131,7 +137,41 @@
             </LinearLayout>
 
         </LinearLayout>
-
     </com.google.android.material.card.MaterialCardView>
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/task_tip_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:background="@drawable/bg_tip_bubble"
+
+        android:paddingEnd="14dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/summary_cv"
+        app:layout_constraintStart_toStartOf="@id/summary_cv"
+        app:layout_constraintEnd_toEndOf="@id/summary_cv"
+        android:translationY="-30dp">
+
+        <TextView
+            style="@style/tip_tv"
+            android:text="Tip"
+            android:rotation="-15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="7dp" />
+
+        <TextView
+            android:id="@+id/tip_tv"
+            style="@style/tip_title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="이걸 하기 어려울 땐 \n이렇게 저렇게 시작해보는 건 어때요?"
+            android:paddingStart="10dp"
+            android:paddingTop="13dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

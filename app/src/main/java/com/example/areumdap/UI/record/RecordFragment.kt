@@ -62,7 +62,7 @@ class RecordFragment : Fragment() {
             onItemClick = { item ->
                 // 상세 화면 이동
                 parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_frm, ChatDetailFragment.newInstance(item.id))
+                    .replace(R.id.main_frm, ChatDetailFragment.newInstance(item.id, item.title))
                     .addToBackStack(null)
                     .commit()
             },

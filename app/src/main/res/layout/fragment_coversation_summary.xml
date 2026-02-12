@@ -27,11 +27,11 @@
 
     <LinearLayout
         android:id="@+id/summary_layout"
-        android:layout_width="296dp"
+        android:layout_width="270dp"
         android:layout_height="323dp"
         android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:background="@drawable/bg_keyword_chip_selector"
+        android:gravity="center"
+        android:background="@drawable/bg_card_radius40"
         android:paddingTop="20dp"
         android:paddingBottom="60dp"
         android:paddingEnd="16dp"
@@ -63,23 +63,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textColor="@color/reflection2" />
+            android:textColor="@color/reflection2"
+            />
     </LinearLayout>
 
         <TextView
             android:id="@+id/sum_title_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text=""
+            android:gravity="center"
             style="@style/TA_Body1"
             android:layout_marginBottom="38dp"/>
 
         <TextView
             android:id="@+id/sum_body_tv"
             style="@style/TA_Caption1"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="" />
+            android:text=""
+            android:gravity="center"
+            android:breakStrategy="balanced"
+            android:hyphenationFrequency="normal"
+            android:lineSpacingExtra="4dp"/>
 
 
     </LinearLayout>
