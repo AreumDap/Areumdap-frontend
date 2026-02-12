@@ -1,11 +1,13 @@
 package com.example.areumdap.UI.Chat
 
 import android.os.Bundle
+import android.text.TextPaint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -23,6 +25,28 @@ class ConversationSummaryFragment : Fragment() {
     private var reportRequested = false
 
     private val viewModel: ChatViewModel by activityViewModels()
+
+    fun wrapByWord(text: String, paint: TextPaint, maxWidthPx: Float): String {
+        val words = text.split(Regex("\\s+"))
+        val sb = StringBuilder()
+        var line = ""
+
+        for (w in words) {
+            val candidate = if (line.isEmpty()) w else "$line $w"
+            if (paint.measureText(candidate) <= maxWidthPx) {
+                line = candidate
+            } else {
+                if (sb.isNotEmpty()) sb.append('\n')
+                sb.append(line)
+                line = w
+            }
+        }
+        if (line.isNotEmpty()) {
+            if (sb.isNotEmpty()) sb.append('\n')
+            sb.append(line)
+        }
+        return sb.toString()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +79,7 @@ class ConversationSummaryFragment : Fragment() {
                 viewModel.summaryState.collect{state ->
                     if (!reportRequested && state is SummaryUiState.Success) {
                         reportRequested = true
-                        viewModel.createReport() // ✅ 요약 성공 후 레포트 생성
+                        viewModel.createReport()
                     }
                     when(state){
                         is SummaryUiState.Idle -> Unit
@@ -69,8 +93,15 @@ class ConversationSummaryFragment : Fragment() {
                             val s = state.data.summaryContent
 
 
-                            binding.sumTitleTv.text = s.title
-                            binding.sumBodyTv.text = s.summary
+                            binding.sumTitleTv.doOnLayout {
+                                val width = binding.sumTitleTv.width - binding.sumTitleTv.paddingLeft - binding.sumTitleTv.paddingRight
+                                binding.sumTitleTv.text = wrapByWord(s.title, binding.sumTitleTv.paint, width.toFloat())
+                            }
+
+                            binding.sumBodyTv.doOnLayout {
+                                val width = binding.sumBodyTv.width - binding.sumBodyTv.paddingLeft - binding.sumBodyTv.paddingRight
+                                binding.sumBodyTv.text = wrapByWord(s.summary, binding.sumBodyTv.paint, width.toFloat())
+                            }
                             val cat = Category.fromServerTag(data.tag)
                             binding.sumCatIv.setImageResource(cat.iconRes)
                             binding.sumCatTv.text = cat.label

@@ -50,9 +50,9 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
                     reportId = data.reportId
                     val messages = data.histories.flatMap { it.toChatMessages() }
                     adapter.submitList(messages)
-                    if (messages.isNotEmpty()) {
-                        binding.chatRv.scrollToPosition(messages.size - 1)
-                    }
+//                    if (messages.isNotEmpty()) {
+//                        binding.chatRv.scrollToPosition(messages.size - 1)
+//                    }
                 }
                 .onFailure { e ->
                     e.printStackTrace()
@@ -92,9 +92,11 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
     }
 
     private fun setupToolbar() {
+        val titleFromArgs = arguments?.getString(ARG_THREAD_TITLE).orEmpty()
+        val title = if (titleFromArgs.isBlank()) "대화 기록" else titleFromArgs
         (activity as? MainActivity)?.setToolbar(
             visible = true,
-            title = "대화 기록",
+            title = title,
             showBackButton = true,
             subText = "",
             onBackClick = { parentFragmentManager.popBackStack() }
@@ -103,8 +105,10 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
 
     companion object {
         private const val ARG_THREAD_ID = "threadId"
-        fun newInstance(threadId: Long) = ChatDetailFragment().apply {
-            arguments = Bundle().apply { putLong(ARG_THREAD_ID, threadId) }
+        private const val ARG_THREAD_TITLE = "threadTitle"
+        fun newInstance(threadId: Long, title:String?=null) = ChatDetailFragment().apply {
+            arguments = Bundle().apply { putLong(ARG_THREAD_ID, threadId)
+            putString(ARG_THREAD_TITLE, title)}
         }
     }
 }
@@ -142,6 +146,8 @@ private fun HistoryDto.toChatMessages(): List<ChatMessage> {
     )
 }
 
+
+// 구분자에 따라 버블 나누기
 private fun splitToBubbles(text: String): List<String> {
     val regex = Regex("(?<=[.!?])\\s+")
     return text.trim()
