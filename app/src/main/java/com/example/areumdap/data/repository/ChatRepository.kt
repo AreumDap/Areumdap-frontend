@@ -2,11 +2,13 @@ package com.example.areumdap.data.repository
 
 
 import com.example.areumdap.data.api.ApiResponse
+import com.example.areumdap.data.model.AssignedQuestionDto
 import com.example.areumdap.data.model.ChatSummaryData
 import com.example.areumdap.data.model.ReportResponse
 import com.example.areumdap.data.model.SendChatMessageResponse
 
 interface ChatRepository {
+    suspend fun fetchAssignedQuestions(): Result<List<AssignedQuestionDto>>
     suspend fun ask(content: String, threadId: Long): SendChatMessageResponse
     suspend fun stopChat(threadId: Long)
 

@@ -1,6 +1,16 @@
 package com.example.areumdap.data.model
 
 
+data class AssignedQuestionsResponse(
+    val questions: List<AssignedQuestionDto> = emptyList()
+)
+
+data class AssignedQuestionDto(
+    val userQuestionId: Long,
+    val content: String,
+    val tag: String // "ELSE" 같은 문자열로 옴
+)
+
 // 대화 시작하기 api
 data class StartChatRequest(
     val content: String,

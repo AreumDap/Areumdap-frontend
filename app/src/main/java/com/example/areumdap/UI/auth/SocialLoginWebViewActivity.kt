@@ -12,8 +12,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.R
 import com.example.areumdap.data.repository.AuthRepository
+import com.example.areumdap.data.api.ChatbotApiService
+import com.example.areumdap.data.repository.ChatbotRepository
 import com.example.areumdap.data.repository.SocialAuthRepository
 import com.example.areumdap.data.repository.UserRepository
+import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
 import com.example.areumdap.databinding.ActivitySocialLoginWebviewBinding
@@ -232,6 +235,7 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 showCustomToast("${response?.name ?: "회원"}님 환영합니다!", isSuccess = true)
 
                 saveLoginState()
+                assignTodayRecommendIfNeeded()
 
                 // FCM 토큰 등록
                 Log.d(tag, "4️⃣ [FCM 토큰] 등록 시작")
@@ -282,6 +286,7 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
                 showCustomToast("${response?.name ?: "회원"}님 환영합니다!", isSuccess = true)
 
                 saveLoginState()
+                assignTodayRecommendIfNeeded()
 
                 // FCM 토큰 등록
                 Log.d(tag, "4️⃣ [FCM 토큰] 등록 시작")
@@ -334,6 +339,15 @@ class SocialLoginWebViewActivity : AppCompatActivity() {
     /**
      * 캐릭터 확인 후 화면 이동 (suspend - 완료될 때까지 대기)
      */
+    private suspend fun assignTodayRecommendIfNeeded() {
+        val api = RetrofitClient.create(ChatbotApiService::class.java)
+        val repo = ChatbotRepository(api)
+        repo.assignTodayRecommendOnLogin()
+            .onFailure { e ->
+                Log.w(tag, "assign recommend failed: ${e.message}")
+            }
+    }
+
     private suspend fun checkCharacterAndNavigateSync() {
         try {
             // 현재 토큰 상태 확인

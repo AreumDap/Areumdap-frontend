@@ -8,6 +8,9 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.areumdap.data.repository.AuthRepository
+import com.example.areumdap.data.api.ChatbotApiService
+import com.example.areumdap.data.repository.ChatbotRepository
+import com.example.areumdap.data.source.RetrofitClient
 import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.R
 import com.example.areumdap.UI.Onboarding.OnboardingActivity
@@ -48,6 +51,7 @@ class SplashActivity : AppCompatActivity() {
                 result.onSuccess {
                     // 200 OK: 캐릭터 있음 -> 온보딩 완료 처리 -> 메인으로
                     Log.d("Splash", "캐릭터 있음: 메인으로 이동")
+                    assignTodayRecommendIfNeeded()
                     saveOnboardingDone()
                     navigateToMain()
                 }.onFailure { e ->
@@ -67,6 +71,15 @@ class SplashActivity : AppCompatActivity() {
                 navigateToLogin()
             }
         }
+    }
+
+    private suspend fun assignTodayRecommendIfNeeded() {
+        val api = RetrofitClient.create(ChatbotApiService::class.java)
+        val repo = ChatbotRepository(api)
+        repo.assignTodayRecommendOnLogin()
+            .onFailure { e ->
+                Log.w("Splash", "assign recommend failed: ${e.message}")
+            }
     }
 
     private fun saveOnboardingDone() {
