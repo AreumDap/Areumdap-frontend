@@ -94,6 +94,14 @@ class RecordFragment : Fragment() {
                 return v
             }
         }
+        binding.recordSp.post {
+            val spinnerWidth = binding.recordSp.width
+            val density = resources.displayMetrics.density
+            val dropdownWidthPx = (100 * density).toInt()
+            val offset = spinnerWidth - dropdownWidthPx
+            binding.recordSp.dropDownHorizontalOffset = offset
+        }
+
         binding.recordSp.adapter = spinnerAdapter
         binding.recordSp.setSelection(filterOptions.indexOf(currentFilter))
 
@@ -194,9 +202,8 @@ private fun String?.parseSummaryJson(): ParsedSummary {
 private fun String.toCategory(): Category = Category.fromServerTag(this)
 
 private fun String.toKoreanDate(): String {
-    // 예: 2026-01-26T01:44:27.394324 -> 2026. 01. 26
     return try {
-        val date = this.take(10) // "yyyy-MM-dd"
+        val date = this.take(10)
         val y = date.substring(0, 4)
         val m = date.substring(5, 7)
         val d = date.substring(8, 10)

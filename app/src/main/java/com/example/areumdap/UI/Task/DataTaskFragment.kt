@@ -66,7 +66,7 @@ class DataTaskFragment: DialogFragment() {
                 if (showsDialog) dismiss() else parentFragmentManager.popBackStack()
             }
         } else {
-            binding.taskCompleteBtn.text = "완료하기"
+            binding.taskCompleteBtn.text = "과제 완료"
             binding.taskCompleteBtn.setOnClickListener {
                 completeMission(missionId)
             }

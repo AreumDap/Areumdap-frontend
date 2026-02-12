@@ -44,6 +44,13 @@ class TaskFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
 
+        binding.taskSp.post {
+            val spinnerWidth = binding.taskSp.width
+            val density = resources.displayMetrics.density
+            val dropdownWidthPx = (110 * density).toInt()
+            val offset = spinnerWidth - dropdownWidthPx
+            binding.taskSp.dropDownHorizontalOffset = offset
+        }
     }
 
     private fun setupSpinner() {

@@ -47,6 +47,14 @@ class QuestionFragment : Fragment() {
 
         // 초기 데이터 로드
         viewModel.fetchSavedQuestions(tag = null)
+
+        binding.questionSp.post {
+            val spinnerWidth = binding.questionSp.width
+            val density = resources.displayMetrics.density
+            val dropdownWidthPx = (110 * density).toInt()
+            val offset = spinnerWidth - dropdownWidthPx
+            binding.questionSp.dropDownHorizontalOffset = offset
+        }
     }
 
     private fun setupObservers() {
