@@ -46,19 +46,37 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <EditText
-        style="@style/InputRounded"
-        android:id="@+id/et_password"
+    <FrameLayout
+        android:id="@+id/layout_password"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginTop="16dp"
-        android:hint="비밀번호"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:inputType="textPassword"
         app:layout_constraintTop_toBottomOf="@id/et_id"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <EditText
+            style="@style/InputRounded"
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="비밀번호"
+            android:paddingStart="20dp"
+            android:paddingEnd="50dp"
+            android:inputType="textPassword" />
+
+        <ImageButton
+            android:id="@+id/btn_password_toggle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_visibility_off"
+            android:contentDescription="비밀번호 보기"
+            app:tint="#888888" />
+
+    </FrameLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         style="@style/BtnPinkMain"
@@ -68,7 +86,7 @@
         android:layout_marginTop="24dp"
         android:text="로그인"
         android:stateListAnimator="@null"
-        app:layout_constraintTop_toBottomOf="@id/et_password"
+        app:layout_constraintTop_toBottomOf="@id/layout_password"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

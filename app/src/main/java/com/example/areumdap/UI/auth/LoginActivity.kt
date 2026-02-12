@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // 직접 로그인 텍스트 클릭
+        // 직접 로그인 텍스트 클릭..
         binding.tvLoginDirect.setOnClickListener {
             val intent = Intent(this, EmailLoginActivity::class.java)
             startActivity(intent)
