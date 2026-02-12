@@ -184,9 +184,9 @@ class SettingFragment : Fragment() {
         binding.layoutName.setOnClickListener { showNicknameDialog() }
         binding.layoutBirthday.setOnClickListener { showDatePickerDialog() }
 
-        binding.layoutServiceIntro.setOnClickListener { openUrl("https://areumdap.notion.site/1f08d65f6acf8009952ed1e1a76b0b3a") }
-        binding.layoutPrivacyPolicy.setOnClickListener { openUrl("https://areumdap.notion.site/1f08d65f6acf807c942ef5bf97c753c2") }
-        binding.layoutTerms.setOnClickListener { openUrl("https://areumdap.notion.site/1f08d65f6acf8085b0e5c00b9d6d8cd2") }
+        binding.layoutServiceIntro.setOnClickListener { openUrl("https://goofy-mambo-180.notion.site/304d17225e8b80cea4a7ebd44b17b365") }
+        binding.layoutPrivacyPolicy.setOnClickListener { openUrl("https://goofy-mambo-180.notion.site/304d17225e8b80a693f2f636d77c3533") }
+        binding.layoutTerms.setOnClickListener { openUrl("https://goofy-mambo-180.notion.site/304d17225e8b80829321c329d7af8287") }
 
         binding.layoutLogout.setOnClickListener { showLogoutConfirmDialog() }
         binding.layoutDeleteAccount.setOnClickListener { showDeleteAccountConfirmDialog() }
