@@ -30,6 +30,7 @@
             android:layout_marginTop="24dp">
 
             <TextView
+                android:id="@+id/loading_first_tv"
                 style="@style/loading_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -48,6 +49,7 @@
                     android:text="00" />
 
                 <TextView
+                    android:id="@+id/loading_second_tv"
                     style="@style/loading_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

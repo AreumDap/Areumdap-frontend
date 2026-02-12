@@ -6,13 +6,13 @@
     android:background="@color/white"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/record_layout_top"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-      android:paddingBottom="20dp"
+        android:paddingBottom="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginHorizontal="26dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,13 +26,15 @@
             android:layout_height="wrap_content"
             android:text="대화 기록"
             style="@style/TA_Body1"
-            android:textColor="@color/black" />
+            android:textColor="@color/black"
+            tools:ignore="MissingConstraints" />
 
         <!-- 왼쪽/오른쪽 밀어주는 스페이서 -->
         <Space
             android:layout_width="0dp"
             android:layout_height="1dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            tools:ignore="MissingConstraints" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/sort_card"
@@ -44,7 +46,9 @@
             app:cardBackgroundColor="@android:color/white"
             app:cardElevation="0dp"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <Spinner
                 android:id="@+id/record_sp"
@@ -54,10 +58,11 @@
                 android:popupBackground="@drawable/bg_spinner_dropdown"
                 android:spinnerMode="dropdown"
                 android:paddingStart="18dp"
-                android:paddingEnd="20dp" />
+                android:paddingEnd="20dp"
+                android:dropDownWidth="100dp" />
         </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rec_card_rv"

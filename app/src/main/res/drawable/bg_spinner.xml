@@ -11,4 +11,4 @@
     <item
         android:drawable="@drawable/ic_dropdown"
         android:gravity="end|center_vertical"
-        android:right="5dp" /> </layer-list>
+        android:right="10dp" /> </layer-list>

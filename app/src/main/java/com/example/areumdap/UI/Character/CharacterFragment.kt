@@ -102,6 +102,14 @@ class CharacterFragment : Fragment() {
             transaction.commit()
         }
 
+        binding.taskFilterSp.post {
+            val spinnerWidth = binding.taskFilterSp.width
+            val density = resources.displayMetrics.density
+            val dropdownWidthPx = (100 * density).toInt()
+            val offset = spinnerWidth - dropdownWidthPx
+            binding.taskFilterSp.dropDownHorizontalOffset = offset
+        }
+
     }
 
     private fun setupObservers() {

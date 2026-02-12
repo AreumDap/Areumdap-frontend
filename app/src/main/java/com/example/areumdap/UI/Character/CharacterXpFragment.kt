@@ -14,6 +14,7 @@ import com.example.areumdap.data.repository.CharacterViewModelFactory
 import com.example.areumdap.databinding.FragmentCharacterXpBinding
 import kotlin.getValue
 import com.example.areumdap.UI.auth.LoadingDialogFragment
+import com.example.areumdap.data.source.TokenManager
 import androidx.fragment.app.DialogFragment
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.load.DataSource
@@ -42,7 +43,11 @@ class CharacterXpFragment : Fragment() {
 
         (activity as? MainActivity)?.setBottomNavVisibility(true)
 
-        val loadingDialog = LoadingDialogFragment()
+        val customMessage = "님의 아름이가 성장 중이에요"
+        val loadingDialog = LoadingDialogFragment.newInstance(
+            customMessage = customMessage,
+            hideFirstLine = true
+        )
         loadingDialog.show(parentFragmentManager, "loading_dialog")
 
         viewModel.fetchCharacterLevel()
@@ -52,8 +57,9 @@ class CharacterXpFragment : Fragment() {
                 // 현재 달성한 레벨
                 binding.characterXpLevelTv.text = "${it.displayLevel}"
                 
-                // 필요 경험치
-                binding.characterNextXpTv.text = "${it.maxXp}"
+                // 목표 경험치
+                val targetXp = it.currentXp + it.maxXp
+                binding.characterNextXpTv.text = "$targetXp"
 
                 binding.characterXpIv.visibility = View.VISIBLE
                 Glide.with(this)
