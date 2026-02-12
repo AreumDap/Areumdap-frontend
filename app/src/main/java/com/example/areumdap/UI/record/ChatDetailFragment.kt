@@ -1,7 +1,6 @@
 ﻿package com.example.areumdap.UI.record
 
 import android.os.Bundle
-import android.widget.Toast
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -64,7 +63,6 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
         binding.icReportIv.setOnClickListener {
             val rid = reportId
             if (rid == null || rid <= 0L) {
-                Toast.makeText(requireContext(), "레포트 정보를 찾을 수 없어요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             navigatingToReport = true
