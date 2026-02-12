@@ -6,7 +6,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.areumdap.R
 import com.example.areumdap.data.repository.UserRepository
@@ -19,25 +18,18 @@ import kotlinx.coroutines.launch
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // 메시지 수신 시 처리
-        Log.d(TAG, "From: ${remoteMessage.from}")
-
         // 데이터 메시지가 포함되어 있는지 확인
         if (remoteMessage.data.isNotEmpty()) {
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
             // 데이터 메시지 처리 로직 (필요 시)
         }
 
         // 알림 메시지가 포함되어 있는지 확인
         remoteMessage.notification?.let {
-            Log.d(TAG, "Message Notification Body: ${it.body}")
             sendNotification(it.title, it.body)
         }
     }
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "Refreshed token: $token")
-
         // 토큰이 갱신되면 서버로 전송
         // Service는 Main Thread에서 동작하므로 CoroutineScope 사용
         CoroutineScope(Dispatchers.IO).launch {
@@ -66,7 +58,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher) // 앱 아이콘 사용
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title ?: getString(R.string.app_name))
             .setContentText(messageBody)
             .setAutoCancel(true)
@@ -88,7 +80,4 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
     }
 
-    companion object {
-        private const val TAG = "MyFirebaseMsgService"
-    }
 }

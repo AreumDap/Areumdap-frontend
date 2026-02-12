@@ -74,11 +74,11 @@ class DataTaskFragment: DialogFragment() {
 
         // Tip 및 D-day 가시성 초기 설정
         if (showTip) {
-            binding.taskTipLl.visibility = View.VISIBLE
+            binding.dataTaskCard.taskTipLl.visibility = View.VISIBLE
             binding.dataTaskCard.icClockIv.visibility = View.VISIBLE
             binding.dataTaskCard.sumDuedayTv.visibility = View.VISIBLE
         } else {
-            binding.taskTipLl.visibility = View.GONE
+            binding.dataTaskCard.taskTipLl.visibility = View.GONE
             binding.dataTaskCard.icClockIv.visibility = View.INVISIBLE
             binding.dataTaskCard.sumDuedayTv.visibility = View.INVISIBLE
 
@@ -186,7 +186,7 @@ class DataTaskFragment: DialogFragment() {
                         if (showTip) {
                              // 가이드 텍스트 설정
                             missionDetail.guide?.let { guideText ->
-                                binding.tipTv.text = guideText
+                                binding.dataTaskCard.tipTv.text = guideText
                             }
 
                             missionDetail.dDay?.let {
@@ -236,6 +236,16 @@ class DataTaskFragment: DialogFragment() {
             sumCatTv.text = catName
             sumCatTv.setTextColor(color2)
             sumCatIv.setImageResource(iconRes)
+            
+            // 아이콘 색상 적용
+            androidx.core.widget.ImageViewCompat.setImageTintList(
+                sumCatIv,
+                ColorStateList.valueOf(color2)
+            )
+            androidx.core.widget.ImageViewCompat.setImageTintList(
+                icClockIv,
+                ColorStateList.valueOf(color2)
+            )
             
             // 듀데이 텍스트
             sumDuedayTv.setTextColor(color2)

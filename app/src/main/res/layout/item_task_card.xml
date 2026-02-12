@@ -94,7 +94,7 @@
                     android:gravity="center"
                     android:textColor="@color/black"
                     android:maxLines="2"
-                    android:singleLine="false"
+                    android:ellipsize="end"
                     android:paddingBottom="10dp" />
 
                 <TextView
@@ -106,9 +106,7 @@
                     android:gravity="center"
                     android:textColor="@color/black"
                     android:maxLines="3"
-                    android:ellipsize="end"
-                    android:breakStrategy="balanced"
-                     />
+                    android:ellipsize="end" />
             </LinearLayout>
 
             <!-- 시간 -->
@@ -166,7 +164,7 @@
         <TextView
             android:id="@+id/tip_tv"
             style="@style/tip_title_tv"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="이걸 하기 어려울 땐 \n이렇게 저렇게 시작해보는 건 어때요?"

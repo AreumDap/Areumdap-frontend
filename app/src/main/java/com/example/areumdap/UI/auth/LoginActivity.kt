@@ -75,7 +75,6 @@ class LoginActivity : AppCompatActivity() {
 
             result.onSuccess { loginUrl ->
                 Log.d(tag, "카카오 로그인 URL: $loginUrl")
-
                 // 웹뷰 화면으로 이동
                 val intent = Intent(this@LoginActivity, SocialLoginWebViewActivity::class.java)
                 intent.putExtra(SocialLoginWebViewActivity.EXTRA_LOGIN_TYPE, SocialLoginWebViewActivity.TYPE_KAKAO)

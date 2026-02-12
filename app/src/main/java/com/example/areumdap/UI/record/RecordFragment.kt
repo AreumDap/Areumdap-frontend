@@ -57,6 +57,7 @@ class RecordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as? com.example.areumdap.UI.auth.MainActivity)?.setToolbar(false)
 
         adapter = RecordRVAdapter(
             onItemClick = { item ->
@@ -94,14 +95,6 @@ class RecordFragment : Fragment() {
                 return v
             }
         }
-        binding.recordSp.post {
-            val spinnerWidth = binding.recordSp.width
-            val density = resources.displayMetrics.density
-            val dropdownWidthPx = (100 * density).toInt()
-            val offset = spinnerWidth - dropdownWidthPx
-            binding.recordSp.dropDownHorizontalOffset = offset
-        }
-
         binding.recordSp.adapter = spinnerAdapter
         binding.recordSp.setSelection(filterOptions.indexOf(currentFilter))
 
@@ -141,6 +134,15 @@ class RecordFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        (activity as? com.example.areumdap.UI.auth.MainActivity)?.setToolbar(false)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as? com.example.areumdap.UI.auth.MainActivity)?.setToolbar(false)
+    }
 
 
     override fun onDestroyView() {
@@ -202,8 +204,9 @@ private fun String?.parseSummaryJson(): ParsedSummary {
 private fun String.toCategory(): Category = Category.fromServerTag(this)
 
 private fun String.toKoreanDate(): String {
+    // 예: 2026-01-26T01:44:27.394324 -> 2026. 01. 26
     return try {
-        val date = this.take(10)
+        val date = this.take(10) // "yyyy-MM-dd"
         val y = date.substring(0, 4)
         val m = date.substring(5, 7)
         val d = date.substring(8, 10)
