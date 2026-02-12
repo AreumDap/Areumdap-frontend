@@ -27,6 +27,7 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        navigatingToReport = false
 
         val threadId = requireArguments().getLong(ARG_THREAD_ID, -1L)
         if (threadId == -1L) return
@@ -67,10 +68,12 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
                 return@setOnClickListener
             }
             navigatingToReport = true
+            val recordTitle = arguments?.getString(ARG_THREAD_TITLE)
             parentFragmentManager.beginTransaction()
                 .replace(R.id.main_frm, ReportFragment().apply{
                     arguments = Bundle().apply{
                         putLong("reportId", rid)
+                        putString("recordTitle", recordTitle)
                     }
                 })
                 .addToBackStack(null)
@@ -79,14 +82,13 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
     }
 
     override fun onDestroyView() {
-        if (!navigatingToReport) {
-            (activity as? MainActivity)?.setToolbar(false)
-        }
+        (activity as? MainActivity)?.setToolbar(false)
         super.onDestroyView()
     }
 
     override fun onResume() {
         super.onResume()
+        navigatingToReport = false
         setupToolbar()
     }
 
@@ -107,7 +109,7 @@ class ChatDetailFragment : Fragment(R.layout.fragment_chat_detail) {
         private const val ARG_THREAD_TITLE = "threadTitle"
         fun newInstance(threadId: Long, title:String?=null) = ChatDetailFragment().apply {
             arguments = Bundle().apply { putLong(ARG_THREAD_ID, threadId)
-            putString(ARG_THREAD_TITLE, title)}
+                putString(ARG_THREAD_TITLE, title)}
         }
     }
 }

@@ -20,9 +20,16 @@ import com.example.areumdap.data.repository.UserRepository
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
+    private val toolbarLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
+        override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+            updateToolbarForFragment(f)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         applySeasonTheme()
@@ -30,6 +37,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setToolbar(false)
+        supportFragmentManager.registerFragmentLifecycleCallbacks(toolbarLifecycleCallbacks, true)
 
         // =========================================================
         // [추가된 부분] 로그인 화면에서 전달된 환영 메시지 확인 및 표시
@@ -88,6 +97,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initBottomNavigation(){
+        setToolbar(false)
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_frm, HomeFragment())
             .commitAllowingStateLoss()
@@ -95,12 +105,14 @@ class MainActivity : AppCompatActivity() {
         binding.mainBnv.setOnItemSelectedListener { item ->
             when (item.itemId){
                 R.id.archiveFragment -> {
+                    setToolbar(false)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, ArchiveFragment())
                         .commitAllowingStateLoss()
                     return@setOnItemSelectedListener true
                 }
                 R.id.homeFragment -> {
+                    setToolbar(false)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, HomeFragment())
                         .commitAllowingStateLoss()
@@ -108,6 +120,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.settingFragment -> {
+                    setToolbar(false)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm,SettingFragment())
                         .commitAllowingStateLoss()
@@ -115,6 +128,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.recordFragment -> {
+                    setToolbar(false)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, RecordFragment())
                         .commitAllowingStateLoss()
@@ -122,6 +136,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.characterFragment -> {
+                    setToolbar(false)
                     supportFragmentManager.beginTransaction()
                         .replace(R.id.main_frm, CharacterFragment())
                         .commitAllowingStateLoss()
@@ -176,5 +191,16 @@ class MainActivity : AppCompatActivity() {
 
     fun goToCharacterFragment() {
         binding.mainBnv.selectedItemId = R.id.characterFragment
+    }
+
+    private fun updateToolbarForFragment(fragment: Fragment?) {
+        when (fragment) {
+            is HomeFragment,
+            is RecordFragment,
+            is ArchiveFragment,
+            is CharacterFragment,
+            is SettingFragment -> setToolbar(false)
+            else -> Unit
+        }
     }
 }

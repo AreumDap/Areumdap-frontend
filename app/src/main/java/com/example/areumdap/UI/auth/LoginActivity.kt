@@ -72,7 +72,6 @@ class LoginActivity : AppCompatActivity() {
             val result = SocialAuthRepository.getKakaoLoginUrl()
 
             result.onSuccess { loginUrl ->
-
                 // 웹뷰 화면으로 이동
                 val intent = Intent(this@LoginActivity, SocialLoginWebViewActivity::class.java)
                 intent.putExtra(SocialLoginWebViewActivity.EXTRA_LOGIN_TYPE, SocialLoginWebViewActivity.TYPE_KAKAO)
