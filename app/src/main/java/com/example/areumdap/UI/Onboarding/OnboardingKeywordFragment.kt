@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -129,15 +129,17 @@ class OnboardingKeywordFragment : Fragment(){
                     val success = viewModel.toggleKeyword(keyword)
                     if (success) {
                         applySelectedStyle()
+                        binding.tvKeywordLimitWarning.visibility = View.GONE
                     } else {
-                        // 3개 초과 → 선택 되돌리기 + 토스트
+                        // 3개 초과 → 선택 되돌리기 + 경고 텍스트 표시
                         chip.isChecked = false
-                        Toast.makeText(requireContext(), "키워드는 3개까지만 선택 가능합니다", Toast.LENGTH_SHORT).show()
+                        binding.tvKeywordLimitWarning.visibility = View.VISIBLE
                         return@setOnCheckedChangeListener
                     }
                 } else {
                     viewModel.toggleKeyword(keyword)
                     applyUnselectedStyle()
+                    binding.tvKeywordLimitWarning.visibility = View.GONE
                 }
 
                 updateButtonState()

@@ -106,7 +106,13 @@ class OnboardingInfoFragment: Fragment() {
             "앞선 당신의 이야기를 통해<br>당신을 닮은 <b>아름이</b>가 태어났어요!",
             Html.FROM_HTML_MODE_LEGACY
         )
-        // 계절별 알 이미지를 위해 캐릭터 생성 API 호출
+        // 이미 캐릭터가 생성되어 있으면 API 호출 스킵, 저장된 이미지 사용
+        if (viewModel.createdCharacterId != null) {
+            Log.d("CharacterAPI", "이미 생성된 캐릭터 사용: ID=${viewModel.createdCharacterId}")
+            restoreCharacterImage()
+            return
+        }
+        // 캐릭터 미생성 시 API 호출
         createCharacter()
     }
 
