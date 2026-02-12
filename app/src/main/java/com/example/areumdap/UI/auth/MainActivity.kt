@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -73,12 +72,10 @@ class MainActivity : AppCompatActivity() {
     private fun checkFcmToken() {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (!task.isSuccessful) {
-                Log.w("MainActivity", "Fetching FCM registration token failed", task.exception)
                 return@addOnCompleteListener
             }
 
             val token = task.result
-            Log.d("MainActivity", "FCM Token: $token")
 
             lifecycleScope.launch(Dispatchers.IO) {
                 try {

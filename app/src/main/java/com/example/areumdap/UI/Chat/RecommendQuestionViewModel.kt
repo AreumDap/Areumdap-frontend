@@ -1,6 +1,5 @@
 package com.example.areumdap.UI.Chat
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,8 +13,6 @@ import retrofit2.HttpException
 class RecommendQuestionViewModel(
     private val repo: ChatbotRepository
 ) : ViewModel() {
-    private val tag = "RecommendQuestionVM"
-
     private val _questions = MutableLiveData<List<AssignedQuestionDto>>()
     val questions: LiveData<List<AssignedQuestionDto>> = _questions
 
@@ -38,7 +35,6 @@ class RecommendQuestionViewModel(
                     _error.value = null
                 }
                 .onFailure { e ->
-                    Log.e(tag, "assigned fetch failed", e)
                     _error.value = mapErrorMessage(e)
                 }
             _loading.value = false
@@ -54,7 +50,6 @@ class RecommendQuestionViewModel(
             val assignResult = repo.assignTodayRecommendOnLogin()
             if (assignResult.isFailure) {
                 val e = assignResult.exceptionOrNull()
-                Log.e(tag, "assign failed on home", e)
                 if (e is ApiException && e.code == "USER_404") {
                     _error.value = mapErrorMessage(e)
                     _loading.value = false
@@ -69,7 +64,6 @@ class RecommendQuestionViewModel(
                     _error.value = null
                 }
                 .onFailure { e ->
-                    Log.e(tag, "assigned fetch failed", e)
                     _error.value = mapErrorMessage(e)
                 }
             _loading.value = false

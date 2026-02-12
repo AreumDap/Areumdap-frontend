@@ -1,6 +1,5 @@
 package com.example.areumdap.data.repository
 
-import android.util.Log
 import com.example.areumdap.data.api.ApiException
 import com.example.areumdap.data.api.ApiResponse
 import com.example.areumdap.data.api.ChatbotApiService
@@ -49,7 +48,6 @@ class ChatRepositoryImpl(
     override suspend fun stopChat(threadId: Long) {
         val res = api.stopChat(threadId)
         if (!res.isSuccessful) {
-            Log.e("ChatRepository", "stopChat failed: ${res.code()}")
         }
     }
 
