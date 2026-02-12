@@ -1,0 +1,296 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.AreumDap" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <item name="colorPrimary">@color/pink2</item>
+        <item name="colorPrimaryVariant">@color/pink2</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/blue1</item>
+        <item name="colorSecondaryVariant">@color/blue2</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:windowBackground">@color/background2</item>
+
+        <item name="android:statusBarColor">@color/background2</item>
+
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="android:fontFamily">@font/nanum_square_round</item>
+
+    </style>
+
+    <style name="TA_Header1">
+        <item name="android:textSize">36sp</item>
+        <item name="lineHeight">40sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TA_Subtitle1">
+        <item name="android:textSize">24sp</item>
+        <item name="lineHeight">40sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TA_Body1">
+        <item name="android:textSize">20sp</item>
+        <item name="lineHeight">30sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TA_Body2">
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">20sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TA_Body2_bold">
+        <item name="android:textSize">16sp</item>
+        <item name="lineHeight">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TA_Body3">
+        <item name="android:textSize">14sp</item>
+        <item name="lineHeight">22sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TA_Caption1">
+        <item name="android:textSize">12sp</item>
+        <item name="lineHeight">20sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <!-- 아카이브 페이지 -->
+    <style name="archive_tv">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+    <style name="item_date">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#666666</item>
+    </style>
+
+    <style name="item_tag_tv">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="character_task">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#666</item>
+    </style>
+
+    <style name="task_type_tv">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_xp_tv">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_title_tv">
+        <item name="android:textSize">25sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_tip_tv">
+        <item name="android:textSize">9sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#A0A0A0</item>
+    </style>
+
+    <style name="task_date_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#525252</item>
+    </style>
+
+    <style name="character_xp_tv">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="spinner_tv">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="task_complete_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="home_tv">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#222</item>
+    </style>
+
+    <style name="tip_title_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#FFF</item>
+    </style>
+
+    <style name="tip_tv">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#FFF</item>
+    </style>
+
+    <style name="character_task_date_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">@color/reflection2</item>
+    </style>
+
+    <style name="character_level_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#222</item>
+    </style>
+
+    <style name="CustomDialog" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
+    <style name="character_history_tv">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#222</item>
+    </style>
+
+    <style name="character_next_tv">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textColor">#222</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowDisablePreview">true</item>
+
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
+    <style name="CustomDatePickerDialog" parent="Theme.MaterialComponents.Light.Dialog">
+        <item name="colorAccent">#E91E63</item>
+        <item name="colorPrimary">#E91E63</item>
+        <item name="android:headerBackground">#E91E63</item>
+    </style>
+
+
+    <style name="NumberPickerTheme">
+        <item name="android:textColorPrimary">#1A1A1A</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- 계절 테마 -->
+    <style name="Theme.AreumDap.Spring" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/pink2</item>
+        <item name="colorPrimaryVariant">@color/pink1</item>
+        <item name="android:windowBackground">@color/bg_pink</item>
+    </style>
+
+    <style name="Theme.AreumDap.Summer" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/green2</item>
+        <item name="colorPrimaryVariant">@color/green1</item>
+        <item name="android:windowBackground">@color/bg_green</item>
+    </style>
+
+    <style name="Theme.AreumDap.Fall" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/yellow2</item>
+        <item name="colorPrimaryVariant">@color/yellow1</item>
+        <item name="android:windowBackground">@color/bg_yellow</item>
+    </style>
+
+    <style name="Theme.AreumDap.Winter" parent="Theme.AreumDap">
+        <item name="colorPrimary">@color/blue2</item>
+        <item name="colorPrimaryVariant">@color/blue1</item>
+        <item name="android:windowBackground">@color/bg_blue</item>
+    </style>
+
+    <style name="loading_tv">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="SettingHeaderTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#1A1A1A</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SettingCardTitle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#1A1A1A</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SettingCardDesc">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">#888888</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
+
+    <style name="SettingMenuTitle">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#1A1A1A</item>
+    </style>
+
+    <style name="SettingMenuValue">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#888888</item>
+    </style>
+
+    <style name="BtnPinkMain">
+        <item name="android:background">@drawable/bg_button_pink</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="BtnGraySmall">
+        <item name="android:background">@drawable/bg_button_gray</item>
+        <item name="android:textColor">#555555</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="InputRounded">
+        <item name="android:background">@drawable/bg_input_rounded</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingHorizontal">16dp</item>
+    </style>
+
+    <style name="TextPageTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextLabel">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#333333</item>
+    </style>
+
+    <style name="TextError">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">#EB7383</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="DialogTitle">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#1A1A1A</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+</resources>

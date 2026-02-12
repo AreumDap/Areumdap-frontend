@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background1">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:gravity="center"
+        style="@style/TA_Subtitle1"
+        android:text="앞선 당신의 이야기를 통해\n당신을 닮은 아름이가 태어났어요!"
+        android:textColor="@color/black"
+
+        app:layout_constraintVertical_chainStyle="packed"
+
+        app:layout_constraintBottom_toTopOf="@id/iv_character"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/iv_character"
+        android:layout_width="190dp"
+        android:layout_height="190dp"
+        android:layout_marginTop="87dp"
+
+        android:visibility="invisible"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

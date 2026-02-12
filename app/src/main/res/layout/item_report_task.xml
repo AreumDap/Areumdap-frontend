@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/report_task_cv"
+    android:layout_width="216dp"
+    android:layout_height="250dp"
+    android:layout_marginEnd="14dp"
+    app:cardCornerRadius="20dp"
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:id="@+id/report_task_content_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background2"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="27dp">
+
+        <ImageView
+            android:id="@+id/rep_task_cat_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            tools:src="@drawable/ic_reflection" />
+
+        <TextView
+            android:id="@+id/rep_task_title_tv"
+            style="@style/TA_Body1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="2"
+            android:textColor="@color/black"
+            tools:text="과제 제목" />
+
+        <TextView
+            android:id="@+id/rep_task_content_tv"
+            style="@style/TA_Caption1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="3"
+            android:textColor="@color/black"
+            tools:text="과제 설명" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

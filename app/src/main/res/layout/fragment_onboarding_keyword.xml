@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="24dp"
+    android:background="@color/background1">
+
+
+<TextView
+        android:id="@+id/tv_selected_season_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="76dp"
+        android:gravity="center"
+        android:text="봄과 가장 닮아 계시군요!"
+        style="@style/TA_Body2"
+        android:textColor="@color/gray5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_keyword_selection_guide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="봄의 어떤 부분과\n가장 닮았다고 생각하시나요?"
+        style="@style/TA_Subtitle1"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_selected_season_result" />
+
+    <TextView
+        android:id="@+id/tv_keyword_limit_warning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        android:text="키워드는 최대 3개까지만 선택 가능해요."
+        style="@style/TA_Body3"
+        android:textColor="@color/gray5"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_keyword_selection_guide" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexbox_keywords"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="23dp"
+        app:flexWrap="wrap"
+        app:justifyContent="center"
+        app:alignItems="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_keyword_limit_warning">
+    </com.google.android.flexbox.FlexboxLayout>
+
+    <TextView
+        android:id="@+id/tv_direct_keyword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="직접 작성하기"
+        android:textColor="@color/gray3"
+        style="@style/TA_Caption1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/flexbox_keywords" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

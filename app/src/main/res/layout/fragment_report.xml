@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/report_sv"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/report_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/layout_core_value_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingHorizontal="19.5dp"
+                android:paddingTop="25dp"
+                android:paddingBottom="40dp">
+
+                <TextView
+                    android:id="@+id/cor_value_title_tv"
+                    style="@style/TA_Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingHorizontal="17dp"
+                    android:paddingVertical="10dp"
+                    android:text="나에게 가장 중요한 가치"
+                    android:textColor="@color/black" />
+
+                <LinearLayout
+                    android:id="@+id/summary_title_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:orientation="horizontal"
+                    android:paddingBottom="12dp"> <TextView
+                    style="@style/TA_Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="13dp"
+                    android:text="대화 요약" />
+
+                    <TextView
+                        android:id="@+id/sum_date_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2026.02.11" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:overScrollMode="never"
+                    android:layout_marginBottom="24dp">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/hashtag_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleLine="true"
+                        app:chipSpacingHorizontal="8dp" />
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:id="@+id/sum_content_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="40dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/cnt_message_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="97dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_title_border_radius8"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="16dp">
+
+                            <TextView
+                                style="@style/TA_Caption1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:text="주고 받은 메시지"
+                                android:textColor="@color/black" />
+
+                            <TextView
+                                android:id="@+id/report_message_cnt_tv"
+                                style="@style/TA_Subtitle1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="23개"
+                                android:textColor="@color/black" />
+                        </LinearLayout>
+
+                        <Space
+                            android:layout_width="12dp"
+                            android:layout_height="1dp" />
+
+                        <LinearLayout
+                            android:id="@+id/time_chat_layout"
+                            android:layout_width="0dp"
+                            android:layout_height="97dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_title_border_radius8"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:paddingVertical="16dp">
+
+                            <TextView
+                                style="@style/TA_Caption1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:text="대화 시간"
+                                android:textColor="@color/black" />
+
+                            <TextView
+                                android:id="@+id/report_time_cnt_tv"
+                                style="@style/TA_Subtitle1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="2분"
+                                android:textColor="@color/black" />
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/reflection_depth_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="97dp"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/bg_title_border_radius8"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingVertical="16dp">
+
+                        <TextView
+                            style="@style/TA_Caption1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
+                            android:text="성찰 깊이"
+                            android:textColor="@color/black" />
+
+                        <TextView
+                            android:id="@+id/report_depth_tv"
+                            style="@style/TA_Subtitle1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="깊음"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/ic_coner_top"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="10dp"
+                        android:paddingStart="10dp"
+                        android:src="@drawable/ic_coner_pink"
+                        app:tint="?attr/colorPrimary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+
+                    <TextView
+                        android:id="@+id/report_summary_tv"
+                        style="@style/TA_Body3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="6dp"
+                        android:gravity="center"
+                        android:text="오늘은 이러이러한 대화를 나눴어요.\n이러이러한 고민을 나눴고,\n이러이러한 이야기를 이야기해줬어요."
+                        app:layout_constraintStart_toEndOf="@id/ic_coner_top"
+                        app:layout_constraintEnd_toStartOf="@id/ic_coner_bottom"
+                        app:layout_constraintTop_toBottomOf="@id/ic_coner_top"
+                        app:layout_constraintBottom_toTopOf="@id/ic_coner_bottom"/>
+
+                    <ImageView
+                        android:id="@+id/ic_coner_bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="10dp"
+                        android:paddingStart="10dp"
+                        android:rotation="180"
+                        android:src="@drawable/ic_coner_pink"
+                        app:tint="?attr/colorPrimary"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                <Space
+                    android:layout_width="1dp"
+                    android:layout_height="12dp" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="12dp" />
+
+            <LinearLayout
+                android:id="@+id/mid_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingHorizontal="19.5dp"
+                android:paddingVertical="40dp">
+
+                <TextView
+                    style="@style/TA_Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="대화를 통해 발견한 것"
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="20dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/found_card_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:stackFromEnd="true"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_found_card"/>
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="12dp"
+                android:layout_height="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:paddingHorizontal="19.5dp"
+                android:paddingVertical="40dp">
+
+                <TextView
+                    style="@style/TA_Body1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="대화를 통해 얻은 과제"
+                    android:textColor="@color/black"
+                    android:layout_margin="20dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/report_task_rv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    tools:listitem="@layout/item_report_task"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

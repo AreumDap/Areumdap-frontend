@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/character_history_iv"
+        tools:src="@drawable/ic_character"
+        android:layout_width="179dp"
+        android:layout_height="140dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="47dp"
+        android:layout_marginStart="108dp"
+        android:layout_marginEnd="108dp"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@id/character_history_iv"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:id="@+id/character_history_ll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:elevation="10dp"
+            android:background="@drawable/bg_character_task"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/character_history_iv"
+            >
+
+            <TextView
+                android:text="성장 히스토리"
+                style="@style/TA_Body2"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginStart="22dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/character_history_rv"
+                android:layout_width="match_parent"
+                android:layout_height="91dp"
+                android:layout_marginTop="22dp"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                tools:listitem="@layout/item_character_history"/>
+
+            <TextView
+                android:text="과거의 나는 이랬어요"
+                style="@style/TA_Body2"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="33dp"
+                android:layout_marginStart="22dp"/>
+
+            <LinearLayout
+                android:layout_marginTop="13dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_character_history"
+                android:padding="15dp">
+
+                <TextView
+                    android:id="@+id/past_content_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="10dp"
+                    tools:text="제목없음"
+                    style="@style/character_history_tv" />
+
+            </LinearLayout>
+
+            <TextView
+                android:text="현재의 나는 이렇게 성장했어요"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TA_Body2"
+                android:textColor="@color/black"
+                android:layout_marginTop="26dp"
+                android:layout_marginStart="22dp"/>
+
+            <LinearLayout
+                android:layout_marginTop="13dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginBottom="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_character_history"
+                android:padding="15dp">
+
+                <TextView
+                    android:id="@+id/present_content_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="10dp"
+                    tools:text="제목없음"
+                    style="@style/character_history_tv" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

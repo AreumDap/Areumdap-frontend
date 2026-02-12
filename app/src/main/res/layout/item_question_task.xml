@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="6dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ImageView
+        android:id="@+id/task_trash_iv"
+        android:src="@drawable/ic_trash"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/task_card_view"
+        app:layout_constraintBottom_toBottomOf="@+id/task_card_view"
+        android:layout_marginEnd="31dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/task_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="100dp"
+        android:paddingBottom="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/bg_item_character_task"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/item_question_task_iv"
+            android:layout_width="10dp"
+            android:layout_height="15dp"
+            android:src="@drawable/ic_reflection"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="24dp"/>
+
+        <TextView
+            android:id="@+id/item_question_task_tv"
+            android:text="자기 성찰"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/item_question_task_iv"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="7dp"/>
+
+        <TextView
+            style="@style/TA_Body2"
+            android:id="@+id/item_question_content_tv"
+            android:textColor="@color/black"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/item_question_task_check_iv"
+            app:layout_constraintTop_toBottomOf="@+id/item_question_task_iv"
+            android:layout_marginTop="15.5dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="20dp"/>
+
+        <ImageView
+            android:id="@+id/item_question_task_check_iv"
+            android:src="@drawable/ic_question_right"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.6"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="20dp"
+            android:layout_width="7.5dp"
+            android:layout_height="15dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

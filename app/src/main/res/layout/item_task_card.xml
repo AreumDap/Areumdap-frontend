@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/summary_cv"
+        android:layout_width="244dp"
+        android:layout_height="296dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/reflection1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/summary_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingTop="16dp"
+            android:paddingBottom="14dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp">
+
+            <!-- 카테고리 -->
+            <LinearLayout
+                android:id="@+id/summary_layout_top"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <LinearLayout
+                    android:id="@+id/sum_category_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:id="@+id/sum_cat_iv"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_reflection"
+                        android:layout_marginEnd="8dp"
+                        app:tint="@color/reflection2"/>
+
+                    <TextView
+                        android:id="@+id/sum_cat_tv"
+                        style="@style/TA_Body3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/reflection2" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/xp_tv"
+                    style="@style/TA_Body3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 XP"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="1dp"
+                android:layout_height="34dp" />
+
+            <!-- 과제 내용 -->
+            <LinearLayout
+                android:id="@+id/summary_layout_mid"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <TextView
+                    android:id="@+id/sum_task_title_tv"
+                    style="@style/TA_Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:paddingBottom="10dp" />
+
+                <TextView
+                    android:id="@+id/sum_task_desc_tv"
+                    style="@style/TA_Caption1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:maxLines="3"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <!-- 시간 -->
+            <LinearLayout
+                android:id="@+id/summary_layout_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end|center_vertical">
+
+                <ImageView
+                    android:id="@+id/ic_clock_iv"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_clock"
+                    app:tint="@color/black"
+                    android:layout_marginEnd="6dp" />
+
+                <TextView
+                    android:id="@+id/sum_dueday_tv"
+                    style="@style/TA_Body3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="@color/reflection2" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/task_tip_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="10dp"
+        android:background="@drawable/bg_tip_bubble"
+
+        android:paddingEnd="14dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/summary_cv"
+        app:layout_constraintStart_toStartOf="@id/summary_cv"
+        app:layout_constraintEnd_toEndOf="@id/summary_cv"
+        android:translationY="-30dp">
+
+        <TextView
+            style="@style/tip_tv"
+            android:text="Tip"
+            android:rotation="-15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="7dp" />
+
+        <TextView
+            android:id="@+id/tip_tv"
+            style="@style/tip_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="이걸 하기 어려울 땐 \n이렇게 저렇게 시작해보는 건 어때요?"
+            android:paddingStart="10dp"
+            android:paddingTop="13dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

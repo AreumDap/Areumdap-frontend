@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1070771450086",
+    "project_id": "areumdap-umc9th",
+    "storage_bucket": "areumdap-umc9th.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070771450086:android:9914aae4317c52a3e50b27",
+        "android_client_info": {
+          "package_name": "com.example.areumdap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgYm_SKRRmLzGcsykIlM3c8E1GSV8LH6Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

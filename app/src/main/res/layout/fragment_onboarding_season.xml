@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background1">
+
+    <TextView
+        android:id="@+id/tv_question"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:text="나와 가장 닮은 계절은\n무엇인가요?"
+        android:textColor="@color/black"
+        style="@style/TA_Subtitle1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_spring"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="131dp"
+        android:layout_height="131dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="16dp"
+
+        app:icon="@drawable/ic_spring_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n봄"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TA_Body1"
+
+        app:backgroundTint="@color/white"
+        app:strokeColor="@color/pink1"
+        app:strokeWidth="1dp"
+        app:cornerRadius="160dp"
+
+        android:stateListAnimator="@null"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+
+        app:layout_constraintEnd_toStartOf="@+id/btn_summer"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_question" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_summer"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="131dp"
+        android:layout_height="131dp"
+        android:layout_marginStart="16dp"
+
+        app:icon="@drawable/ic_summer_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n여름"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TA_Body1"
+
+        app:backgroundTint="@color/white"
+        app:strokeColor="@color/green1"
+        app:strokeWidth="1dp"
+        app:cornerRadius="160dp"
+
+        android:stateListAnimator="@null"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_spring"
+        app:layout_constraintTop_toTopOf="@id/btn_spring" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_autumn"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="131dp"
+        android:layout_height="131dp"
+        android:layout_marginTop="32dp"
+
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:stateListAnimator="@null"
+
+        app:icon="@drawable/ic_fall_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n가을"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TA_Body1"
+
+        app:backgroundTint="@color/white"
+        app:cornerRadius="160dp"
+        app:layout_constraintStart_toStartOf="@id/btn_spring"
+        app:layout_constraintTop_toBottomOf="@id/btn_spring"
+
+        app:strokeColor="@color/yellow1"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_winter"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="131dp"
+        android:layout_height="131dp"
+
+        app:icon="@drawable/ic_winter_color"
+        app:iconGravity="textTop"
+        app:iconTint="@null"
+
+        android:text="\n겨울"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TA_Body1"
+
+        app:cornerRadius="160dp"
+        app:strokeColor="@color/blue1"
+        app:strokeWidth="1dp"
+        app:backgroundTint="@color/white"
+
+        android:stateListAnimator="@null"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+
+        app:layout_constraintStart_toStartOf="@id/btn_summer"
+        app:layout_constraintTop_toTopOf="@id/btn_autumn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:id="@+id/character_level_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="156dp">
+
+        <TextView
+            style="@style/character_xp_tv"
+            android:text="아름이가 "
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="@style/character_xp_tv"
+            android:text=""
+            android:id="@+id/character_xp_level_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="@style/character_xp_tv"
+            android:text="단계로 성장했어요!"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/character_xp_ll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="57dp"
+        app:layout_constraintTop_toBottomOf="@+id/character_level_ll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:text="다음 성장을 위해선 "
+            style="@style/character_xp_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/character_next_xp_tv"
+            style="@style/character_xp_tv"
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="@style/character_xp_tv"
+            android:text=" XP가 필요해요."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/character_xp_iv"
+        android:layout_width="211dp"
+        android:layout_height="165dp"
+        android:visibility="invisible"
+        tools:src="@drawable/ic_character"
+        android:layout_marginTop="83dp"
+        app:layout_constraintTop_toBottomOf="@id/character_xp_ll"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
+        android:id="@+id/character_xp_close_iv"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:src="@drawable/ic_close"
+        app:layout_constraintTop_toBottomOf="@id/character_xp_iv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="157dp"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
