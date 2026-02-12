@@ -3,22 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/report_task_cv"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="216dp"
+    android:layout_height="250dp"
     android:layout_marginEnd="14dp"
     app:cardCornerRadius="20dp"
-    app:cardUseCompatPadding="true"
-    app:cardPreventCornerOverlap="true">
+    app:cardPreventCornerOverlap="true"
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:id="@+id/report_task_content_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:background="@color/background2"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingHorizontal="27dp"
-        android:paddingVertical="46dp">
+        android:paddingHorizontal="27dp">
 
         <ImageView
             android:id="@+id/rep_task_cat_iv"
@@ -30,21 +29,24 @@
         <TextView
             android:id="@+id/rep_task_title_tv"
             style="@style/TA_Body1"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
+            android:ellipsize="end"
             android:gravity="center"
+            android:maxLines="2"
             android:textColor="@color/black"
-            tools:text="오늘 하루\n나를 위한 시간 갖기" />
+            tools:text="과제 제목" />
 
         <TextView
             android:id="@+id/rep_task_content_tv"
             style="@style/TA_Caption1"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:maxLines="3"
             android:textColor="@color/black"
-            tools:text="아무 생각 없이 좋아하는 일을 하며\n나만의 시간을 가져보세요." />
+            tools:text="과제 설명" />
 
     </LinearLayout>
 
