@@ -71,6 +71,14 @@ class RecordFragment : Fragment() {
                 viewModel.toggleFavorite(item.id)
             }
         )
+        binding.recordSp.post {
+            val spinnerWidth = binding.recordSp.width
+            val density = resources.displayMetrics.density
+            val dropdownWidthPx = (100 * density).toInt()
+            val offset = spinnerWidth - dropdownWidthPx
+            binding.recordSp.dropDownHorizontalOffset = offset
+        }
+
         binding.recCardRv.apply{
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@RecordFragment.adapter
