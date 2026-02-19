@@ -18,13 +18,13 @@
 
             <TextView
                 style="@style/archive_tv"
-                android:text="완료"
+                android:text="완료 "
                 android:layout_width="wrap_content"
                 android:layout_height="23dp"/>
 
             <TextView
                 android:id="@+id/task_finish_tv"
-                android:text=" 00"
+                android:text="00"
                 android:textSize="20sp"
                 android:textColor="?attr/colorPrimary"
                 android:layout_width="wrap_content"
@@ -32,14 +32,14 @@
 
             <TextView
                 style="@style/archive_tv"
-                android:text="개 / 총"
+                android:text="개 / 총 "
                 android:layout_width="wrap_content"
                 android:layout_height="23dp" />
 
             <TextView
                 android:id="@+id/task_total_tv"
                 style="@style/archive_tv"
-                android:text=" 00"
+                android:text="00"
                 android:layout_width="wrap_content"
                 android:layout_height="23dp"/>
 
