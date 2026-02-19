@@ -64,7 +64,10 @@ class ChatThreadViewModel(
                 favorite = favorite,
                 size = 10
             ).onSuccess { data ->
-                _threads.value = data.userChatThreads
+                _threads.value = data.userChatThreads.filter { thread ->
+                    val summary = thread.summary?.trim().orEmpty()
+                    summary.isNotBlank() && !summary.equals("null", ignoreCase = true)
+                }
             }.onFailure { e->
                 _error.value = e.message ?: "알 수 없는 오류"
             }

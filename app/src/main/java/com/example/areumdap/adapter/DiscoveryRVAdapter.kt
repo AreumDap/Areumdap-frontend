@@ -1,14 +1,19 @@
 package com.example.areumdap.adapter
 
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.areumdap.R
 import com.example.areumdap.data.model.InsightDto
 import com.example.areumdap.databinding.ItemFoundCardBinding
-
-
+import com.google.android.material.color.MaterialColors
+import androidx.appcompat.R as AppCompatR
 
 class DiscoveryRVAdapter : ListAdapter<InsightDto, DiscoveryRVAdapter.VH>(DIFF) {
     inner class VH(private val binding: ItemFoundCardBinding)
@@ -16,6 +21,8 @@ class DiscoveryRVAdapter : ListAdapter<InsightDto, DiscoveryRVAdapter.VH>(DIFF) 
 
         fun bind(item: InsightDto){
             binding.fountCardContentTv.text = item.content
+            val highlightColor = MaterialColors.getColor(binding.root, AppCompatR.attr.colorPrimary)
+            binding.fountCardContentTv.text = highlightBacktickText(item.content, highlightColor)
         }
     }
 
@@ -38,7 +45,40 @@ class DiscoveryRVAdapter : ListAdapter<InsightDto, DiscoveryRVAdapter.VH>(DIFF) 
         }
 
     }
+    private fun highlightBacktickText(raw: String, color: Int): CharSequence {
+        val result = SpannableStringBuilder()
+        val regex = Regex("`([^`]+)`")
+        var last = 0
+
+        regex.findAll(raw).forEach { match ->
+            val start = match.range.first
+            val end = match.range.last + 1
+            val inner = match.groupValues[1]
+
+            if (start > last) {
+                result.append(raw.substring(last, start))
+            }
+
+            val spanStart = result.length
+            result.append(inner) // backtick 문자는 노출하지 않음
+            result.setSpan(
+                ForegroundColorSpan(color),
+                spanStart,
+                result.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            last = end
+        }
+
+        if (last < raw.length) {
+            result.append(raw.substring(last))
+        }
+
+        return if (result.isEmpty()) raw else result
+    }
 
 }
+
+
 
 
