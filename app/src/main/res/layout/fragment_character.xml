@@ -10,16 +10,18 @@
         android:id="@+id/character_level_ll"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="8dp"
         android:layout_marginTop="57dp"
         android:layout_marginStart="18dp"
-        android:layout_width="130dp"
-        android:layout_height="42dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/bg_home_level"
         android:gravity="center">
 
         <TextView
             style="@style/home_tv"
-            android:text="성장 단계 :"
+            android:text="성장 단계:"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -195,10 +197,8 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/character_vp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

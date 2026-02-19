@@ -133,7 +133,7 @@ class HomeFragment : Fragment() {
     private fun setupRecommendObserver() {
         recommendViewModel.questions.observe(viewLifecycleOwner) { apiQuestions ->
             val safeItems = apiQuestions ?: emptyList()
-            val domainQuestions = safeItems.map { apiQuestion ->
+            val domainQuestions = safeItems.take(5).map { apiQuestion ->
                 RecommendQuestion(
                     id = apiQuestion.userQuestionId,
                     text = apiQuestion.content,

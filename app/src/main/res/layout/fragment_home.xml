@@ -13,7 +13,7 @@
         android:paddingHorizontal="15dp"
         android:paddingVertical="8dp"
         android:layout_marginStart="18dp"
-        android:layout_marginTop="46dp"
+        android:layout_marginTop="57dp"
         android:background="@drawable/bg_home_level"
         android:gravity="center"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,7 +23,7 @@
             style="@style/home_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="성장 단계 :" />
+            android:text="성장 단계:" />
 
         <TextView
             android:id="@+id/home_character_level_tv"
@@ -44,14 +44,13 @@
         android:layout_width="211dp"
         android:layout_height="165dp"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="81dp"
         android:layout_marginEnd="100dp"
-        android:layout_marginBottom="52dp"
         tools:src="@drawable/ic_character"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/home_character_level_ll"
-        app:layout_constraintBottom_toTopOf="@id/character_task_ll"/>
+        />
 
     <TextView
         android:id="@+id/chat_start_button"
