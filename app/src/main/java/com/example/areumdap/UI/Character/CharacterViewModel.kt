@@ -214,7 +214,7 @@ class CharacterViewModel(private val apiService: CharacterApiService) : ViewMode
                     val errorMsg = try {
                         Gson().fromJson(errorBody, ErrorResponse::class.java).message
                     } catch (e: Exception) {
-                        response.body()?.message ?: "캐릭터 생성에 실패했습니다."
+                        body?.message ?: "캐릭터 생성에 실패했습니다."
                     }
                     _uiState.value = CharacterUiState.Error(errorMsg)
                 }
