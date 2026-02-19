@@ -19,6 +19,60 @@ object AuthRepository {
     }
 
     /**
+     * 데모 자동 로그인 (파라미터 없이 테스트 계정으로 로그인)
+     */
+    suspend fun testLogin(): Result<LoginResponse> {
+        return try {
+            val response = authApi.testLogin()
+
+            if (response.isSuccessful && response.body() != null) {
+                val baseResponse = response.body()!!
+
+                if (baseResponse.isSuccess && baseResponse.data != null) {
+                    val loginData = baseResponse.data
+
+                    // 토큰 저장
+                    TokenManager.saveTokens(
+                        loginData.accessToken ?: "",
+                        loginData.refreshToken ?: ""
+                    )
+
+                    // 유저 정보 저장
+                    val userIdLong: Long = try {
+                        loginData.userId?.toString()?.toLong() ?: 0L
+                    } catch (e: Exception) {
+                        0L
+                    }
+                    TokenManager.saveUserInfo(
+                        userIdLong,
+                        loginData.email ?: "",
+                        loginData.name ?: ""
+                    )
+
+                    // 프로필 닉네임 조회 및 저장
+                    try {
+                        val profileResult = UserRepository.getProfile()
+                        profileResult.onSuccess { profile ->
+                            profile.nickname?.let { TokenManager.saveNickname(it) }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    Result.success(loginData)
+                } else {
+                    Result.failure(Exception(baseResponse.message))
+                }
+            } else {
+                Result.failure(HttpException(response))
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
+
+    /**
      * 이메일 로그인
      */
     suspend fun login(email: String, password: String): Result<LoginResponse> {
@@ -68,7 +122,7 @@ object AuthRepository {
                     Result.failure(Exception(baseResponse.message))
                 }
             } else {
-                // [수정된 부분] ★ 중요 ★
+                // ★ 중요 ★
                 // 여기서 문자열로 바꾸지 않고 HttpException을 그대로 던져야
                 // Activity에서 error.code() == 401을 체크할 수 있습니다.
                 Result.failure(HttpException(response))
@@ -88,9 +142,6 @@ object AuthRepository {
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
-                // 다른 API들도 통일성을 위해 HttpException을 던지는 것을 권장하지만,
-                // 일단 로그인 문제 해결을 위해 기존 로직을 유지하거나 필요시 수정하세요.
-                // 여기서는 로그인과 동일하게 HttpException을 던지도록 수정해드립니다.
                 Result.failure(HttpException(response))
             }
         } catch (e: Exception) {
