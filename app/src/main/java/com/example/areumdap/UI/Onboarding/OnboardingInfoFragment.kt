@@ -64,12 +64,16 @@ class OnboardingInfoFragment: Fragment() {
         // 시작 화면 진입 시 하단 버튼을 즉시 활성화(pink1) 상태로
         viewModel.isKeywordSelected.value = true
 
-        // ViewModel에 저장된 캐릭터 정보 복원 (Fragment 재생성 대응)
+        // FINAL Fragment 진입 시 이미 생성된 캐릭터 정보 복원
         createdCharacterId = viewModel.createdCharacterId
         createdImageUrl = viewModel.createdImageUrl
-
-        // 이미 캐릭터가 생성된 상태라면 이미지 복원
-        restoreCharacterImage()
+        if (!createdImageUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(createdImageUrl)
+                .error(R.drawable.img_character_egg)
+                .into(binding.ivCharacter)
+            binding.ivCharacter.visibility = View.VISIBLE
+        }
 
         // 캐릭터 생성 상태 관찰
         observeCharacterCreation()
@@ -86,29 +90,12 @@ class OnboardingInfoFragment: Fragment() {
         }
     }
 
-    // Fragment 재생성 시 이미 생성된 캐릭터 이미지를 복원
-    private fun restoreCharacterImage() {
-        val imageUrl = viewModel.createdImageUrl
-        if (!imageUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(imageUrl)
-                .error(R.drawable.img_character_egg)
-                .into(binding.ivCharacter)
-            binding.ivCharacter.visibility = View.VISIBLE
-        }
-    }
-
     private fun showText1() {
         binding.tvTitle.text = Html.fromHtml(
             "앞선 당신의 이야기를 통해<br>당신을 닮은 <b>아름이</b>가 태어났어요!",
             Html.FROM_HTML_MODE_LEGACY
         )
-        // 이미 캐릭터가 생성되어 있으면 API 호출 스킵, 저장된 이미지 사용
-        if (viewModel.createdCharacterId != null) {
-            restoreCharacterImage()
-            return
-        }
-        // 캐릭터 미생성 시 API 호출
+        // 캐릭터 생성 API 호출 (INFO 화면 진입 시 최초 1회)
         createCharacter()
     }
 
@@ -138,10 +125,14 @@ class OnboardingInfoFragment: Fragment() {
     // 캐릭터 생성
     private fun createCharacter() {
         val season = viewModel.selectedSeason.value
-        val keywords = viewModel.selectedKeywords.value ?: mutableListOf()
 
         if (season.isNullOrEmpty()) {
             showError("계절 정보가 없습니다.")
+            return
+        }
+
+        // 이미 캐릭터가 생성된 경우 재호출 방지
+        if (viewModel.createdCharacterId != null) {
             return
         }
 
@@ -171,7 +162,7 @@ class OnboardingInfoFragment: Fragment() {
                         is CharacterUiState.Success -> {
                             createdCharacterId = state.characterId
                             createdImageUrl = state.imageUrl
-                            // ViewModel에도 저장 (Fragment 재생성 시 복원용)
+                            // ViewModel에 저장 (FINAL Fragment에서 복원용)
                             viewModel.createdCharacterId = state.characterId
                             viewModel.createdImageUrl = state.imageUrl
                             // 계절별 알 이미지 로드
@@ -181,8 +172,6 @@ class OnboardingInfoFragment: Fragment() {
                                     .error(R.drawable.img_character_egg)
                                     .into(binding.ivCharacter)
                                 binding.ivCharacter.visibility = View.VISIBLE
-                            } else {
-                                // imageUrl이 null이면 이미지가 표시되지 않음
                             }
                             hideLoading()
                             characterViewModel.resetUiState()
@@ -223,8 +212,6 @@ class OnboardingInfoFragment: Fragment() {
 
                 if (!response.isSuccessful) {
                 }
-
-                // 캐릭터는 이미 생성 완료되었으므로 온보딩 저장 성공/실패 무관하게 메인으로 이동
                 saveCharacterInfo(characterId, imageUrl)
                 characterViewModel.resetUiState()
                 viewModel.infoTextStep.value = -1

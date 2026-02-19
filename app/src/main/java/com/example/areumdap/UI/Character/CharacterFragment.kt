@@ -139,7 +139,7 @@ class CharacterFragment : Fragment() {
     private fun updateCharacterUI(levelData: CharacterLevelUpResponse){
         // 레벨 업데이트
         val displayLevel = levelData.level ?: levelData.previousLevel ?: 0
-        binding.characterLevelTv.text = "$displayLevel"
+        binding.characterLevelTv.text = " $displayLevel"
 
         // 경험치 최대치
         val maxProgress = levelData.maxXp

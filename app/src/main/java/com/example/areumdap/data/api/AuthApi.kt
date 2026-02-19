@@ -88,6 +88,12 @@ interface AuthApi {
     ): Response<Unit>
 
     /**
+     * 데모 자동 로그인 (파라미터 없음 - 테스트 계정)
+     */
+    @POST("/api/auth/test/login")
+    suspend fun testLogin(): Response<BaseResponse<LoginResponse>>
+
+    /**
      * 로그아웃
      */
     @POST("/api/auth/logout")

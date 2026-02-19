@@ -84,6 +84,7 @@ class OnboardingSeasonFragment: Fragment(){
             // 뷰모델 데이터 업데이트
             viewModel.selectedSeason.value = seasonKey
             viewModel.isKeywordSelected.value = true
+
         }
     }
 

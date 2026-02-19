@@ -113,8 +113,8 @@ class OnboardingActivity : AppCompatActivity() {
                     true
                 }
                 else -> {
-                    // step0 → KEYWORD Fragment로 돌아가기 (popBackStack)
-                    false
+                    // step0: 캐릭터 생성 후이므로 뒤로가기 막기
+                    true
                 }
             }
 
@@ -262,11 +262,11 @@ class OnboardingActivity : AppCompatActivity() {
         updateButtonText(stepValue)
         updateButtonState(stepValue)
 
-        if (stepValue == OnboardingStep.START.value) {
-            binding.ivBack.visibility = View.INVISIBLE
-        } else {
-            binding.ivBack.visibility = View.VISIBLE
-        }
+        val step = OnboardingStep.fromValue(stepValue) ?: OnboardingStep.START
+        val hideBack = stepValue == OnboardingStep.START.value ||
+            (step == OnboardingStep.INFO &&
+                InfoTextStep.fromValue(viewModel.infoTextStep.value ?: 0) == InfoTextStep.AREUM_BORN)
+        binding.ivBack.visibility = if (hideBack) View.INVISIBLE else View.VISIBLE
     }
 
     private fun updateProgressBar(stepValue: Int) {

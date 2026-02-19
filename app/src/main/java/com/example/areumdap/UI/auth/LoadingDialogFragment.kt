@@ -10,6 +10,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.areumdap.data.source.TokenManager
 import com.example.areumdap.databinding.FragmentDialogLoadingBinding
+import androidx.lifecycle.lifecycleScope
+import com.example.areumdap.data.repository.UserRepository
+import kotlinx.coroutines.launch
 
 class LoadingDialogFragment : DialogFragment() {
     private lateinit var binding : FragmentDialogLoadingBinding
@@ -65,8 +68,23 @@ class LoadingDialogFragment : DialogFragment() {
         }
 
         // 닉네임은 항상 표시
-        val nickname = TokenManager.getUserNickname() ?: ""
-        binding.loadingIdTv.text = nickname
+        // 닉네임은 항상 표시
+        val nickname = TokenManager.getUserNickname()
+        if (nickname.isNullOrBlank()) {
+            // 닉네임이 없으면 서버에서 가져오기
+            viewLifecycleOwner.lifecycleScope.launch {
+                val result = UserRepository.getProfile()
+                result.onSuccess { profile ->
+                    val newNickname = profile.nickname ?: ""
+                    if (newNickname.isNotBlank()) {
+                        TokenManager.saveNickname(newNickname)
+                        binding.loadingIdTv.text = newNickname
+                    }
+                }
+            }
+        } else {
+            binding.loadingIdTv.text = nickname
+        }
 
         // 커스텀 메시지가 있으면 loading_second_tv 텍스트만 변경
         if (customMessage != null) {

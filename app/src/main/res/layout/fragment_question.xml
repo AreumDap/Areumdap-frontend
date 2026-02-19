@@ -18,13 +18,13 @@
 
         <TextView
             style="@style/archive_tv"
-            android:text="전체"
+            android:text="전체 "
             android:layout_width="wrap_content"
             android:layout_height="23dp"/>
 
         <TextView
             android:id="@+id/question_total_tv"
-            android:text=" 00"
+            android:text="00"
             android:textSize="20sp"
             android:textColor="?attr/colorPrimary"
             android:layout_width="wrap_content"
