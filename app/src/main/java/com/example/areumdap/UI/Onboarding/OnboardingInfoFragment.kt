@@ -223,8 +223,6 @@ class OnboardingInfoFragment: Fragment() {
 
                 if (!response.isSuccessful) {
                 }
-
-                // 캐릭터는 이미 생성 완료되었으므로 온보딩 저장 성공/실패 무관하게 메인으로 이동
                 saveCharacterInfo(characterId, imageUrl)
                 characterViewModel.resetUiState()
                 viewModel.infoTextStep.value = -1
