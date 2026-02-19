@@ -48,6 +48,7 @@ class OnboardingKeywordFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.selectedKeywords.value = mutableListOf()
         viewModel.isKeywordSelected.value = false
         viewModel.isDirectInput.value = false
 
